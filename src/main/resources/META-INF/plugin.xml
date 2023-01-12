@@ -4,8 +4,6 @@
     <vendor email="sergey@php.net" url="https://github.com/qq-agency/bitrix-idea/">Sergey Panteleev</vendor>
 
     <depends>com.intellij.modules.platform</depends>
-    <depends>com.intellij.modules.lang</depends>
-    <depends>com.jetbrains.php</depends>
 
     <extensions defaultExtensionNs="com.jetbrains.php">
         <libraryRoot id="bitrix-idea-library" path="/bitrix-idea-library/" runtime="false"/>
