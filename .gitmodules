@@ -1,0 +1,3 @@
+[submodule "src/main/resources/bitrix-idea-library"]
+	path = src/main/resources/bitrix-idea-library
+	url = https://github.com/qq-agency/bxApiDocs.git

@@ -1,42 +1,63 @@
-# bitrix-idea
+# Bitrix Idea
 
+[![Version](http://phpstorm.espend.de/badge/14703/version)](https://plugins.jetbrains.com/plugin/14703)
+[![Downloads](http://phpstorm.espend.de/badge/14703/downloads)](https://plugins.jetbrains.com/plugin/14703)
+[![Rating](https://img.shields.io/jetbrains/plugin/r/rating/14703-bitrix-idea?style=flat-square)](https://plugins.jetbrains.com/plugin/14703)
 ![Build](https://github.com/qq-agency/bitrix-idea/workflows/Build/badge.svg)
-[![Version](https://img.shields.io/jetbrains/plugin/v/PLUGIN_ID.svg)](https://plugins.jetbrains.com/plugin/PLUGIN_ID)
-[![Downloads](https://img.shields.io/jetbrains/plugin/d/PLUGIN_ID.svg)](https://plugins.jetbrains.com/plugin/PLUGIN_ID)
-
-## Template ToDo list
-- [x] Create a new [IntelliJ Platform Plugin Template][template] project.
-- [ ] Get familiar with the [template documentation][template].
-- [ ] Verify the [pluginGroup](./gradle.properties), [plugin ID](./src/main/resources/META-INF/plugin.xml) and [sources package](./src/main/kotlin).
-- [ ] Review the [Legal Agreements](https://plugins.jetbrains.com/docs/marketplace/legal-agreements.html?from=IJPluginTemplate).
-- [ ] [Publish a plugin manually](https://plugins.jetbrains.com/docs/intellij/publishing-plugin.html?from=IJPluginTemplate) for the first time.
-- [ ] Set the Plugin ID in the above README badges.
-- [ ] Set the [Plugin Signing](https://plugins.jetbrains.com/docs/intellij/plugin-signing.html?from=IJPluginTemplate) related [secrets](https://github.com/JetBrains/intellij-platform-plugin-template#environment-variables).
-- [ ] Set the [Deployment Token](https://plugins.jetbrains.com/docs/marketplace/plugin-upload.html?from=IJPluginTemplate).
-- [ ] Click the <kbd>Watch</kbd> button on the top of the [IntelliJ Platform Plugin Template][template] to be notified about releases containing new features and fixes.
+[![License](https://img.shields.io/github/license/qq-agency/bitrix-idea?style=flat-square)](https://plugins.jetbrains.com/plugin/14703)
 
 <!-- Plugin description -->
-This Fancy IntelliJ Platform Plugin is going to be your implementation of the brilliant ideas that you have.
-
-This specific section is a source for the [plugin.xml](/src/main/resources/META-INF/plugin.xml) file which will be extracted by the [Gradle](/build.gradle.kts) during the build process.
-
-To keep everything working, do not remove `<!-- ... -->` sections. 
+Plugin for [PhpStorm](http://www.jetbrains.com/phpstorm) to help 
+the developer navigate the Bitrix CMS core source code.
 <!-- Plugin description end -->
+
+Key         | Value
+----------- | -----------
+Plugin url  | https://plugins.jetbrains.com/plugin/14703-bitrix-idea
+Id          | ru.panteleev.bitrix-idea
+Changelog   | [CHANGELOG](CHANGELOG.md)
 
 ## Installation
 
-- Using IDE built-in plugin system:
-  
-  <kbd>Settings/Preferences</kbd> > <kbd>Plugins</kbd> > <kbd>Marketplace</kbd> > <kbd>Search for "bitrix-idea"</kbd> >
-  <kbd>Install Plugin</kbd>
-  
-- Manually:
+To install, go to Settings > Plugins and search for "Bitrix Idea".
 
-  Download the [latest release](https://github.com/qq-agency/bitrix-idea/releases/latest) and install it manually using
-  <kbd>Settings/Preferences</kbd> > <kbd>Plugins</kbd> > <kbd>⚙️</kbd> > <kbd>Install plugin from disk...</kbd>
+## Supported IDEs
 
+The plugin can be installed on following IntelliJ-based:
 
----
-Plugin based on the [IntelliJ Platform Plugin Template][template].
+* PhpStorm 2021.3+
 
-[template]: https://github.com/JetBrains/intellij-platform-plugin-template
+## Release versions schema
+
+| Plugin version number | Since Version | Until Version |
+| ----- | ------ |---------------|
+| 2.0.x | 2021.3 | 2022.3        |
+| 1.1.x | 2017.3 | 2022.3        |
+| 1.0.x | 2017.3 | 2021.1        |
+
+## Bugs
+
+If you've found a bug, which is not a duplicate, [report it](https://github.com/qq-agency/bitrix-idea/issues).
+
+When reporting a bug, please include the following:
+
+* PhpStorm version
+* OS version
+* JDK version
+* Plugin version (or commit hash, if you built the plugin yourself)
+* Detailed steps to reproduce (please include sample code)
+
+## Contributing
+
+We encourage you to contribute to the plugin if you find any issues 
+or missing functionality that you'd like to see. 
+In order to get started, see the [contribution guide](CONTRIBUTING.md).
+
+## License
+
+The plugin is distributed under MIT. 
+For full license terms, see [LICENCE](LICENCE.md).
+
+## Screenshots
+
+![bitrix_idea phpstorm](https://plugins.jetbrains.com/files/14703/screenshot_22644.png)

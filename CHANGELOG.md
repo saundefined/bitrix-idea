@@ -1,7 +1,13 @@
-<!-- Keep a Changelog guide -> https://keepachangelog.com -->
-
-# bitrix-idea Changelog
+# CHANGELOG
 
 ## [Unreleased]
-### Added
-- Initial scaffold created from [IntelliJ Platform Plugin Template](https://github.com/JetBrains/intellij-platform-plugin-template)
+- Updated Plugin Core
+- Updated Bitrix CMS core
+
+## [1.1.0] - [1.1.15]
+### Changed
+- Updated Bitrix CMS core
+
+## [1.0.0] - [1.0.26]
+### Changed
+- Updated Bitrix CMS core

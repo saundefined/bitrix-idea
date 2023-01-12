@@ -1,18 +1,13 @@
-<!-- Plugin Configuration File. Read more: https://plugins.jetbrains.com/docs/intellij/plugin-configuration-file.html -->
 <idea-plugin>
-    <id>com.github.saundefined.bitrixidea</id>
-    <name>IntelliJ Platform Plugin bitrix-idea</name>
-    <vendor>saundefined</vendor>
+    <id>ru.panteleev.bitrix-idea</id>
+    <name>Bitrix Idea</name>
+    <vendor email="sergey@php.net" url="https://github.com/qq-agency/bitrix-idea/">Sergey Panteleev</vendor>
 
     <depends>com.intellij.modules.platform</depends>
+    <depends>com.intellij.modules.lang</depends>
+    <depends>com.jetbrains.php</depends>
 
-    <extensions defaultExtensionNs="com.intellij">
-        <applicationService serviceImplementation="com.github.saundefined.bitrixidea.services.MyApplicationService"/>
-        <projectService serviceImplementation="com.github.saundefined.bitrixidea.services.MyProjectService"/>
+    <extensions defaultExtensionNs="com.jetbrains.php">
+        <libraryRoot id="bitrix-idea-library" path="/bitrix-idea-library/" runtime="false"/>
     </extensions>
-
-    <applicationListeners>
-        <listener class="com.github.saundefined.bitrixidea.listeners.MyProjectManagerListener"
-                  topic="com.intellij.openapi.project.ProjectManagerListener"/>
-    </applicationListeners>
 </idea-plugin>
