@@ -7,7 +7,7 @@
 [![License](https://img.shields.io/github/license/qq-agency/bitrix-idea?style=flat-square)](https://plugins.jetbrains.com/plugin/14703)
 
 <!-- Plugin description -->
-Plugin for [PhpStorm](http://www.jetbrains.com/phpstorm) to help 
+Plugin for [PhpStorm](https://www.jetbrains.com/phpstorm) to help 
 the developer navigate the Bitrix CMS core source code.
 <!-- Plugin description end -->
 
@@ -31,7 +31,7 @@ The plugin can be installed on following IntelliJ-based:
 
 | Plugin version number | Since Version | Until Version |
 | ----- | ------ |---------------|
-| 2.0.x | 2021.3 | 2022.3        |
+| 2.0.x | 2021.3 | 2023.1        |
 | 1.1.x | 2017.3 | 2022.3        |
 | 1.0.x | 2017.3 | 2021.1        |
 
