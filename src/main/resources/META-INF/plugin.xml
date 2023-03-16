@@ -3,7 +3,7 @@
     <name>Bitrix Idea</name>
     <vendor email="sergey@php.net" url="https://github.com/qq-agency/bitrix-idea/">sergey-panteleev</vendor>
     
-    <product-descriptor code="PBITRIXIDEA" release-date="20230316" release-version="200" optional="true"></product-descriptor>
+    <product-descriptor code="PBITRIXIDEA" release-date="20230316" release-version="02" optional="true"></product-descriptor>
 
     <depends>com.intellij.modules.platform</depends>
 

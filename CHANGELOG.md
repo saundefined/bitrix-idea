@@ -4,6 +4,10 @@
 - Updated Plugin Core
 - Updated Bitrix CMS core
 
+## [2.0.0]
+- Updated Plugin Core
+- Updated Bitrix CMS core
+
 ## [1.1.0] - [1.1.15]
 ### Changed
 - Updated Bitrix CMS core
