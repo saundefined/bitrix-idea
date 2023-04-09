@@ -31,27 +31,9 @@ The plugin can be installed on following IntelliJ-based:
 
 | Plugin version number | Since Version | Until Version |
 | ----- | ------ |---------------|
-| 2.0.x | 2021.3 | 2023.1        |
+| v2023.x | 2021.3 | 2023.1      |
 | 1.1.x | 2017.3 | 2022.3        |
 | 1.0.x | 2017.3 | 2021.1        |
-
-## Bugs
-
-If you've found a bug, which is not a duplicate, [report it](https://github.com/qq-agency/bitrix-idea/issues).
-
-When reporting a bug, please include the following:
-
-* PhpStorm version
-* OS version
-* JDK version
-* Plugin version (or commit hash, if you built the plugin yourself)
-* Detailed steps to reproduce (please include sample code)
-
-## Contributing
-
-We encourage you to contribute to the plugin if you find any issues 
-or missing functionality that you'd like to see. 
-In order to get started, see the [contribution guide](CONTRIBUTING.md).
 
 ## License
 
