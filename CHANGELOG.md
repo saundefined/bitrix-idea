@@ -4,7 +4,7 @@
 - Updated Plugin Core
 - Updated Bitrix CMS core
 
-## [v2023.1.0]
+## [2023.1.0]
 - Updated Plugin Core
 - Updated Bitrix CMS core
 
