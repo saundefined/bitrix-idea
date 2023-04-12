@@ -7,15 +7,15 @@
 [![License](https://img.shields.io/github/license/qq-agency/bitrix-idea?style=flat-square)](https://plugins.jetbrains.com/plugin/14703)
 
 <!-- Plugin description -->
-Plugin for [PhpStorm](https://www.jetbrains.com/phpstorm) to help 
+Plugin for [PhpStorm](https://www.jetbrains.com/phpstorm) to help
 the developer navigate the Bitrix CMS core source code.
 <!-- Plugin description end -->
 
-Key         | Value
------------ | -----------
-Plugin url  | https://plugins.jetbrains.com/plugin/14703-bitrix-idea
-Id          | ru.panteleev.bitrix-idea
-Changelog   | [CHANGELOG](CHANGELOG.md)
+ Key        | Value                                                  
+------------|--------------------------------------------------------
+ Plugin url | https://plugins.jetbrains.com/plugin/14703-bitrix-idea 
+ Id         | ru.panteleev.bitrix-idea                               
+ Changelog  | [CHANGELOG](CHANGELOG.md)                              
 
 ## Installation
 
@@ -30,12 +30,14 @@ The plugin can be installed on following IntelliJ-based:
 ## Release versions schema
 
 | Plugin version number | Since Version | Until Version |
-| ----- | ------ |---------------|
-| v2023.1 | 2021.3 | 2023.1      |
+|-----------------------|---------------|---------------|
+| v2023.3.x             | 2021.3        | 2023.1        |
+| v2023.2.x             | 2021.3        | 2023.1        |
+| v2023.1.x             | 2021.3        | 2023.1        |
 
 ## License
 
-The plugin is distributed under MIT. 
+The plugin is distributed under MIT.
 For full license terms, see [LICENCE](LICENCE.md).
 
 ## Screenshots
