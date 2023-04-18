@@ -1,7 +1,7 @@
-package com.github.saundefined.bitrix_idea
+package com.github.saundefined.bitrix_idea.activity
 
 import com.github.saundefined.bitrix_idea.BitrixIdeaBundle.message
-import com.github.saundefined.bitrix_idea.license.CheckLicense
+import icons.license.CheckLicense
 import com.intellij.notification.Notification
 import com.intellij.notification.NotificationType
 import com.intellij.notification.Notifications

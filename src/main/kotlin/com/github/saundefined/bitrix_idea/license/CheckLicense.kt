@@ -1,4 +1,4 @@
-package com.github.saundefined.bitrix_idea.license
+package icons.license
 
 import com.intellij.openapi.actionSystem.*
 import com.intellij.openapi.application.ApplicationManager

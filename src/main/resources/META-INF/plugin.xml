@@ -13,8 +13,40 @@
 
     <extensions defaultExtensionNs="com.intellij">
         <notificationGroup id="Bitrix Idea Plugin" displayType="BALLOON"/>
-        <postStartupActivity implementation="com.github.saundefined.bitrix_idea.NotificationStartupActivity"/>
+        <postStartupActivity implementation="com.github.saundefined.bitrix_idea.activity.NotificationStartupActivity"/>
     </extensions>
+
+    <actions>
+        <group
+                id="com.github.saundefined.bitrix_idea.actions.BitrixIdeaMenu"
+                text="Bitrix Idea"
+                popup="true"
+                icon="com.github.saundefined.bitrix_idea.icons.BitrixIdeaIcons.Bitrix"
+        >
+            <add-to-group group-id="NewGroup" anchor="first"/>
+            <action
+                    class="com.github.saundefined.bitrix_idea.actions.CreateSimpleComponentAction"
+                    id="com.github.saundefined.bitrix_idea.actions.CreateSimpleComponentAction"
+                    text="Component"
+                    icon="com.github.saundefined.bitrix_idea.icons.BitrixIdeaIcons.Bitrix"
+            >
+            </action>
+            <action
+                    class="com.github.saundefined.bitrix_idea.actions.CreateTemplateAction"
+                    id="com.github.saundefined.bitrix_idea.actions.CreateTemplateAction"
+                    text="Template"
+                    icon="com.github.saundefined.bitrix_idea.icons.BitrixIdeaIcons.Bitrix"
+            >
+            </action>
+            <action
+                    class="com.github.saundefined.bitrix_idea.actions.CreateModuleAction"
+                    id="com.github.saundefined.bitrix_idea.actions.CreateModuleAction"
+                    text="Module"
+                    icon="com.github.saundefined.bitrix_idea.icons.BitrixIdeaIcons.Bitrix"
+            >
+            </action>
+        </group>
+    </actions>
 
     <resource-bundle>messages.BitrixIdeaBundle</resource-bundle>
 </idea-plugin>
