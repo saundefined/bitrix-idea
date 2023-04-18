@@ -16,9 +16,6 @@ object CheckLicense {
     private val STAMP_PREFIX = "stamp:"
     private val EVAL_PREFIX = "eval:"
 
-    /**
-     * Public root certificates needed to verify JetBrains-signed licenses
-     */
     private val ROOT_CERTIFICATES = arrayOf(
         "-----BEGIN CERTIFICATE-----\n" +
                 "MIIFOzCCAyOgAwIBAgIJANJssYOyg3nhMA0GCSqGSIb3DQEBCwUAMBgxFjAUBgNV\n" +
@@ -85,13 +82,8 @@ object CheckLicense {
     private val SECOND: Long = 1000
     private val MINUTE = 60 * SECOND
     private val HOUR = 60 * MINUTE
-    private val TIMESTAMP_VALIDITY_PERIOD_MS = 10 * HOUR
+    private val TIMESTAMP_VALIDITY_PERIOD_MS = 1 * HOUR
     val isLicensed: Boolean?
-        /**
-         * @return TRUE if licensed, FALSE otherwise.
-         * Null return value means the LicensingFacade object is not initialized yet => one cannot say for sure does a valid license for the plugin exist or not.
-         * The interpretation of the null value is up to plugin.
-         */
         get() {
             val facade = LicensingFacade.getInstance() ?: return null
             val cstamp = facade.getConfirmationStamp(PRODUCT_CODE) ?: return false
@@ -107,10 +99,9 @@ object CheckLicense {
         }
 
     fun requestLicense(message: String) {
-        // ensure the dialog is appeared from UI thread and in a non-modal context
         ApplicationManager.getApplication().invokeLater({
             showRegisterDialog(
-                "PBITRIXIDEA",
+                PRODUCT_CODE,
                 message
             )
         }, ModalityState.NON_MODAL)
@@ -118,10 +109,8 @@ object CheckLicense {
 
     private fun showRegisterDialog(productCode: String, message: String) {
         val actionManager = ActionManager.getInstance()
-        // first, assume we are running inside the opensource version
         var registerAction = actionManager.getAction("RegisterPlugins")
         if (registerAction == null) {
-            // assume running inside commercial IDE distribution
             registerAction = actionManager.getAction("Register")
         }
         registerAction?.actionPerformed(
@@ -133,10 +122,6 @@ object CheckLicense {
         )
     }
 
-    // This creates a DataContext providing additional information for the license UI
-    // The "Register*" actions show the registration dialog and expect to find this additional data in the DataContext passed to the action
-    // - productCode: the product corresponding to the passed productCode will be pre-selected in the opened dialog
-    // - message: optional message explaining the reason why the dialog has been shown
     private fun asDataContext(productCode: String, message: String?): DataContext {
         return DataContext { dataId: String? ->
             when (dataId) {
@@ -148,19 +133,19 @@ object CheckLicense {
     }
 
     private fun isEvaluationValid(expirationTime: String): Boolean {
-        try {
+        return try {
             val now = Date()
             val expiration = Date(expirationTime.toLong())
-            return now.before(expiration)
+            now.before(expiration)
         } catch (e: NumberFormatException) {
-            return false
+            false
         }
     }
 
     private fun isKeyValid(key: String): Boolean {
         val licenseParts = key.split("-".toRegex()).dropLastWhile { it.isEmpty() }.toTypedArray()
         if (licenseParts.size != 4) {
-            return false // invalid format
+            return false
         }
         val licenseId = licenseParts[0]
         val licensePartBase64 = licenseParts[1]
@@ -168,9 +153,7 @@ object CheckLicense {
         val certBase64 = licenseParts[3]
         try {
             val sig = Signature.getInstance("SHA1withRSA")
-            // the last parameter of 'createCertificate()' set to 'false' switches off certificate expiration checks.
-            // This might be the case if the key is at the same time a perpetual fallback license for older IDE versions.
-            // Here it is only important that the key was signed with an authentic JetBrains certificate.
+
             sig.initVerify(
                 createCertificate(
                     Base64.getMimeDecoder().decode(certBase64.toByteArray(StandardCharsets.UTF_8)), emptySet(), false
@@ -181,12 +164,11 @@ object CheckLicense {
             if (!sig.verify(Base64.getMimeDecoder().decode(signatureBase64.toByteArray(StandardCharsets.UTF_8)))) {
                 return false
             }
-            // Optional additional check: the licenseId corresponds to the licenseId encoded in the signed license data
-            // The following is a 'least-effort' code. It would be more accurate to parse json and then find there the value of the attribute "licenseId"
+
             val licenseData = String(licenseBytes, StandardCharsets.UTF_8)
             return licenseData.contains("\"licenseId\":\"$licenseId\"")
         } catch (e: Throwable) {
-            e.printStackTrace() // For debug purposes only. Normally you will not want to print exception's trace to console
+            e.printStackTrace()
         }
         return false
     }
@@ -207,17 +189,13 @@ object CheckLicense {
             }
             val sig = Signature.getInstance(signatureType)
 
-            // the last parameter of 'createCertificate()' set to 'true' causes the certificate to be checked for
-            // expiration. Expired certificates from a license server cannot be trusted
             sig.initVerify(createCertificate(certBytes, intermediate, true))
             sig.update(("$timeStamp:$machineId").toByteArray(StandardCharsets.UTF_8))
             if (sig.verify(signatureBytes)) {
-                // machineId must match the machineId from the server reply and
-                // server reply should be relatively 'fresh'
                 return (expectedMachineId == machineId) && Math.abs(System.currentTimeMillis() - timeStamp) < TIMESTAMP_VALIDITY_PERIOD_MS
             }
         } catch (ignored: Throwable) {
-            // consider serverStamp invalid
+            
         }
         return false
     }
@@ -236,10 +214,9 @@ object CheckLicense {
             allCerts.add(x509factory.generateCertificate(ByteArrayInputStream(bytes)))
         }
         try {
-            // Create the selector that specifies the starting certificate
             val selector = X509CertSelector()
-            selector.certificate = cert
-            // Configure the PKIX certificate builder algorithm parameters
+            selector.certificate = cert 
+
             val trustAchors: MutableSet<TrustAnchor> = HashSet()
             for (rc: String in ROOT_CERTIFICATES) {
                 trustAchors.add(
@@ -252,21 +229,19 @@ object CheckLicense {
             val pkixParams = PKIXBuilderParameters(trustAchors, selector)
             pkixParams.isRevocationEnabled = false
             if (!checkValidityAtCurrentDate) {
-                // deliberately check validity on the start date of cert validity period, so that we do not depend on
-                // the actual moment when the check is performed
                 pkixParams.date = cert.notBefore
             }
             pkixParams.addCertStore(
                 CertStore.getInstance("Collection", CollectionCertStoreParameters(allCerts))
             )
-            // Build and verify the certification chain
+
             val path = CertPathBuilder.getInstance("PKIX").build(pkixParams).certPath
             if (path != null) {
                 CertPathValidator.getInstance("PKIX").validate(path, pkixParams)
                 return cert
             }
         } catch (e: Exception) {
-            // debug the reason here
+
         }
         throw Exception("Certificate used to sign the license is not signed by JetBrains root certificate")
     }
