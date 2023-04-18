@@ -8,4 +8,11 @@
     <extensions defaultExtensionNs="com.jetbrains.php">
         <libraryRoot id="bitrix-idea-library" path="/bitrix-idea-library/" runtime="false"/>
     </extensions>
+
+    <extensions defaultExtensionNs="com.intellij">
+        <notificationGroup id="Bitrix Idea Plugin" displayType="BALLOON"/>
+        <postStartupActivity implementation="com.github.saundefined.bitrix_idea.NotificationStartupActivity"/>
+    </extensions>
+
+    <resource-bundle>messages.BitrixIdeaBundle</resource-bundle>
 </idea-plugin>
