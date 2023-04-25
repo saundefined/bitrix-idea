@@ -15,8 +15,8 @@ class NotificationStartupActivity : StartupActivity {
         app.invokeLater {
             val notification = Notification(
                 "Bitrix Idea Plugin",
-                message("startup_notification_title"),
-                message("startup_notification_body"),
+                message("startup.notification.title"),
+                message("startup.notification.body"),
                 NotificationType.INFORMATION
             )
 
