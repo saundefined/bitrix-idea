@@ -2,6 +2,9 @@
 
 ## [Unreleased]
 
+### Changed
+
+- Updated Plugin Core
 
 ## [2023.3.0]
 
