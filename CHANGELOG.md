@@ -5,6 +5,7 @@
 ### Changed
 
 - Updated Plugin Core
+- Updated Bitrix CMS core
 
 ## [2023.3.0]
 
