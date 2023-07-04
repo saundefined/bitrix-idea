@@ -1,10 +1,7 @@
 package com.github.saundefined.bitrix_idea
 
 import com.github.saundefined.bitrix_idea.BitrixIdeaBundle.message
-import com.intellij.notification.Notification
-import com.intellij.notification.NotificationAction
-import com.intellij.notification.NotificationType
-import com.intellij.notification.Notifications
+import com.intellij.notification.*
 import com.intellij.openapi.actionSystem.AnActionEvent
 import com.intellij.openapi.application.ApplicationManager
 import com.intellij.openapi.project.Project
@@ -31,6 +28,14 @@ class NotificationStartupActivity : StartupActivity {
                 NotificationAction(message("startup.notification.action")) {
                 override fun actionPerformed(e: AnActionEvent, notification: Notification) {
                     openUrl(GITHUB_URL)
+                }
+            })
+
+            notification.addAction(object : NotificationAction(message("startup.notification.dismiss")) {
+                override fun actionPerformed(e: AnActionEvent, notification: Notification) {
+                    val notificationSettings = NotificationsConfiguration.getNotificationsConfiguration()
+                    notificationSettings.changeSettings(NOTIFICATION_GROUP, NotificationDisplayType.NONE, false, false)
+                    notification.expire()
                 }
             })
 

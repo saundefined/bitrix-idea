@@ -2,6 +2,9 @@
 
 ## [Unreleased]
 
+### Changed
+
+- Add "Don't show again" action to startup notification
 
 ## [2023.4.0]
 
