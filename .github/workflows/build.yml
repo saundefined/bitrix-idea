@@ -27,16 +27,21 @@ jobs:
           submodules: 'true'
           token: ${{ secrets.FETCH_SUBMODULES_PAT }}
 
+      - name: Remove .updates file
+        run: |
+          rm -f src/main/resources/bitrix-idea-library/.updates
+
       # Validate wrapper
       - name: Gradle Wrapper Validation
         uses: gradle/wrapper-validation-action@v1.0.6
 
-      # Setup Java 11 environment for the next steps
+      # Setup Java environment for the next steps
       - name: Setup Java
         uses: actions/setup-java@v3
         with:
           distribution: zulu
-          java-version: 11
+          java-version: 17
+          cache: gradle
 
       # Set environment variables
       - name: Export Properties
@@ -147,9 +152,9 @@ jobs:
           gh release create v${{ needs.build.outputs.version }} \
             --draft \
             --title "v${{ needs.build.outputs.version }}"
-          
+      
       # Upload artifact as a release asset    
       - name: Upload Release Asset
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        run: gh release upload ${{ github.event.release.tag_name }} ./build/distributions/*
+        run: gh release upload ${{ needs.build.outputs.version }} ./build/distributions/content/*
