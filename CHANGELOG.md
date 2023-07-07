@@ -2,6 +2,10 @@
 
 ## [Unreleased]
 
+### Added
+
+- Module creating form
+
 ### Changed
 
 - Add "Don't show again" action to startup notification

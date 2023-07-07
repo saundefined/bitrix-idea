@@ -1,0 +1,99 @@
+<?php
+        
+use Bitrix\Main\Localization\Loc;
+use Bitrix\Main\ModuleManager;
+
+Loc::loadMessages(__FILE__);
+
+class ${SNACK_CASED_MODULE_NAME} extends CModule
+{
+    var ${DS}MODULE_ID = '${DEFAULT_MODULE_NAME}';
+    var ${DS}MODULE_VERSION;
+    var ${DS}MODULE_VERSION_DATE;
+    var ${DS}MODULE_NAME;
+    var ${DS}MODULE_DESCRIPTION;
+    var ${DS}PARTNER_NAME;
+    var ${DS}PARTNER_URI;
+    var ${DS}MODULE_GROUP_RIGHTS = 'Y';
+
+    public function __construct()
+    {
+        ${DS}arModuleVersion = [];
+        include __DIR__.'/version.php';
+        if (is_array(${DS}arModuleVersion) && array_key_exists('VERSION', ${DS}arModuleVersion)) {
+            ${DS}this->MODULE_VERSION = ${DS}arModuleVersion['VERSION'];
+            ${DS}this->MODULE_VERSION_DATE = ${DS}arModuleVersion['VERSION_DATE'];
+        }
+
+        ${DS}this->MODULE_NAME = Loc::getMessage('${UPPER_CASED_MODULE_NAME}_MODULE_NAME');
+        ${DS}this->MODULE_DESCRIPTION = Loc::getMessage('${UPPER_CASED_MODULE_NAME}_MODULE_DESCRIPTION');
+        ${DS}this->PARTNER_NAME = Loc::getMessage('${UPPER_CASED_MODULE_NAME}_PARTNER_NAME');
+        ${DS}this->PARTNER_URI = Loc::getMessage('${UPPER_CASED_MODULE_NAME}_PARTNER_URI');
+    }
+
+    public function InstallFiles()
+    {
+    }
+    
+    public function InstallDB()
+    {
+    }
+    
+    public function InstallEvents()
+    {
+    }
+    
+    public function InstallTasks()
+    {
+    }
+    
+    public function UnInstallTasks()
+    {
+    }
+    
+    public function UnInstallEvents()
+    {
+    }
+    
+    public function UnInstallDB()
+    {
+    }
+    
+    public function UnInstallFiles()
+    {
+    }
+    
+    public function GetModuleRightList()
+    {
+        return [
+            'reference_id' => ['D', 'R', 'W'],
+            'reference' => [
+                Loc::getMessage('${UPPER_CASED_MODULE_NAME}_MODULE_ACCESS_DENIED'),
+                Loc::getMessage('${UPPER_CASED_MODULE_NAME}_MODULE_ACCESS_OPENED'),
+                Loc::getMessage('${UPPER_CASED_MODULE_NAME}_MODULE_ACCESS_FULL'),
+            ],
+        ];
+    }
+    
+    public function DoInstall()
+    {
+        ${DS}this->InstallFiles();
+        ${DS}this->InstallDB();
+        ${DS}this->InstallEvents();
+        ${DS}this->InstallTasks();
+        
+        ModuleManager::registerModule(${DS}this->MODULE_ID);
+        
+        return true;
+    }
+    
+    public function DoUninstall()
+    {
+        ${DS}this->UnInstallTasks();
+        ${DS}this->UnInstallEvents();
+        ${DS}this->UnInstallDB();
+        ${DS}this->UnInstallFiles();
+        
+        ModuleManager::unRegisterModule(${DS}this->MODULE_ID);
+    }
+}

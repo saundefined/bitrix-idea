@@ -1,4 +1,4 @@
-package com.github.saundefined.bitrix_idea
+package com.github.saundefined.bitrix_idea.activity
 
 import com.github.saundefined.bitrix_idea.BitrixIdeaBundle.message
 import com.intellij.notification.*

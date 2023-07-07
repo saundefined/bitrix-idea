@@ -4,6 +4,8 @@ import com.github.saundefined.bitrix_idea.BitrixIdeaBundle.message
 import com.github.saundefined.bitrix_idea.validation.ModuleCodeVerifier
 import com.github.saundefined.bitrix_idea.validation.UrlVerifier
 import com.intellij.ide.IdeView
+import com.intellij.ide.fileTemplates.FileTemplateManager
+import com.intellij.ide.fileTemplates.FileTemplateUtil
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.ui.DialogWrapper
 import com.intellij.openapi.ui.ValidationInfo
@@ -13,6 +15,7 @@ import com.intellij.ui.components.JBTextField
 import com.intellij.util.ui.JBUI
 import java.awt.GridBagConstraints
 import java.awt.GridBagLayout
+import java.util.*
 import javax.swing.JComponent
 import javax.swing.JPanel
 
@@ -109,7 +112,52 @@ class CreateModuleDialogWrapper : DialogWrapper(true) {
             val vendor = vendorField.text
             val url = urlField.text
 
+            val templateManager = FileTemplateManager.getInstance(project)
+
+            val properties: Properties = FileTemplateManager.getInstance(project).defaultProperties
+            properties.setProperty("DEFAULT_MODULE_NAME", code)
+            properties.setProperty("SNACK_CASED_MODULE_NAME", code.replace(".", "_"))
+            properties.setProperty("UPPER_CASED_MODULE_NAME", code.replace(".", "_").uppercase(Locale.getDefault()))
+
+            properties.setProperty("MODULE_NAME", name)
+            properties.setProperty("MODULE_DESCRIPTION", description)
+            properties.setProperty("PARTNER_NAME", vendor)
+            properties.setProperty("PARTNER_URI", url)
+
             val moduleDirectory = directory.createSubdirectory(code)
+
+            try {
+                val rootFileNames =
+                    listOf("prolog.php", "options.php", "include.php", "default_option.php", ".settings.php")
+
+                rootFileNames.forEach { fileName ->
+                    val template = templateManager.getJ2eeTemplate("Bitrix Module $fileName")
+                    FileTemplateUtil.createFromTemplate(template, fileName, properties, moduleDirectory)
+                }
+
+                val installDirectory = moduleDirectory.createSubdirectory("install")
+
+                val installFileNames = listOf("index.php", "version.php")
+                installFileNames.forEach { fileName ->
+                    val template = templateManager.getJ2eeTemplate("Bitrix Module install $fileName")
+                    FileTemplateUtil.createFromTemplate(template, fileName, properties, installDirectory)
+                }
+
+                val languages = listOf("ru", "en")
+
+                val langDirectory = moduleDirectory.createSubdirectory("lang")
+                languages.forEach { language ->
+                    val langInstallDirectory = langDirectory.createSubdirectory(language).createSubdirectory("install")
+                    installFileNames
+                        .filter { fileName -> fileName !== "version.php" }
+                        .forEach { fileName ->
+                            val template = templateManager.getJ2eeTemplate("Bitrix Module language install $fileName")
+                            FileTemplateUtil.createFromTemplate(template, fileName, properties, langInstallDirectory)
+                        }
+                }
+            } catch (e: Exception) {
+                e.printStackTrace()
+            }
 
             super.doOKAction()
         }

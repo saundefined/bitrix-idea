@@ -1,0 +1,3 @@
+<?php
+        
+define('ADMIN_MODULE_NAME', '${DEFAULT_MODULE_NAME}');
