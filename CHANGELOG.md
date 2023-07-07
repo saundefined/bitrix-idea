@@ -6,6 +6,7 @@
 
 - Module creating form
 - Template creating form
+- Simple component creating form
 
 ### Changed
 

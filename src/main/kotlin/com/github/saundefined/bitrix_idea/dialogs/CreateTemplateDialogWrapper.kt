@@ -1,9 +1,7 @@
 package com.github.saundefined.bitrix_idea.dialogs
 
 import com.github.saundefined.bitrix_idea.BitrixIdeaBundle.message
-import com.github.saundefined.bitrix_idea.validation.ModuleCodeVerifier
 import com.github.saundefined.bitrix_idea.validation.TemplateCodeVerifier
-import com.github.saundefined.bitrix_idea.validation.UrlVerifier
 import com.intellij.ide.IdeView
 import com.intellij.ide.fileTemplates.FileTemplateManager
 import com.intellij.ide.fileTemplates.FileTemplateUtil
