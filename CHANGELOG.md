@@ -11,6 +11,7 @@
 ### Changed
 
 - Add "Don't show again" action to startup notification
+- Update IntelliJ Platform 1.8.0
 
 ## [2023.4.0]
 
