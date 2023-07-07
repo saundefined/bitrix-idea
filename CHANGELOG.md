@@ -5,6 +5,7 @@
 ### Added
 
 - Module creating form
+- Template creating form
 
 ### Changed
 
