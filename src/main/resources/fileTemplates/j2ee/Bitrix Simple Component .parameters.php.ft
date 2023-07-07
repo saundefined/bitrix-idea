@@ -1,0 +1,23 @@
+<?php
+        
+use Bitrix\Main\Localization\Loc;
+
+Loc::loadMessages(__FILE__);
+
+${DS}arComponentParameters = [
+    'GROUPS' => [
+        'SETTINGS' => [
+            'NAME' => Loc::getMessage('${UPPERCASE_COMPONENT_NAME}_GROUP_SETTINGS')
+        ],
+    ],
+    'PARAMETERS' => [
+            'PARAMETER_1' => [
+            'PARENT' => 'SETTINGS',
+            'NAME' => Loc::getMessage('${UPPERCASE_COMPONENT_NAME}_PARAMETERS_PARAMETER_1'),
+            'TYPE' => 'STRING',
+            'MULTIPLE' => 'N',
+            'DEFAULT' => Loc::getMessage('${UPPERCASE_COMPONENT_NAME}_PARAMETERS_PARAMETER_1_DEFAULT'),
+        ],
+        'CACHE_TIME' => [],
+    ]
+];

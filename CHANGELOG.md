@@ -2,6 +2,12 @@
 
 ## [Unreleased]
 
+### Added
+
+- Module creating form
+- Template creating form
+- Simple component creating form
+
 ### Changed
 
 - Add "Don't show again" action to startup notification

@@ -1,0 +1,9 @@
+<?php
+        
+class ${CAMEL_COMPONENT_NAME}Component extends \CBitrixComponent
+{
+    public function executeComponent()
+    {
+        ${DS}this->includeComponentTemplate();
+    }
+}

@@ -1,4 +1,4 @@
-package com.github.saundefined.bitrix_idea
+package com.github.saundefined.bitrix_idea.activity
 
 import com.github.saundefined.bitrix_idea.BitrixIdeaBundle.message
 import com.intellij.notification.*
@@ -34,7 +34,12 @@ class NotificationStartupActivity : StartupActivity {
             notification.addAction(object : NotificationAction(message("startup.notification.dismiss")) {
                 override fun actionPerformed(e: AnActionEvent, notification: Notification) {
                     val notificationSettings = NotificationsConfiguration.getNotificationsConfiguration()
-                    notificationSettings.changeSettings(NOTIFICATION_GROUP, NotificationDisplayType.NONE, false, false)
+                    notificationSettings.changeSettings(
+                        NOTIFICATION_GROUP,
+                        NotificationDisplayType.NONE,
+                        false,
+                        false
+                    )
                     notification.expire()
                 }
             })

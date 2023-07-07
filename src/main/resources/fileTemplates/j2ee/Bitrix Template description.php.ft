@@ -1,0 +1,8 @@
+<?php
+
+${DS}arTemplate = [
+    'NAME' => '${TEMPLATE_NAME}',
+    'DESCRIPTION' => '${TEMPLATE_DESCRIPTION}',
+    'SORT' => '',
+    'TYPE' => '',
+];
