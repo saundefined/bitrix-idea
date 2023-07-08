@@ -12,6 +12,10 @@
     <extensions defaultExtensionNs="com.intellij">
         <fileTemplateGroup
                 implementation="com.github.saundefined.bitrix_idea.templates.module.BitrixModuleFileTemplateGroupFactory"/>
+        <fileTemplateGroup
+                implementation="com.github.saundefined.bitrix_idea.templates.simple_component.BitrixSimpleComponentFileTemplateGroupFactory"/>
+        <fileTemplateGroup
+                implementation="com.github.saundefined.bitrix_idea.templates.template.BitrixTemplateFileTemplateGroupFactory"/>
         <notificationGroup id="Bitrix Idea Plugin" displayType="BALLOON"/>
         <postStartupActivity implementation="com.github.saundefined.bitrix_idea.activity.NotificationStartupActivity"/>
     </extensions>
