@@ -8,6 +8,7 @@
 - Template creating form
 - Simple component creating form
 - Add Bitrix Idea settings
+- Add localizations table to settings and create entity forms
 
 ### Changed
 

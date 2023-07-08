@@ -11,12 +11,13 @@ import org.jetbrains.annotations.Nullable
 
 @State(
     name = "com.github.saundefined.bitrix_idea.settings.AppSettingsState",
-    storages = [Storage("BitrixIdeaSettingsPlugin.xml")]
+    storages = [Storage("TestBitrixIdeaSettingsPlugin.xml")]
 )
 class AppSettingsState : PersistentStateComponent<AppSettingsState> {
     var vendorCode: String = ""
     var vendorName: String = ""
     var vendorWebsite: String = ""
+    var languages: List<String> = listOf("ru")
 
     @Nullable
     override fun getState(): AppSettingsState {

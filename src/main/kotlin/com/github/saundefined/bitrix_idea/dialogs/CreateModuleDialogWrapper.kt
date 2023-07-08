@@ -10,27 +10,37 @@ import com.intellij.ide.fileTemplates.FileTemplateUtil
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.ui.DialogWrapper
 import com.intellij.psi.PsiDirectory
-import javax.swing.JComponent
+import com.intellij.ui.ScrollPaneFactory
+import com.intellij.ui.components.JBPanel
 import com.intellij.ui.dsl.builder.RowLayout
 import com.intellij.ui.dsl.builder.bindText
 import com.intellij.ui.dsl.builder.panel
 import com.intellij.ui.dsl.builder.text
 import com.intellij.ui.dsl.gridLayout.HorizontalAlign
+import com.intellij.ui.dsl.gridLayout.VerticalAlign
+import com.intellij.ui.table.JBTable
+import com.intellij.util.ui.JBUI
+import java.awt.*
 import java.util.*
+import javax.swing.*
+import javax.swing.table.DefaultTableCellRenderer
+import javax.swing.table.DefaultTableModel
+import javax.swing.table.JTableHeader
 
 class CreateModuleDialogWrapper : DialogWrapper(true) {
+    val settings: AppSettingsState
+        get() = AppSettingsState().getInstance()
+    
     var code: String = ""
     var name: String = ""
     var description: String = ""
     var vendor: String = ""
     var url: String = ""
+    var languages: List<String> = settings.languages
 
     lateinit var view: IdeView
     lateinit var project: Project
     lateinit var directory: PsiDirectory
-
-    val settings: AppSettingsState
-        get() = AppSettingsState().getInstance()
 
     init {
         init()
@@ -38,6 +48,74 @@ class CreateModuleDialogWrapper : DialogWrapper(true) {
     }
 
     override fun createCenterPanel(): JComponent {
+        val tableModel = object : DefaultTableModel(
+            languages.map { arrayOf(it) }.toTypedArray(),
+            arrayOf(message("localization.table.column.name"))
+        ) {
+            override fun isCellEditable(row: Int, column: Int): Boolean {
+                return false
+            }
+        }
+
+        val table = JBTable(tableModel)
+            .apply {
+                tableHeader = JTableHeader(this.columnModel).apply {
+                    resizingAllowed = false
+                    reorderingAllowed = false
+                }
+            }
+
+        val buttonDimension = Dimension(24, 24)
+
+        val addButton = JButton("+").apply {
+            preferredSize = buttonDimension
+            minimumSize = buttonDimension
+            maximumSize = buttonDimension
+
+            addActionListener {
+                val result =
+                    JOptionPane.showInputDialog(
+                        null,
+                        message("localization.add"),
+                        message("localization.add.title"),
+                        JOptionPane.QUESTION_MESSAGE,
+                    )
+
+                if (!result.isNullOrEmpty()) {
+                    tableModel.addRow(arrayOf(result))
+                    languages = tableModel.dataVector.map { (it as Vector<*>)[0].toString() }
+                }
+
+                this@CreateModuleDialogWrapper.pack()
+            }
+        }
+
+        val removeButton = JButton("-").apply {
+            preferredSize = buttonDimension
+            minimumSize = buttonDimension
+            maximumSize = buttonDimension
+
+            addActionListener {
+                if (table.selectedRow != -1 && tableModel.rowCount > 1) {
+                    tableModel.removeRow(table.selectedRow)
+                    languages = tableModel.dataVector.map { (it as Vector<*>)[0].toString() }
+                }
+
+                this@CreateModuleDialogWrapper.pack()
+            }
+        }
+
+        val btnPanel = JPanel().apply {
+            layout = BoxLayout(this, BoxLayout.Y_AXIS)
+
+            add(addButton)
+            add(removeButton)
+        }
+
+        val wrapperPanel = JPanel(BorderLayout())
+        wrapperPanel.add(btnPanel, BorderLayout.LINE_END)
+        wrapperPanel.add(ScrollPaneFactory.createScrollPane(table), BorderLayout.CENTER)
+
         return panel {
             row {
                 label(message("create.module.code"))
@@ -111,6 +189,14 @@ class CreateModuleDialogWrapper : DialogWrapper(true) {
                         }
                     }
             }.layout(RowLayout.PARENT_GRID)
+
+            row {
+                label(message("localization.table.row.name"))
+                    .verticalAlign(VerticalAlign.TOP)
+                cell(wrapperPanel)
+                    .horizontalAlign(HorizontalAlign.FILL)
+            }
+                .layout(RowLayout.PARENT_GRID)
         }
     }
 
@@ -147,8 +233,6 @@ class CreateModuleDialogWrapper : DialogWrapper(true) {
                 val template = templateManager.getJ2eeTemplate("Bitrix Module install $fileName")
                 FileTemplateUtil.createFromTemplate(template, fileName, properties, installDirectory)
             }
-
-            val languages = listOf("ru", "en")
 
             val langDirectory = moduleDirectory.createSubdirectory("lang")
             languages.forEach { language ->
