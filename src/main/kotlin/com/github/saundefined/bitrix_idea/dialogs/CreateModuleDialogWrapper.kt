@@ -8,23 +8,21 @@ import com.intellij.ide.fileTemplates.FileTemplateManager
 import com.intellij.ide.fileTemplates.FileTemplateUtil
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.ui.DialogWrapper
-import com.intellij.openapi.ui.ValidationInfo
 import com.intellij.psi.PsiDirectory
-import com.intellij.ui.components.JBLabel
-import com.intellij.ui.components.JBTextField
-import com.intellij.util.ui.JBUI
-import java.awt.GridBagConstraints
-import java.awt.GridBagLayout
-import java.util.*
 import javax.swing.JComponent
-import javax.swing.JPanel
+import com.intellij.ui.UIBundle
+import com.intellij.ui.dsl.builder.RowLayout
+import com.intellij.ui.dsl.builder.bindText
+import com.intellij.ui.dsl.builder.panel
+import com.intellij.ui.dsl.gridLayout.HorizontalAlign
+import java.util.*
 
 class CreateModuleDialogWrapper : DialogWrapper(true) {
-    private var codeField = JBTextField(53)
-    private var nameField = JBTextField(53)
-    private var descriptionField = JBTextField(53)
-    private var vendorField = JBTextField(20)
-    private var urlField = JBTextField(20)
+    var code: String = ""
+    var name: String = ""
+    var description: String = ""
+    var vendor: String = ""
+    var url: String = ""
 
     lateinit var view: IdeView
     lateinit var project: Project
@@ -36,130 +34,127 @@ class CreateModuleDialogWrapper : DialogWrapper(true) {
     }
 
     override fun createCenterPanel(): JComponent {
-        val panel = JPanel(GridBagLayout())
-        val constraints = GridBagConstraints()
+        return panel {
+            row {
+                label(message("create.module.code"))
+                textField()
+                    .bindText(::code)
+                    .focused()
+                    .horizontalAlign(HorizontalAlign.FILL)
+                    .validationOnApply {
+                        val value = it.text
+                        when {
+                            ModuleCodeVerifier().verify(value)
+                                .not() -> error(message("create.module.code.validation.fail"))
 
-        constraints.anchor = GridBagConstraints.WEST
-        constraints.insets = JBUI.insets(10)
+                            else -> null
+                        }
+                    }
+                
+                label(message("create.module.name"))
+                textField()
+                    .bindText(::name)
+                    .horizontalAlign(HorizontalAlign.FILL)
+                    .validationOnApply {
+                        val value = it.text
+                        when {
+                            value === null -> error(UIBundle.message("create.module.name.validation.fail"))
+                            else -> null
+                        }
+                    }
+            }.layout(RowLayout.PARENT_GRID)
+            
+            row(message("create.module.description")) {
+                textField()
+                    .bindText(::description)
+                    .horizontalAlign(HorizontalAlign.FILL)
+                    .validationOnApply {
+                        val value = it.text
+                        when {
+                            value === null -> error(message("create.module.description.validation.fail"))
+                            else -> null
+                        }
+                    }
+            }.layout(RowLayout.PARENT_GRID)
 
-        constraints.gridx = 0;
-        constraints.gridy = 0;
-        panel.add(JBLabel(message("create.module.code")), constraints);
+            row {
+                label(message("create.module.vendor"))
+                textField()
+                    .bindText(::vendor)
+                    .horizontalAlign(HorizontalAlign.FILL)
+                    .validationOnApply {
+                        val value = it.text
+                        when {
+                            value === null -> error(message("create.module.vendor.validation.fail"))
+                            else -> null
+                        }
+                    }
 
-        constraints.gridx = 1;
-        constraints.gridwidth = 3;
-        panel.add(codeField, constraints);
+                label(message("create.module.url"))
+                textField()
+                    .bindText(::url)
+                    .horizontalAlign(HorizontalAlign.FILL)
+                    .validationOnApply {
+                        val value = it.text
+                        when {
+                            UrlVerifier().verify(value)
+                                .not() -> error(message("create.module.url.validation.fail"))
 
-        constraints.gridx = 0;
-        constraints.gridy = 1;
-        panel.add(JBLabel(message("create.module.name")), constraints);
-
-        constraints.gridx = 1;
-        constraints.gridwidth = 3;
-        panel.add(nameField, constraints);
-
-        constraints.gridx = 0;
-        constraints.gridy = 2;
-        panel.add(JBLabel(message("create.module.description")), constraints);
-
-        constraints.gridx = 1;
-        constraints.gridwidth = 3;
-        panel.add(descriptionField, constraints);
-
-        constraints.gridx = 0;
-        constraints.gridy = 3;
-        constraints.gridwidth = 1;
-        panel.add(JBLabel(message("create.module.vendor")), constraints);
-
-        constraints.gridx = 1;
-        panel.add(vendorField, constraints);
-
-        constraints.gridx = 2;
-        panel.add(JBLabel(message("create.module.url")), constraints);
-
-        constraints.gridx = 3;
-        panel.add(urlField, constraints);
-
-        return panel
-    }
-
-    override fun doValidate(): ValidationInfo? {
-        if (ModuleCodeVerifier().verify(codeField.text).not()) {
-            return ValidationInfo(message("create.module.code.validation.fail"), codeField)
+                            else -> null
+                        }
+                    }
+            }.layout(RowLayout.PARENT_GRID)
         }
-        if (nameField.text.isBlank()) {
-            return ValidationInfo(message("create.module.name.validation.fail"), nameField)
-        }
-        if (descriptionField.text.isBlank()) {
-            return ValidationInfo(message("create.module.description.validation.fail"), descriptionField)
-        }
-        if (vendorField.text.isBlank()) {
-            return ValidationInfo(message("create.module.vendor.validation.fail"), vendorField)
-        }
-        if (UrlVerifier().verify(urlField.text).not()) {
-            return ValidationInfo(message("create.module.url.validation.fail"), urlField)
-        }
-
-        return null
     }
 
     override fun doOKAction() {
-        val validationInfo = doValidate()
-        if (validationInfo == null) {
-            val code = codeField.text
-            val name = nameField.text
-            val description = descriptionField.text
-            val vendor = vendorField.text
-            val url = urlField.text
+        super.applyFields()
 
-            val templateManager = FileTemplateManager.getInstance(project)
+        val templateManager = FileTemplateManager.getInstance(project)
 
-            val properties: Properties = FileTemplateManager.getInstance(project).defaultProperties
-            properties.setProperty("DEFAULT_MODULE_NAME", code)
-            properties.setProperty("SNACK_CASED_MODULE_NAME", code.replace(".", "_"))
-            properties.setProperty("UPPER_CASED_MODULE_NAME", code.replace(".", "_").uppercase(Locale.getDefault()))
+        val properties: Properties = FileTemplateManager.getInstance(project).defaultProperties
+        properties.setProperty("DEFAULT_MODULE_NAME", code)
+        properties.setProperty("SNACK_CASED_MODULE_NAME", code.replace(".", "_"))
+        properties.setProperty("UPPER_CASED_MODULE_NAME", code.replace(".", "_").uppercase(Locale.getDefault()))
 
-            properties.setProperty("MODULE_NAME", name)
-            properties.setProperty("MODULE_DESCRIPTION", description)
-            properties.setProperty("PARTNER_NAME", vendor)
-            properties.setProperty("PARTNER_URI", url)
+        properties.setProperty("MODULE_NAME", name)
+        properties.setProperty("MODULE_DESCRIPTION", description)
+        properties.setProperty("PARTNER_NAME", vendor)
+        properties.setProperty("PARTNER_URI", url)
 
-            val moduleDirectory = directory.createSubdirectory(code)
+        val moduleDirectory = directory.createSubdirectory(code)
 
-            try {
-                val rootFileNames =
-                    listOf("prolog.php", "options.php", "include.php", "default_option.php", ".settings.php")
+        try {
+            val rootFileNames =
+                listOf("prolog.php", "options.php", "include.php", "default_option.php", ".settings.php")
 
-                rootFileNames.forEach { fileName ->
-                    val template = templateManager.getJ2eeTemplate("Bitrix Module $fileName")
-                    FileTemplateUtil.createFromTemplate(template, fileName, properties, moduleDirectory)
-                }
-
-                val installDirectory = moduleDirectory.createSubdirectory("install")
-
-                val installFileNames = listOf("index.php", "version.php")
-                installFileNames.forEach { fileName ->
-                    val template = templateManager.getJ2eeTemplate("Bitrix Module install $fileName")
-                    FileTemplateUtil.createFromTemplate(template, fileName, properties, installDirectory)
-                }
-
-                val languages = listOf("ru", "en")
-
-                val langDirectory = moduleDirectory.createSubdirectory("lang")
-                languages.forEach { language ->
-                    val langInstallDirectory = langDirectory.createSubdirectory(language).createSubdirectory("install")
-                    installFileNames
-                        .filter { fileName -> fileName !== "version.php" }
-                        .forEach { fileName ->
-                            val template = templateManager.getJ2eeTemplate("Bitrix Module language install $fileName")
-                            FileTemplateUtil.createFromTemplate(template, fileName, properties, langInstallDirectory)
-                        }
-                }
-            } catch (e: Exception) {
-                e.printStackTrace()
+            rootFileNames.forEach { fileName ->
+                val template = templateManager.getJ2eeTemplate("Bitrix Module $fileName")
+                FileTemplateUtil.createFromTemplate(template, fileName, properties, moduleDirectory)
             }
 
-            super.doOKAction()
+            val installDirectory = moduleDirectory.createSubdirectory("install")
+
+            val installFileNames = listOf("index.php", "version.php")
+            installFileNames.forEach { fileName ->
+                val template = templateManager.getJ2eeTemplate("Bitrix Module install $fileName")
+                FileTemplateUtil.createFromTemplate(template, fileName, properties, installDirectory)
+            }
+
+            val languages = listOf("ru", "en")
+
+            val langDirectory = moduleDirectory.createSubdirectory("lang")
+            languages.forEach { language ->
+                val langInstallDirectory = langDirectory.createSubdirectory(language).createSubdirectory("install")
+                installFileNames.filter { fileName -> fileName !== "version.php" }.forEach { fileName ->
+                    val template = templateManager.getJ2eeTemplate("Bitrix Module language install $fileName")
+                    FileTemplateUtil.createFromTemplate(template, fileName, properties, langInstallDirectory)
+                }
+            }
+        } catch (e: Exception) {
+            e.printStackTrace()
         }
+
+        super.doOKAction()
     }
 }
