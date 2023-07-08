@@ -11,7 +11,6 @@ import com.intellij.openapi.project.Project
 import com.intellij.openapi.ui.DialogWrapper
 import com.intellij.psi.PsiDirectory
 import javax.swing.JComponent
-import com.intellij.ui.UIBundle
 import com.intellij.ui.dsl.builder.RowLayout
 import com.intellij.ui.dsl.builder.bindText
 import com.intellij.ui.dsl.builder.panel
@@ -64,7 +63,7 @@ class CreateModuleDialogWrapper : DialogWrapper(true) {
                     .validationOnApply {
                         val value = it.text
                         when {
-                            value === null -> error(UIBundle.message("create.module.name.validation.fail"))
+                            value === null -> error(message("create.module.name.validation.fail"))
                             else -> null
                         }
                     }
