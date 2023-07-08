@@ -1,6 +1,7 @@
 package com.github.saundefined.bitrix_idea.dialogs
 
 import com.github.saundefined.bitrix_idea.BitrixIdeaBundle.message
+import com.github.saundefined.bitrix_idea.settings.AppSettingsState
 import com.github.saundefined.bitrix_idea.validation.ModuleCodeVerifier
 import com.github.saundefined.bitrix_idea.validation.UrlVerifier
 import com.intellij.ide.IdeView
@@ -14,6 +15,7 @@ import com.intellij.ui.UIBundle
 import com.intellij.ui.dsl.builder.RowLayout
 import com.intellij.ui.dsl.builder.bindText
 import com.intellij.ui.dsl.builder.panel
+import com.intellij.ui.dsl.builder.text
 import com.intellij.ui.dsl.gridLayout.HorizontalAlign
 import java.util.*
 
@@ -28,6 +30,9 @@ class CreateModuleDialogWrapper : DialogWrapper(true) {
     lateinit var project: Project
     lateinit var directory: PsiDirectory
 
+    val settings: AppSettingsState
+        get() = AppSettingsState().getInstance()
+
     init {
         init()
         title = message("create.module.form.title")
@@ -40,6 +45,7 @@ class CreateModuleDialogWrapper : DialogWrapper(true) {
                 textField()
                     .bindText(::code)
                     .focused()
+                    .text(settings.vendorCode + ".")
                     .horizontalAlign(HorizontalAlign.FILL)
                     .validationOnApply {
                         val value = it.text
@@ -50,7 +56,7 @@ class CreateModuleDialogWrapper : DialogWrapper(true) {
                             else -> null
                         }
                     }
-                
+
                 label(message("create.module.name"))
                 textField()
                     .bindText(::name)
@@ -63,7 +69,7 @@ class CreateModuleDialogWrapper : DialogWrapper(true) {
                         }
                     }
             }.layout(RowLayout.PARENT_GRID)
-            
+
             row(message("create.module.description")) {
                 textField()
                     .bindText(::description)
@@ -81,6 +87,7 @@ class CreateModuleDialogWrapper : DialogWrapper(true) {
                 label(message("create.module.vendor"))
                 textField()
                     .bindText(::vendor)
+                    .text(settings.vendorName)
                     .horizontalAlign(HorizontalAlign.FILL)
                     .validationOnApply {
                         val value = it.text
@@ -93,6 +100,7 @@ class CreateModuleDialogWrapper : DialogWrapper(true) {
                 label(message("create.module.url"))
                 textField()
                     .bindText(::url)
+                    .text(settings.vendorWebsite)
                     .horizontalAlign(HorizontalAlign.FILL)
                     .validationOnApply {
                         val value = it.text

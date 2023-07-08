@@ -18,6 +18,12 @@
                 implementation="com.github.saundefined.bitrix_idea.templates.template.BitrixTemplateFileTemplateGroupFactory"/>
         <notificationGroup id="Bitrix Idea Plugin" displayType="BALLOON"/>
         <postStartupActivity implementation="com.github.saundefined.bitrix_idea.activity.NotificationStartupActivity"/>
+        <applicationConfigurable
+                parentId="tools"
+                instance="com.github.saundefined.bitrix_idea.settings.ApplicationSettingsConfigurable"
+                id="com.github.saundefined.bitrix_idea.settings.ApplicationSettingsConfigurable"
+                displayName="Bitrix Idea"/>
+        <applicationService serviceImplementation="com.github.saundefined.bitrix_idea.settings.AppSettingsState"/>
     </extensions>
 
     <actions>
@@ -31,21 +37,21 @@
             <action
                     class="com.github.saundefined.bitrix_idea.actions.CreateSimpleComponentAction"
                     id="com.github.saundefined.bitrix_idea.actions.CreateSimpleComponentAction"
-                    text="Component"
+                    text="Простой компонент"
                     icon="com.github.saundefined.bitrix_idea.icons.BitrixIdeaIcons.Bitrix"
             >
             </action>
             <action
                     class="com.github.saundefined.bitrix_idea.actions.CreateTemplateAction"
                     id="com.github.saundefined.bitrix_idea.actions.CreateTemplateAction"
-                    text="Template"
+                    text="Шаблон"
                     icon="com.github.saundefined.bitrix_idea.icons.BitrixIdeaIcons.Bitrix"
             >
             </action>
             <action
                     class="com.github.saundefined.bitrix_idea.actions.CreateModuleAction"
                     id="com.github.saundefined.bitrix_idea.actions.CreateModuleAction"
-                    text="Module"
+                    text="Модуль"
                     icon="com.github.saundefined.bitrix_idea.icons.BitrixIdeaIcons.Bitrix"
             >
             </action>

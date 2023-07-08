@@ -7,6 +7,7 @@
 - Module creating form
 - Template creating form
 - Simple component creating form
+- Add Bitrix Idea settings
 
 ### Changed
 
