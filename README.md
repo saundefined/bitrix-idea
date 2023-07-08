@@ -3,8 +3,8 @@
 [![Version](http://phpstorm.espend.de/badge/14703/version)](https://plugins.jetbrains.com/plugin/14703)
 [![Downloads](http://phpstorm.espend.de/badge/14703/downloads)](https://plugins.jetbrains.com/plugin/14703)
 [![Rating](https://img.shields.io/jetbrains/plugin/r/rating/14703-bitrix-idea?style=flat-square)](https://plugins.jetbrains.com/plugin/14703)
-![Build](https://github.com/qq-agency/bitrix-idea/workflows/Build/badge.svg)
-[![License](https://img.shields.io/github/license/qq-agency/bitrix-idea?style=flat-square)](https://plugins.jetbrains.com/plugin/14703)
+![Build](https://github.com/saundefined/bitrix-idea/actions/workflows/test.yml/badge.svg)
+[![License](https://img.shields.io/github/license/saundefined/bitrix-idea?style=flat-square)](https://plugins.jetbrains.com/plugin/14703)
 
 <!-- Plugin description -->
 Plugin for [PhpStorm](https://www.jetbrains.com/phpstorm) to help
