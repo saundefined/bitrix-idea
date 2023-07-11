@@ -35,6 +35,13 @@ jobs:
       # Validate wrapper
       - name: Gradle Wrapper Validation
         uses: gradle/wrapper-validation-action@v1.0.6
+        
+      # Setup Java environment for the next steps
+      - name: Setup Java
+        uses: actions/setup-java@v3
+        with:
+          distribution: zulu
+          java-version: 17
 
       # Setup Java environment for the next steps
       - name: Setup Gradle
@@ -90,6 +97,13 @@ jobs:
       # Check out current repository
       - name: Fetch Sources
         uses: actions/checkout@v3
+        
+      # Setup Java environment for the next steps
+      - name: Setup Java
+        uses: actions/setup-java@v3
+        with:
+          distribution: zulu
+          java-version: 17
 
       # Setup Gradle
       - name: Setup Gradle
@@ -123,6 +137,13 @@ jobs:
       # Check out current repository
       - name: Fetch Sources
         uses: actions/checkout@v3
+        
+      # Setup Java environment for the next steps
+      - name: Setup Java
+        uses: actions/setup-java@v3
+        with:
+          distribution: zulu
+          java-version: 17
 
       # Setup Gradle
       - name: Setup Gradle
