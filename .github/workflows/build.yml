@@ -35,7 +35,7 @@ jobs:
       # Validate wrapper
       - name: Gradle Wrapper Validation
         uses: gradle/wrapper-validation-action@v1.0.6
-        
+      
       # Setup Java environment for the next steps
       - name: Setup Java
         uses: actions/setup-java@v3
@@ -97,7 +97,7 @@ jobs:
       # Check out current repository
       - name: Fetch Sources
         uses: actions/checkout@v3
-        
+      
       # Setup Java environment for the next steps
       - name: Setup Java
         uses: actions/setup-java@v3
@@ -137,7 +137,7 @@ jobs:
       # Check out current repository
       - name: Fetch Sources
         uses: actions/checkout@v3
-        
+      
       # Setup Java environment for the next steps
       - name: Setup Java
         uses: actions/setup-java@v3
@@ -202,9 +202,15 @@ jobs:
           gh release create v${{ needs.build.outputs.version }} \
             --draft \
             --title "v${{ needs.build.outputs.version }}"
+
+      - name: Download artifact
+        uses: actions/download-artifact@v3
+        id: download
+        with:
+          name: ${{ steps.artifact.outputs.filename }}
       
       # Upload artifact as a release asset    
       - name: Upload Release Asset
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        run: gh release upload ${{ needs.build.outputs.version }} ./build/distributions/content/*
+        run: gh release upload ${{ needs.build.outputs.version }} ${{steps.download.outputs.download-path}}
