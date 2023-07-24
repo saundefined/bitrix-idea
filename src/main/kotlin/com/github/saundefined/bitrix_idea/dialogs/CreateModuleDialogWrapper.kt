@@ -11,7 +11,6 @@ import com.intellij.openapi.project.Project
 import com.intellij.openapi.ui.DialogWrapper
 import com.intellij.psi.PsiDirectory
 import com.intellij.ui.ScrollPaneFactory
-import com.intellij.ui.components.JBPanel
 import com.intellij.ui.dsl.builder.RowLayout
 import com.intellij.ui.dsl.builder.bindText
 import com.intellij.ui.dsl.builder.panel
@@ -19,11 +18,9 @@ import com.intellij.ui.dsl.builder.text
 import com.intellij.ui.dsl.gridLayout.HorizontalAlign
 import com.intellij.ui.dsl.gridLayout.VerticalAlign
 import com.intellij.ui.table.JBTable
-import com.intellij.util.ui.JBUI
 import java.awt.*
 import java.util.*
 import javax.swing.*
-import javax.swing.table.DefaultTableCellRenderer
 import javax.swing.table.DefaultTableModel
 import javax.swing.table.JTableHeader
 

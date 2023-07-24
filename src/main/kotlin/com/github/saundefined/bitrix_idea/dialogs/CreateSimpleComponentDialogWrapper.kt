@@ -194,8 +194,8 @@ class CreateSimpleComponentDialogWrapper : DialogWrapper(true) {
                 FileTemplateUtil.createFromTemplate(template, fileName, properties, componentDirectory)
             }
 
-            val templatesDirectory = componentDirectory.createSubdirectory("templates");
-            val defaultTemplateDirectory = templatesDirectory.createSubdirectory(".default");
+            val templatesDirectory = componentDirectory.createSubdirectory("templates")
+            val defaultTemplateDirectory = templatesDirectory.createSubdirectory(".default")
 
             val defaultTemplateDirectoryTemplate =
                 templateManager.getJ2eeTemplate("Bitrix Simple Component templates default template.php")
@@ -217,9 +217,9 @@ class CreateSimpleComponentDialogWrapper : DialogWrapper(true) {
                     }
 
                 val languageTemplatesDirectory =
-                    langInstallDirectory.createSubdirectory("templates");
+                    langInstallDirectory.createSubdirectory("templates")
                 val languageDefaultTemplateDirectory =
-                    languageTemplatesDirectory.createSubdirectory(".default");
+                    languageTemplatesDirectory.createSubdirectory(".default")
 
                 val languageDefaultTemplateDirectoryTemplate =
                     templateManager.getJ2eeTemplate("Bitrix Simple Component language templates default template.php")
