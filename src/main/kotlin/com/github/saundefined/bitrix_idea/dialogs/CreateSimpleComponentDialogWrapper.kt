@@ -6,6 +6,7 @@ import com.github.saundefined.bitrix_idea.validation.ComponentSimpleCodeVerifier
 import com.intellij.ide.IdeView
 import com.intellij.ide.fileTemplates.FileTemplateManager
 import com.intellij.ide.fileTemplates.FileTemplateUtil
+import com.intellij.openapi.application.ApplicationManager
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.ui.DialogWrapper
 import com.intellij.psi.PsiDirectory
@@ -185,54 +186,56 @@ class CreateSimpleComponentDialogWrapper : DialogWrapper(true) {
         properties.setProperty("COMPONENT_NAME", name)
         properties.setProperty("COMPONENT_DESCRIPTION", description)
 
-        val componentDirectory = directory.createSubdirectory(code)
+        ApplicationManager.getApplication().runWriteAction {
+            try {
+                val componentDirectory = directory.createSubdirectory(code)
 
-        try {
-            val rootFileNames = listOf(".description.php", ".parameters.php", "class.php")
-            rootFileNames.forEach { fileName ->
-                val template = templateManager.getJ2eeTemplate("Bitrix Simple Component $fileName")
-                FileTemplateUtil.createFromTemplate(template, fileName, properties, componentDirectory)
-            }
+                val rootFileNames = listOf(".description.php", ".parameters.php", "class.php")
+                rootFileNames.forEach { fileName ->
+                    val template = templateManager.getJ2eeTemplate("Bitrix Simple Component $fileName")
+                    FileTemplateUtil.createFromTemplate(template, fileName, properties, componentDirectory)
+                }
 
-            val templatesDirectory = componentDirectory.createSubdirectory("templates")
-            val defaultTemplateDirectory = templatesDirectory.createSubdirectory(".default")
+                val templatesDirectory = componentDirectory.createSubdirectory("templates")
+                val defaultTemplateDirectory = templatesDirectory.createSubdirectory(".default")
 
-            val defaultTemplateDirectoryTemplate =
-                templateManager.getJ2eeTemplate("Bitrix Simple Component templates default template.php")
-            FileTemplateUtil.createFromTemplate(
-                defaultTemplateDirectoryTemplate,
-                "template.php",
-                properties,
-                defaultTemplateDirectory
-            )
-
-            val langDirectory = componentDirectory.createSubdirectory("lang")
-            languages.forEach { language ->
-                val langInstallDirectory = langDirectory.createSubdirectory(language)
-                rootFileNames
-                    .filter { fileName -> fileName !== "class.php" }
-                    .forEach { fileName ->
-                        val template = templateManager.getJ2eeTemplate("Bitrix Simple Component language $fileName")
-                        FileTemplateUtil.createFromTemplate(template, fileName, properties, langInstallDirectory)
-                    }
-
-                val languageTemplatesDirectory =
-                    langInstallDirectory.createSubdirectory("templates")
-                val languageDefaultTemplateDirectory =
-                    languageTemplatesDirectory.createSubdirectory(".default")
-
-                val languageDefaultTemplateDirectoryTemplate =
-                    templateManager.getJ2eeTemplate("Bitrix Simple Component language templates default template.php")
+                val defaultTemplateDirectoryTemplate =
+                    templateManager.getJ2eeTemplate("Bitrix Simple Component templates default template.php")
                 FileTemplateUtil.createFromTemplate(
-                    languageDefaultTemplateDirectoryTemplate,
+                    defaultTemplateDirectoryTemplate,
                     "template.php",
                     properties,
-                    languageDefaultTemplateDirectory
+                    defaultTemplateDirectory
                 )
-            }
 
-        } catch (e: Exception) {
-            e.printStackTrace()
+                val langDirectory = componentDirectory.createSubdirectory("lang")
+                languages.forEach { language ->
+                    val langInstallDirectory = langDirectory.createSubdirectory(language)
+                    rootFileNames
+                        .filter { fileName -> fileName !== "class.php" }
+                        .forEach { fileName ->
+                            val template = templateManager.getJ2eeTemplate("Bitrix Simple Component language $fileName")
+                            FileTemplateUtil.createFromTemplate(template, fileName, properties, langInstallDirectory)
+                        }
+
+                    val languageTemplatesDirectory =
+                        langInstallDirectory.createSubdirectory("templates")
+                    val languageDefaultTemplateDirectory =
+                        languageTemplatesDirectory.createSubdirectory(".default")
+
+                    val languageDefaultTemplateDirectoryTemplate =
+                        templateManager.getJ2eeTemplate("Bitrix Simple Component language templates default template.php")
+                    FileTemplateUtil.createFromTemplate(
+                        languageDefaultTemplateDirectoryTemplate,
+                        "template.php",
+                        properties,
+                        languageDefaultTemplateDirectory
+                    )
+                }
+
+            } catch (e: Exception) {
+                e.printStackTrace()
+            }
         }
 
         super.doOKAction()

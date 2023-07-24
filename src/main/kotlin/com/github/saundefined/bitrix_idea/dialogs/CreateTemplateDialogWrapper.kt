@@ -5,6 +5,7 @@ import com.github.saundefined.bitrix_idea.validation.TemplateCodeVerifier
 import com.intellij.ide.IdeView
 import com.intellij.ide.fileTemplates.FileTemplateManager
 import com.intellij.ide.fileTemplates.FileTemplateUtil
+import com.intellij.openapi.application.ApplicationManager
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.ui.DialogWrapper
 import com.intellij.psi.PsiDirectory
@@ -77,19 +78,21 @@ class CreateTemplateDialogWrapper : DialogWrapper(true) {
         properties.setProperty("TEMPLATE_NAME", name)
         properties.setProperty("TEMPLATE_DESCRIPTION", description)
 
-        val templateDirectory = directory.createSubdirectory(code)
+        ApplicationManager.getApplication().runWriteAction {
+            try {
+                val templateDirectory = directory.createSubdirectory(code)
 
-        try {
-            val fileNames = listOf(
-                ".styles.php", "description.php", "footer.php", "header.php", "styles.css", "template_styles.css"
-            )
+                val fileNames = listOf(
+                    ".styles.php", "description.php", "footer.php", "header.php", "styles.css", "template_styles.css"
+                )
 
-            fileNames.forEach { fileName ->
-                val template = templateManager.getJ2eeTemplate("Bitrix Template $fileName")
-                FileTemplateUtil.createFromTemplate(template, fileName, properties, templateDirectory)
+                fileNames.forEach { fileName ->
+                    val template = templateManager.getJ2eeTemplate("Bitrix Template $fileName")
+                    FileTemplateUtil.createFromTemplate(template, fileName, properties, templateDirectory)
+                }
+            } catch (e: Exception) {
+                e.printStackTrace()
             }
-        } catch (e: Exception) {
-            e.printStackTrace()
         }
 
         super.doOKAction()

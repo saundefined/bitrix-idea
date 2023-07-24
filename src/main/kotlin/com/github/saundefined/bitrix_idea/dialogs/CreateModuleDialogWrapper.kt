@@ -7,6 +7,7 @@ import com.github.saundefined.bitrix_idea.validation.UrlVerifier
 import com.intellij.ide.IdeView
 import com.intellij.ide.fileTemplates.FileTemplateManager
 import com.intellij.ide.fileTemplates.FileTemplateUtil
+import com.intellij.openapi.application.ApplicationManager
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.ui.DialogWrapper
 import com.intellij.psi.PsiDirectory
@@ -27,7 +28,7 @@ import javax.swing.table.JTableHeader
 class CreateModuleDialogWrapper : DialogWrapper(true) {
     val settings: AppSettingsState
         get() = AppSettingsState().getInstance()
-    
+
     var code: String = ""
     var name: String = ""
     var description: String = ""
@@ -212,35 +213,37 @@ class CreateModuleDialogWrapper : DialogWrapper(true) {
         properties.setProperty("PARTNER_NAME", vendor)
         properties.setProperty("PARTNER_URI", url)
 
-        val moduleDirectory = directory.createSubdirectory(code)
+        ApplicationManager.getApplication().runWriteAction {
+            try {
+                val moduleDirectory = directory.createSubdirectory(code)
 
-        try {
-            val rootFileNames =
-                listOf("prolog.php", "options.php", "include.php", "default_option.php", ".settings.php")
+                val rootFileNames =
+                    listOf("prolog.php", "options.php", "include.php", "default_option.php", ".settings.php")
 
-            rootFileNames.forEach { fileName ->
-                val template = templateManager.getJ2eeTemplate("Bitrix Module $fileName")
-                FileTemplateUtil.createFromTemplate(template, fileName, properties, moduleDirectory)
-            }
-
-            val installDirectory = moduleDirectory.createSubdirectory("install")
-
-            val installFileNames = listOf("index.php", "version.php")
-            installFileNames.forEach { fileName ->
-                val template = templateManager.getJ2eeTemplate("Bitrix Module install $fileName")
-                FileTemplateUtil.createFromTemplate(template, fileName, properties, installDirectory)
-            }
-
-            val langDirectory = moduleDirectory.createSubdirectory("lang")
-            languages.forEach { language ->
-                val langInstallDirectory = langDirectory.createSubdirectory(language).createSubdirectory("install")
-                installFileNames.filter { fileName -> fileName !== "version.php" }.forEach { fileName ->
-                    val template = templateManager.getJ2eeTemplate("Bitrix Module language install $fileName")
-                    FileTemplateUtil.createFromTemplate(template, fileName, properties, langInstallDirectory)
+                rootFileNames.forEach { fileName ->
+                    val template = templateManager.getJ2eeTemplate("Bitrix Module $fileName")
+                    FileTemplateUtil.createFromTemplate(template, fileName, properties, moduleDirectory)
                 }
+
+                val installDirectory = moduleDirectory.createSubdirectory("install")
+
+                val installFileNames = listOf("index.php", "version.php")
+                installFileNames.forEach { fileName ->
+                    val template = templateManager.getJ2eeTemplate("Bitrix Module install $fileName")
+                    FileTemplateUtil.createFromTemplate(template, fileName, properties, installDirectory)
+                }
+
+                val langDirectory = moduleDirectory.createSubdirectory("lang")
+                languages.forEach { language ->
+                    val langInstallDirectory = langDirectory.createSubdirectory(language).createSubdirectory("install")
+                    installFileNames.filter { fileName -> fileName !== "version.php" }.forEach { fileName ->
+                        val template = templateManager.getJ2eeTemplate("Bitrix Module language install $fileName")
+                        FileTemplateUtil.createFromTemplate(template, fileName, properties, langInstallDirectory)
+                    }
+                }
+            } catch (e: Exception) {
+                e.printStackTrace()
             }
-        } catch (e: Exception) {
-            e.printStackTrace()
         }
 
         super.doOKAction()
