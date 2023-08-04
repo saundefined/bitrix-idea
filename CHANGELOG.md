@@ -2,6 +2,9 @@
 
 ## [Unreleased]
 
+### Changed
+
+- Update IntelliJ Platform 1.10.0
 
 ## [2023.5.0]
 

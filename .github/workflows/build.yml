@@ -16,10 +16,10 @@ jobs:
 
       # Free GitHub Actions Environment Disk Space
       - name: Maximize Build Space
-        run: |
-          sudo rm -rf /usr/share/dotnet
-          sudo rm -rf /usr/local/lib/android
-          sudo rm -rf /opt/ghc
+        uses: jlumbroso/free-disk-space@main
+        with:
+          tool-cache: false
+          large-packages: false
 
       # Check out current repository
       - name: Fetch Sources
@@ -34,7 +34,7 @@ jobs:
 
       # Validate wrapper
       - name: Gradle Wrapper Validation
-        uses: gradle/wrapper-validation-action@v1.0.6
+        uses: gradle/wrapper-validation-action@v1.1.0
       
       # Setup Java environment for the next steps
       - name: Setup Java
@@ -46,6 +46,8 @@ jobs:
       # Setup Java environment for the next steps
       - name: Setup Gradle
         uses: gradle/gradle-build-action@v2
+        with:
+          gradle-home-cache-cleanup: true
 
       # Set environment variables
       - name: Export Properties
@@ -108,6 +110,8 @@ jobs:
       # Setup Gradle
       - name: Setup Gradle
         uses: gradle/gradle-build-action@v2
+        with:
+          gradle-home-cache-cleanup: true
 
       # Run tests
       - name: Run Tests
@@ -125,7 +129,7 @@ jobs:
       - name: Upload Code Coverage Report
         uses: codecov/codecov-action@v3
         with:
-          files: ${{ github.workspace }}/build/reports/kover/xml/report.xml
+          files: ${{ github.workspace }}/build/reports/kover/report.xml
   
   # Run plugin structure verification along with IntelliJ Plugin Verifier
   verify:
@@ -148,6 +152,8 @@ jobs:
       # Setup Gradle
       - name: Setup Gradle
         uses: gradle/gradle-build-action@v2
+        with:
+          gradle-home-cache-cleanup: true
 
       # Cache Plugin Verifier IDEs
       - name: Setup Plugin Verifier IDEs Cache
