@@ -23,7 +23,7 @@ jobs:
 
       # Check out current repository
       - name: Fetch Sources
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
         with:
           submodules: 'true'
           token: ${{ secrets.FETCH_SUBMODULES_PAT }}
@@ -105,7 +105,7 @@ jobs:
 
       # Check out current repository
       - name: Fetch Sources
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
         
       # Setup Java environment for the next steps
       - name: Setup Java
@@ -151,7 +151,7 @@ jobs:
 
       # Check out current repository
       - name: Fetch Sources
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
 
       # Setup Java environment for the next steps
       - name: Setup Java
@@ -162,7 +162,7 @@ jobs:
 
       # Run Qodana inspections
       - name: Qodana - Code Inspection
-        uses: JetBrains/qodana-action@v2023.2.1
+        uses: JetBrains/qodana-action@v2023.2.6
         env:
           QODANA_TOKEN: ${{ secrets.QODANA_TOKEN }}
         with:
@@ -178,7 +178,7 @@ jobs:
 
       # Check out current repository
       - name: Fetch Sources
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
         
       # Setup Java environment for the next steps
       - name: Setup Java

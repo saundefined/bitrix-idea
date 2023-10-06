@@ -6,6 +6,7 @@
 
 - Update IntelliJ Platform 1.10.0
 - Update IntelliJ Platform 1.11.0
+- Update IntelliJ Platform 1.11.2
 - Updated Bitrix CMS core
 
 ## [2023.5.0]
