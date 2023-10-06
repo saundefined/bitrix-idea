@@ -1,6 +1,6 @@
 # CHANGELOG
 
-## [Unreleased]
+## [2023.6.0]
 
 ### Changed
 
