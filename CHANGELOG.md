@@ -3,7 +3,7 @@
 ## [Unreleased]
 
 - Updated Bitrix CMS core
-
+- Update IntelliJ Platform 1.11.3
 
 ## [2023.6.0]
 
