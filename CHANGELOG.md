@@ -2,6 +2,8 @@
 
 ## [Unreleased]
 
+- Updated Bitrix CMS core
+
 ## [2023.7.0]
 
 - Updated Bitrix CMS core
