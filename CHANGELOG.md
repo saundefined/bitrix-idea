@@ -2,9 +2,14 @@
 
 ## [Unreleased]
 
+### Changed
+
 - Updated Bitrix CMS core
+- Support for PhpStorm 2024.1 EAP 
 
 ## [2023.7.0]
+
+### Changed
 
 - Updated Bitrix CMS core
 - Update IntelliJ Platform 1.11.3
