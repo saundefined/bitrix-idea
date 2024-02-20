@@ -228,4 +228,4 @@ jobs:
       - name: Upload Release Asset
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        run: gh release upload "v${{ needs.build.outputs.version }}" ${{steps.download.outputs.download-path}}
+        run: gh release upload "v${{ needs.build.outputs.version }}" ${{ steps.artifact.outputs.filename }}
