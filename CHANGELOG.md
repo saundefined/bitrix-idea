@@ -2,6 +2,9 @@
 
 ## [Unreleased]
 
+### Changed
+
+- Updated Bitrix CMS core
 
 ## [2024.1.0]
 
