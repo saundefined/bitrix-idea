@@ -2,11 +2,16 @@
 
 ## [Unreleased]
 
+### Added
+
+- Creating Bitrix-related .gitignore file
+
 ### Changed
 
 - Updated Bitrix CMS core
 - Update IntelliJ Platform 1.13.0
 - Support for PhpStorm 2024.2 EAP
+- Fix icons
 
 ## [2024.1.0]
 

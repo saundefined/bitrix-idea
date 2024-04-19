@@ -1,6 +1,6 @@
 package com.github.saundefined.bitrix_idea.templates.template
 
-import com.github.saundefined.bitrix_idea.icons.BitrixIdeaIcons
+import icons.BitrixIdeaIcons
 import com.intellij.ide.fileTemplates.FileTemplateDescriptor
 import com.intellij.ide.fileTemplates.FileTemplateGroupDescriptor
 import com.intellij.ide.fileTemplates.FileTemplateGroupDescriptorFactory
