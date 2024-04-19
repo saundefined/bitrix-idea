@@ -25,12 +25,13 @@ To install, go to Settings > Plugins and search for "Bitrix Idea".
 
 The plugin can be installed on following IntelliJ-based:
 
-* PhpStorm 2023.1+
+* PhpStorm 2023.2+
 
 ## Release versions schema
 
 | Plugin version number | Since Version | Until Version |
 |-----------------------|---------------|---------------|
+| v2024.2.x             | 2023.2        | 2024.2        |
 | v2024.1.x             | 2023.1        | 2024.1        |
 | v2023.7.x             | 2022.3        | 2023.3        |
 | v2023.6.x             | 2022.3        | 2023.3        |
