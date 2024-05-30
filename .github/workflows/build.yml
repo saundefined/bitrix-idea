@@ -192,14 +192,6 @@ jobs:
     permissions:
       contents: write
     steps:
-
-      # Check out current repository
-      - name: Fetch Sources
-        uses: actions/checkout@v4
-        with:
-          submodules: 'true'
-          token: ${{ secrets.FETCH_SUBMODULES_PAT }}
-
       # Remove old release drafts by using the curl request for the available releases with draft flag
       - name: Remove Old Release Drafts
         env:
@@ -214,18 +206,12 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
-          gh release create "v${{ needs.build.outputs.version }}" \
+          gh release create "${{ github.event.release.tag_name }}" \
             --draft \
-            --title "v${{ needs.build.outputs.version }}"
-
-      - name: Download artifact
-        uses: actions/download-artifact@v3
-        id: download
-        with:
-          name: ${{ steps.artifact.outputs.filename }}
+            --title "${{ github.event.release.tag_name }}"
       
       # Upload artifact as a release asset    
       - name: Upload Release Asset
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        run: gh release upload "v${{ needs.build.outputs.version }}" ${{ steps.artifact.outputs.filename }}
+        run: gh release upload ${{ github.event.release.tag_name }} ./build/distributions/*
