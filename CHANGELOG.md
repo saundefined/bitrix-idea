@@ -2,6 +2,9 @@
 
 ## [Unreleased]
 
+
+## [2024.2.0]
+
 ### Added
 
 - Creating Bitrix-related .gitignore file
