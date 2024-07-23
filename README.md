@@ -17,6 +17,10 @@ the developer navigate the Bitrix CMS core source code.
 | Id         | ru.panteleev.bitrix-idea                               |
 | Changelog  | [CHANGELOG](CHANGELOG.md)                              |
 
+## Support us
+
+[![](https://sergeypanteleev.storage.yandexcloud.net/ad/saundefined-bitrix-idea.jpg)](https://sergeypanteleev.com/ad/bitrix-idea)
+
 ## Installation
 
 To install, go to Settings > Plugins and search for "Bitrix Idea".
