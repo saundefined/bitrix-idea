@@ -19,7 +19,7 @@ the developer navigate the Bitrix CMS core source code.
 
 ## Support us
 
-[![](https://sergeypanteleev.storage.yandexcloud.net/ad/saundefined-bitrix-idea.jpg)](https://sergeypanteleev.com/ad/bitrix-idea)
+[<img src="https://sergeypanteleev.storage.yandexcloud.net/ad/saundefined-bitrix-idea.jpg"/>](https://sergeypanteleev.com/ad/bitrix-idea)
 
 ## Installation
 
