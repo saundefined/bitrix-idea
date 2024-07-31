@@ -12,10 +12,7 @@ import com.intellij.openapi.project.Project
 import com.intellij.openapi.ui.DialogWrapper
 import com.intellij.psi.PsiDirectory
 import com.intellij.ui.ScrollPaneFactory
-import com.intellij.ui.dsl.builder.RowLayout
-import com.intellij.ui.dsl.builder.bindText
-import com.intellij.ui.dsl.builder.panel
-import com.intellij.ui.dsl.builder.text
+import com.intellij.ui.dsl.builder.*
 import com.intellij.ui.dsl.gridLayout.HorizontalAlign
 import com.intellij.ui.dsl.gridLayout.VerticalAlign
 import com.intellij.ui.table.JBTable
@@ -121,7 +118,7 @@ class CreateModuleDialogWrapper : DialogWrapper(true) {
                     .bindText(::code)
                     .focused()
                     .text(settings.vendorCode + ".")
-                    .horizontalAlign(HorizontalAlign.FILL)
+                    .align(AlignX.FILL)
                     .validationOnApply {
                         val value = it.text
                         when {
@@ -135,7 +132,7 @@ class CreateModuleDialogWrapper : DialogWrapper(true) {
                 label(message("create.module.name"))
                 textField()
                     .bindText(::name)
-                    .horizontalAlign(HorizontalAlign.FILL)
+                    .align(AlignX.FILL)
                     .validationOnApply {
                         val value = it.text
                         when {
@@ -148,7 +145,7 @@ class CreateModuleDialogWrapper : DialogWrapper(true) {
             row(message("create.module.description")) {
                 textField()
                     .bindText(::description)
-                    .horizontalAlign(HorizontalAlign.FILL)
+                    .align(AlignX.FILL)
                     .validationOnApply {
                         val value = it.text
                         when {
@@ -163,7 +160,7 @@ class CreateModuleDialogWrapper : DialogWrapper(true) {
                 textField()
                     .bindText(::vendor)
                     .text(settings.vendorName)
-                    .horizontalAlign(HorizontalAlign.FILL)
+                    .align(AlignX.FILL)
                     .validationOnApply {
                         val value = it.text
                         when {
@@ -176,7 +173,7 @@ class CreateModuleDialogWrapper : DialogWrapper(true) {
                 textField()
                     .bindText(::url)
                     .text(settings.vendorWebsite)
-                    .horizontalAlign(HorizontalAlign.FILL)
+                    .align(AlignX.FILL)
                     .validationOnApply {
                         val value = it.text
                         when {
@@ -190,9 +187,9 @@ class CreateModuleDialogWrapper : DialogWrapper(true) {
 
             row {
                 label(message("localization.table.row.name"))
-                    .verticalAlign(VerticalAlign.TOP)
+                    .align(AlignY.TOP)
                 cell(wrapperPanel)
-                    .horizontalAlign(HorizontalAlign.FILL)
+                    .align(AlignX.FILL)
             }
                 .layout(RowLayout.PARENT_GRID)
         }

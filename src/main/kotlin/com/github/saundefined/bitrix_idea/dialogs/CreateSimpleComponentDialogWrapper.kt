@@ -11,9 +11,7 @@ import com.intellij.openapi.project.Project
 import com.intellij.openapi.ui.DialogWrapper
 import com.intellij.psi.PsiDirectory
 import com.intellij.ui.ScrollPaneFactory
-import com.intellij.ui.dsl.builder.RowLayout
-import com.intellij.ui.dsl.builder.bindText
-import com.intellij.ui.dsl.builder.panel
+import com.intellij.ui.dsl.builder.*
 import com.intellij.ui.dsl.gridLayout.HorizontalAlign
 import com.intellij.ui.dsl.gridLayout.VerticalAlign
 import com.intellij.ui.table.JBTable
@@ -117,7 +115,7 @@ class CreateSimpleComponentDialogWrapper : DialogWrapper(true) {
                 textField()
                     .bindText(::code)
                     .focused()
-                    .horizontalAlign(HorizontalAlign.FILL)
+                    .align(AlignX.FILL)
                     .validationOnApply {
                         val value = it.text
                         when {
@@ -131,7 +129,7 @@ class CreateSimpleComponentDialogWrapper : DialogWrapper(true) {
                 label(message("create.component.simple.name"))
                 textField()
                     .bindText(::name)
-                    .horizontalAlign(HorizontalAlign.FILL)
+                    .align(AlignX.FILL)
                     .validationOnApply {
                         val value = it.text
                         when {
@@ -145,7 +143,7 @@ class CreateSimpleComponentDialogWrapper : DialogWrapper(true) {
             row(message("create.component.simple.description")) {
                 textField()
                     .bindText(::description)
-                    .horizontalAlign(HorizontalAlign.FILL)
+                    .align(AlignX.FILL)
                     .validationOnApply {
                         val value = it.text
                         when {
@@ -157,9 +155,9 @@ class CreateSimpleComponentDialogWrapper : DialogWrapper(true) {
 
             row {
                 label(message("localization.table.row.name"))
-                    .verticalAlign(VerticalAlign.TOP)
+                    .align(AlignY.TOP)
                 cell(wrapperPanel)
-                    .horizontalAlign(HorizontalAlign.FILL)
+                    .align(AlignX.FILL)
             }
                 .layout(RowLayout.PARENT_GRID)
         }

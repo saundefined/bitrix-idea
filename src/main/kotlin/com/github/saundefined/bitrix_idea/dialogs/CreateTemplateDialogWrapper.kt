@@ -9,6 +9,7 @@ import com.intellij.openapi.application.ApplicationManager
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.ui.DialogWrapper
 import com.intellij.psi.PsiDirectory
+import com.intellij.ui.dsl.builder.AlignX
 import com.intellij.ui.dsl.builder.RowLayout
 import com.intellij.ui.dsl.builder.bindText
 import com.intellij.ui.dsl.builder.panel
@@ -37,7 +38,7 @@ class CreateTemplateDialogWrapper : DialogWrapper(true) {
                 textField()
                     .bindText(::code)
                     .focused()
-                    .horizontalAlign(HorizontalAlign.FILL)
+                    .align(AlignX.FILL)
                     .validationOnApply {
                         val value = it.text
                         when {
@@ -51,7 +52,7 @@ class CreateTemplateDialogWrapper : DialogWrapper(true) {
                 label(message("create.template.name"))
                 textField()
                     .bindText(::name)
-                    .horizontalAlign(HorizontalAlign.FILL)
+                    .align(AlignX.FILL)
                     .validationOnApply {
                         val value = it.text
                         when {
@@ -64,7 +65,7 @@ class CreateTemplateDialogWrapper : DialogWrapper(true) {
             row(message("create.template.description")) {
                 textField()
                     .bindText(::description)
-                    .horizontalAlign(HorizontalAlign.FILL)
+                    .align(AlignX.FILL)
             }.layout(RowLayout.PARENT_GRID)
         }
     }

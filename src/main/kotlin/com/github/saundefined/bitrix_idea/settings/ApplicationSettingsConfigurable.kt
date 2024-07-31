@@ -4,9 +4,7 @@ import com.github.saundefined.bitrix_idea.BitrixIdeaBundle.message
 import com.intellij.openapi.options.Configurable
 import com.intellij.openapi.ui.DialogPanel
 import com.intellij.ui.ScrollPaneFactory
-import com.intellij.ui.dsl.builder.RowLayout
-import com.intellij.ui.dsl.builder.bindText
-import com.intellij.ui.dsl.builder.panel
+import com.intellij.ui.dsl.builder.*
 import com.intellij.ui.dsl.gridLayout.HorizontalAlign
 import com.intellij.ui.dsl.gridLayout.VerticalAlign
 import com.intellij.ui.table.JBTable
@@ -93,19 +91,19 @@ class ApplicationSettingsConfigurable : Configurable {
                 row(message("settings.vendor.code")) {
                     textField()
                         .bindText(settings::vendorCode)
-                        .horizontalAlign(HorizontalAlign.FILL)
+                        .align(AlignX.FILL)
                 }.layout(RowLayout.PARENT_GRID)
 
                 row(message("settings.vendor.name")) {
                     textField()
                         .bindText(settings::vendorName)
-                        .horizontalAlign(HorizontalAlign.FILL)
+                        .align(AlignX.FILL)
                 }.layout(RowLayout.PARENT_GRID)
 
                 row(message("settings.vendor.website")) {
                     textField()
                         .bindText(settings::vendorWebsite)
-                        .horizontalAlign(HorizontalAlign.FILL)
+                        .align(AlignX.FILL)
                 }.layout(RowLayout.PARENT_GRID)
             }
                 .expanded = true
@@ -113,9 +111,9 @@ class ApplicationSettingsConfigurable : Configurable {
             collapsibleGroup(message("settings.localizations.group"), false) {
                 row {
                     label(message("localization.table.row.name"))
-                        .verticalAlign(VerticalAlign.TOP)
+                        .align(AlignY.TOP)
                     cell(wrapperPanel)
-                        .horizontalAlign(HorizontalAlign.FILL)
+                        .align(AlignX.FILL)
                 }
                     .layout(RowLayout.PARENT_GRID)
             }
