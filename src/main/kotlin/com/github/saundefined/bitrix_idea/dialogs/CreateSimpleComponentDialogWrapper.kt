@@ -1,28 +1,35 @@
 package com.github.saundefined.bitrix_idea.dialogs
 
 import com.github.saundefined.bitrix_idea.BitrixIdeaBundle.message
+import com.github.saundefined.bitrix_idea.settings.AppSettingsState
 import com.github.saundefined.bitrix_idea.validation.ComponentSimpleCodeVerifier
-import com.github.saundefined.bitrix_idea.validation.TemplateCodeVerifier
 import com.intellij.ide.IdeView
 import com.intellij.ide.fileTemplates.FileTemplateManager
 import com.intellij.ide.fileTemplates.FileTemplateUtil
+import com.intellij.openapi.application.ApplicationManager
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.ui.DialogWrapper
-import com.intellij.openapi.ui.ValidationInfo
 import com.intellij.psi.PsiDirectory
-import com.intellij.ui.components.JBLabel
-import com.intellij.ui.components.JBTextField
-import com.intellij.util.ui.JBUI
-import java.awt.GridBagConstraints
-import java.awt.GridBagLayout
+import com.intellij.ui.ScrollPaneFactory
+import com.intellij.ui.dsl.builder.*
+import com.intellij.ui.dsl.gridLayout.HorizontalAlign
+import com.intellij.ui.dsl.gridLayout.VerticalAlign
+import com.intellij.ui.table.JBTable
+import java.awt.BorderLayout
+import java.awt.Dimension
 import java.util.*
-import javax.swing.JComponent
-import javax.swing.JPanel
+import javax.swing.*
+import javax.swing.table.DefaultTableModel
+import javax.swing.table.JTableHeader
 
 class CreateSimpleComponentDialogWrapper : DialogWrapper(true) {
-    private var codeField = JBTextField(20)
-    private var nameField = JBTextField(20)
-    private var descriptionField = JBTextField(57)
+    val settings: AppSettingsState
+        get() = AppSettingsState().getInstance()
+    
+    var code: String = ""
+    var name: String = ""
+    var description: String = ""
+    var languages: List<String> = settings.languages
 
     lateinit var view: IdeView
     lateinit var project: Project
@@ -34,87 +41,161 @@ class CreateSimpleComponentDialogWrapper : DialogWrapper(true) {
     }
 
     override fun createCenterPanel(): JComponent {
-        val panel = JPanel(GridBagLayout())
-        val constraints = GridBagConstraints()
-
-        constraints.anchor = GridBagConstraints.WEST
-        constraints.insets = JBUI.insets(10)
-
-        constraints.gridx = 0;
-        constraints.gridy = 0;
-        constraints.gridwidth = 1;
-        panel.add(JBLabel(message("create.component.simple.code")), constraints);
-
-        constraints.gridx = 1;
-        panel.add(codeField, constraints);
-
-        constraints.gridx = 2;
-        panel.add(JBLabel(message("create.component.simple.name")), constraints);
-
-        constraints.gridx = 3;
-        panel.add(nameField, constraints);
-
-        constraints.gridx = 0;
-        constraints.gridy = 1;
-        panel.add(JBLabel(message("create.component.simple.description")), constraints);
-
-        constraints.gridx = 1;
-        constraints.gridwidth = 3;
-        panel.add(descriptionField, constraints);
-
-        return panel
-    }
-
-    override fun doValidate(): ValidationInfo? {
-        if (ComponentSimpleCodeVerifier().verify(codeField.text).not()) {
-            return ValidationInfo(message("create.component.simple.code.validation.fail"), codeField)
-        }
-        if (nameField.text.isBlank()) {
-            return ValidationInfo(message("create.component.simple.name.validation.fail"), nameField)
-        }
-        if (descriptionField.text.isBlank()) {
-            return ValidationInfo(message("create.component.simple.description.validation.fail"), descriptionField)
+        val tableModel = object : DefaultTableModel(
+            languages.map { arrayOf(it) }.toTypedArray(),
+            arrayOf(message("localization.table.column.name"))
+        ) {
+            override fun isCellEditable(row: Int, column: Int): Boolean {
+                return false
+            }
         }
 
-        return null
+        val table = JBTable(tableModel)
+            .apply {
+                tableHeader = JTableHeader(this.columnModel).apply {
+                    resizingAllowed = false
+                    reorderingAllowed = false
+                }
+            }
+
+        val buttonDimension = Dimension(24, 24)
+
+        val addButton = JButton("+").apply {
+            preferredSize = buttonDimension
+            minimumSize = buttonDimension
+            maximumSize = buttonDimension
+
+            addActionListener {
+                val result =
+                    JOptionPane.showInputDialog(
+                        null,
+                        message("localization.add"),
+                        message("localization.add.title"),
+                        JOptionPane.QUESTION_MESSAGE,
+                    )
+
+                if (!result.isNullOrEmpty()) {
+                    tableModel.addRow(arrayOf(result))
+                    languages = tableModel.dataVector.map { (it as Vector<*>)[0].toString() }
+                }
+
+                this@CreateSimpleComponentDialogWrapper.pack()
+            }
+        }
+
+        val removeButton = JButton("-").apply {
+            preferredSize = buttonDimension
+            minimumSize = buttonDimension
+            maximumSize = buttonDimension
+
+            addActionListener {
+                if (table.selectedRow != -1 && tableModel.rowCount > 1) {
+                    tableModel.removeRow(table.selectedRow)
+                    languages = tableModel.dataVector.map { (it as Vector<*>)[0].toString() }
+                }
+
+                this@CreateSimpleComponentDialogWrapper.pack()
+            }
+        }
+
+        val btnPanel = JPanel().apply {
+            layout = BoxLayout(this, BoxLayout.Y_AXIS)
+
+            add(addButton)
+            add(removeButton)
+        }
+
+        val wrapperPanel = JPanel(BorderLayout())
+        wrapperPanel.add(btnPanel, BorderLayout.LINE_END)
+        wrapperPanel.add(ScrollPaneFactory.createScrollPane(table), BorderLayout.CENTER)
+
+        return panel {
+            row {
+                label(message("create.component.simple.code"))
+                textField()
+                    .bindText(::code)
+                    .focused()
+                    .align(AlignX.FILL)
+                    .validationOnApply {
+                        val value = it.text
+                        when {
+                            ComponentSimpleCodeVerifier().verify(value)
+                                .not() -> error(message("create.component.simple.code.validation.fail"))
+
+                            else -> null
+                        }
+                    }
+
+                label(message("create.component.simple.name"))
+                textField()
+                    .bindText(::name)
+                    .align(AlignX.FILL)
+                    .validationOnApply {
+                        val value = it.text
+                        when {
+                            value === null -> error(message("create.component.simple.name.validation.fail"))
+                            else -> null
+                        }
+                    }
+
+            }.layout(RowLayout.PARENT_GRID)
+
+            row(message("create.component.simple.description")) {
+                textField()
+                    .bindText(::description)
+                    .align(AlignX.FILL)
+                    .validationOnApply {
+                        val value = it.text
+                        when {
+                            value === null -> error(message("create.component.simple.description.validation.fail"))
+                            else -> null
+                        }
+                    }
+            }.layout(RowLayout.PARENT_GRID)
+
+            row {
+                label(message("localization.table.row.name"))
+                    .align(AlignY.TOP)
+                cell(wrapperPanel)
+                    .align(AlignX.FILL)
+            }
+                .layout(RowLayout.PARENT_GRID)
+        }
     }
 
     override fun doOKAction() {
-        val validationInfo = doValidate()
-        if (validationInfo == null) {
-            val code = codeField.text
-            val name = nameField.text
-            val description = descriptionField.text
+        super.applyFields()
 
-            val templateManager = FileTemplateManager.getInstance(project)
+        val templateManager = FileTemplateManager.getInstance(project)
 
-            val properties: Properties = FileTemplateManager.getInstance(project).defaultProperties
+        val properties: Properties = FileTemplateManager.getInstance(project).defaultProperties
 
-            properties.setProperty("UPPERCASE_COMPONENT_NAME", code.replace(".", "_").uppercase(Locale.getDefault()))
-            properties.setProperty(
-                "CAMEL_COMPONENT_NAME",
-                code.replace(".", "_").split("_").joinToString("") { it ->
-                    it.replaceFirstChar {
-                        if (it.isLowerCase()) it.titlecase(
-                            Locale.getDefault()
-                        ) else it.toString()
-                    }
+        properties.setProperty("UPPERCASE_COMPONENT_NAME", code.replace(".", "_").uppercase(Locale.getDefault()))
+        properties.setProperty(
+            "CAMEL_COMPONENT_NAME",
+            code.replace(".", "_").split("_").joinToString("") { it ->
+                it.replaceFirstChar {
+                    if (it.isLowerCase()) it.titlecase(
+                        Locale.getDefault()
+                    ) else it.toString()
                 }
-            )
-            properties.setProperty("COMPONENT_NAME", name)
-            properties.setProperty("COMPONENT_DESCRIPTION", description)
+            }
+        )
+        properties.setProperty("COMPONENT_NAME", name)
+        properties.setProperty("COMPONENT_DESCRIPTION", description)
 
-            val componentDirectory = directory.createSubdirectory(code)
-
+        ApplicationManager.getApplication().runWriteAction {
             try {
+                val componentDirectory = directory.createSubdirectory(code)
+
                 val rootFileNames = listOf(".description.php", ".parameters.php", "class.php")
                 rootFileNames.forEach { fileName ->
                     val template = templateManager.getJ2eeTemplate("Bitrix Simple Component $fileName")
                     FileTemplateUtil.createFromTemplate(template, fileName, properties, componentDirectory)
                 }
 
-                val templatesDirectory = componentDirectory.createSubdirectory("templates");
-                val defaultTemplateDirectory = templatesDirectory.createSubdirectory(".default");
+                val templatesDirectory = componentDirectory.createSubdirectory("templates")
+                val defaultTemplateDirectory = templatesDirectory.createSubdirectory(".default")
 
                 val defaultTemplateDirectoryTemplate =
                     templateManager.getJ2eeTemplate("Bitrix Simple Component templates default template.php")
@@ -124,8 +205,6 @@ class CreateSimpleComponentDialogWrapper : DialogWrapper(true) {
                     properties,
                     defaultTemplateDirectory
                 )
-
-                val languages = listOf("ru", "en")
 
                 val langDirectory = componentDirectory.createSubdirectory("lang")
                 languages.forEach { language ->
@@ -138,10 +217,10 @@ class CreateSimpleComponentDialogWrapper : DialogWrapper(true) {
                         }
 
                     val languageTemplatesDirectory =
-                        langInstallDirectory.createSubdirectory("templates");
+                        langInstallDirectory.createSubdirectory("templates")
                     val languageDefaultTemplateDirectory =
-                        languageTemplatesDirectory.createSubdirectory(".default");
-                    
+                        languageTemplatesDirectory.createSubdirectory(".default")
+
                     val languageDefaultTemplateDirectoryTemplate =
                         templateManager.getJ2eeTemplate("Bitrix Simple Component language templates default template.php")
                     FileTemplateUtil.createFromTemplate(
@@ -155,8 +234,8 @@ class CreateSimpleComponentDialogWrapper : DialogWrapper(true) {
             } catch (e: Exception) {
                 e.printStackTrace()
             }
-
-            super.doOKAction()
         }
+
+        super.doOKAction()
     }
 }

@@ -14,8 +14,20 @@
     <extensions defaultExtensionNs="com.intellij">
         <fileTemplateGroup
                 implementation="com.github.saundefined.bitrix_idea.templates.module.BitrixModuleFileTemplateGroupFactory"/>
+        <fileTemplateGroup
+                implementation="com.github.saundefined.bitrix_idea.templates.simple_component.BitrixSimpleComponentFileTemplateGroupFactory"/>
+        <fileTemplateGroup
+                implementation="com.github.saundefined.bitrix_idea.templates.template.BitrixTemplateFileTemplateGroupFactory"/>
+        <fileTemplateGroup
+                implementation="com.github.saundefined.bitrix_idea.templates.gitignore.BitrixModuleFileTemplateGroupFactory"/>
         <notificationGroup id="Bitrix Idea Plugin" displayType="BALLOON"/>
         <postStartupActivity implementation="com.github.saundefined.bitrix_idea.activity.NotificationStartupActivity"/>
+        <applicationConfigurable
+                parentId="tools"
+                instance="com.github.saundefined.bitrix_idea.settings.ApplicationSettingsConfigurable"
+                id="com.github.saundefined.bitrix_idea.settings.ApplicationSettingsConfigurable"
+                displayName="Bitrix Idea"/>
+        <applicationService serviceImplementation="com.github.saundefined.bitrix_idea.settings.AppSettingsState"/>
     </extensions>
 
     <actions>
@@ -23,28 +35,35 @@
                 id="com.github.saundefined.bitrix_idea.actions.BitrixIdeaMenu"
                 text="Bitrix Idea"
                 popup="true"
-                icon="com.github.saundefined.bitrix_idea.icons.BitrixIdeaIcons.Bitrix"
+                icon="icons.BitrixIdeaIcons.Bitrix"
         >
             <add-to-group group-id="NewGroup" anchor="first"/>
             <action
+                    class="com.github.saundefined.bitrix_idea.actions.CreateGitignoreAction"
+                    id="com.github.saundefined.bitrix_idea.actions.CreateGitignoreAction"
+                    text=".gitignore"
+                    icon="icons.BitrixIdeaIcons.Bitrix"
+            >
+            </action>
+            <action
                     class="com.github.saundefined.bitrix_idea.actions.CreateSimpleComponentAction"
                     id="com.github.saundefined.bitrix_idea.actions.CreateSimpleComponentAction"
-                    text="Component"
-                    icon="com.github.saundefined.bitrix_idea.icons.BitrixIdeaIcons.Bitrix"
+                    text="Простой компонент"
+                    icon="icons.BitrixIdeaIcons.Bitrix"
             >
             </action>
             <action
                     class="com.github.saundefined.bitrix_idea.actions.CreateTemplateAction"
                     id="com.github.saundefined.bitrix_idea.actions.CreateTemplateAction"
-                    text="Template"
-                    icon="com.github.saundefined.bitrix_idea.icons.BitrixIdeaIcons.Bitrix"
+                    text="Шаблон"
+                    icon="icons.BitrixIdeaIcons.Bitrix"
             >
             </action>
             <action
                     class="com.github.saundefined.bitrix_idea.actions.CreateModuleAction"
                     id="com.github.saundefined.bitrix_idea.actions.CreateModuleAction"
-                    text="Module"
-                    icon="com.github.saundefined.bitrix_idea.icons.BitrixIdeaIcons.Bitrix"
+                    text="Модуль"
+                    icon="icons.BitrixIdeaIcons.Bitrix"
             >
             </action>
         </group>

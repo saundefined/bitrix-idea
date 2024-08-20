@@ -1,0 +1,14 @@
+.idea
+/bitrix/*
+/bitrix/*/*
+!/bitrix/composer.json
+!/bitrix/composer.lock
+!/bitrix/composer-bx.json
+upload/
+!.gitignore
+/.htaccess
+/*.xml
+/*.txt
+/*.json
+/*.log
+/web.config
