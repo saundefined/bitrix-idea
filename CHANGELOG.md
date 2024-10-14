@@ -9,6 +9,7 @@
 - Update IntelliJ Platform 1.14.2
 - Update IntelliJ Platform 2.0.0
 - Update IntelliJ Platform 2.0.1
+- Update IntelliJ Platform 2.0.2
 
 ## [2024.2.0]
 
