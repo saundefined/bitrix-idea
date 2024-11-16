@@ -198,12 +198,12 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
-          gh release create "${{ github.event.release.tag_name }}" \
+          gh release create "${{ github.ref_name }}"" \
             --draft \
-            --title "${{ github.event.release.tag_name }}"
+            --title "${{ github.ref_name }}""
       
       # Upload artifact as a release asset    
       - name: Upload Release Asset
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        run: gh release upload ${{ github.event.release.tag_name }} ./build/distributions/*
+        run: gh release upload ${{ github.ref_name }}" ./build/distributions/*
