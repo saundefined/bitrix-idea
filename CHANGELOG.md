@@ -10,6 +10,7 @@
 - Update IntelliJ Platform 2.0.0
 - Update IntelliJ Platform 2.0.1
 - Update IntelliJ Platform 2.0.2
+- Support for PhpStorm 2024.3
 
 ## [2024.2.0]
 
