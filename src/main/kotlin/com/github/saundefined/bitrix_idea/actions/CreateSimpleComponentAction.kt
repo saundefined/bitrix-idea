@@ -1,6 +1,8 @@
 package com.github.saundefined.bitrix_idea.actions
 
 import com.github.saundefined.bitrix_idea.dialogs.CreateSimpleComponentDialogWrapper
+import com.github.saundefined.bitrix_idea.license.CheckLicense
+import com.github.saundefined.bitrix_idea.BitrixIdeaBundle.message
 import com.intellij.ide.util.DirectoryChooserUtil
 import com.intellij.openapi.actionSystem.ActionUpdateThread
 import com.intellij.openapi.actionSystem.AnAction
@@ -9,9 +11,13 @@ import com.intellij.openapi.actionSystem.LangDataKeys
 import com.intellij.openapi.project.Project
 import org.jetbrains.annotations.NotNull
 
-
 class CreateSimpleComponentAction : AnAction() {
     override fun actionPerformed(@NotNull event: AnActionEvent) {
+        if (CheckLicense.isLicensed == false) {
+            CheckLicense.requestLicense(message("license.request"))
+            return
+        }
+
         val view = event.getData(LangDataKeys.IDE_VIEW)
         if (view === null) {
             return
