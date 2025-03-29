@@ -124,7 +124,7 @@ jobs:
 
       # Upload Kover report to CodeCov
       - name: Upload Code Coverage Report
-        uses: codecov/codecov-action@v3
+        uses: codecov/codecov-action@v5
         with:
           files: ${{ github.workspace }}/build/reports/kover/report.xml
   
