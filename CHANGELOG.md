@@ -2,6 +2,9 @@
 
 ## [Unreleased]
 
+### Changed
+
+- Update IntelliJ Platform 2.2.0
 
 ## [2025.1.0]
 
