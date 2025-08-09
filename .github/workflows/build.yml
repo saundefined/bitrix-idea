@@ -79,6 +79,9 @@ jobs:
       # Check out the current repository
       - name: Fetch Sources
         uses: actions/checkout@v4
+        with:
+          submodules: 'true'
+          token: ${{ secrets.FETCH_SUBMODULES_PAT }}
 
       # Set up the Java environment for the next steps
       - name: Setup Java
