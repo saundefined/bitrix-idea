@@ -1,6 +1,7 @@
 package com.github.saundefined.bitrix_idea.activity
 
 import com.github.saundefined.bitrix_idea.BitrixIdeaBundle.message
+import com.github.saundefined.bitrix_idea.license.CheckLicense
 import com.intellij.notification.*
 import com.intellij.openapi.actionSystem.AnActionEvent
 import com.intellij.openapi.application.ApplicationManager
@@ -22,29 +23,31 @@ class NotificationStartupActivity : StartupActivity {
     override fun runActivity(project: Project) {
         val app = ApplicationManager.getApplication()
         app.invokeLater {
-            val notification =
-                Notification(NOTIFICATION_GROUP, message("startup.notification.title"), NotificationType.IDE_UPDATE)
-            notification.addAction(object :
-                NotificationAction(message("startup.notification.action")) {
-                override fun actionPerformed(e: AnActionEvent, notification: Notification) {
-                    openUrl(GITHUB_URL)
-                }
-            })
+            if (CheckLicense.isLicensed == false) {
+                val notification =
+                    Notification(NOTIFICATION_GROUP, message("startup.notification.title"), NotificationType.IDE_UPDATE)
+                notification.addAction(object :
+                    NotificationAction(message("startup.notification.action")) {
+                    override fun actionPerformed(e: AnActionEvent, notification: Notification) {
+                        openUrl(GITHUB_URL)
+                    }
+                })
 
-            notification.addAction(object : NotificationAction(message("startup.notification.dismiss")) {
-                override fun actionPerformed(e: AnActionEvent, notification: Notification) {
-                    val notificationSettings = NotificationsConfiguration.getNotificationsConfiguration()
-                    notificationSettings.changeSettings(
-                        NOTIFICATION_GROUP,
-                        NotificationDisplayType.NONE,
-                        false,
-                        false
-                    )
-                    notification.expire()
-                }
-            })
+                notification.addAction(object : NotificationAction(message("startup.notification.dismiss")) {
+                    override fun actionPerformed(e: AnActionEvent, notification: Notification) {
+                        val notificationSettings = NotificationsConfiguration.getNotificationsConfiguration()
+                        notificationSettings.changeSettings(
+                            NOTIFICATION_GROUP,
+                            NotificationDisplayType.NONE,
+                            false,
+                            false
+                        )
+                        notification.expire()
+                    }
+                })
 
-            Notifications.Bus.notify(notification)
+                Notifications.Bus.notify(notification)
+            }
         }
     }
 
