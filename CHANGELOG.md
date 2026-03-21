@@ -4,6 +4,12 @@
 
 ### Changed
 
+- Update IntelliJ Platform 2.4.1
+
+## [2025.1.0]
+
+### Changed
+
 - Update IntelliJ Platform 2.4.0
 - Update IntelliJ Platform 2.3.1
 - Update IntelliJ Platform 2.2.0
