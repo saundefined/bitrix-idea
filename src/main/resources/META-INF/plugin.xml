@@ -3,6 +3,8 @@
     <name>Bitrix Idea</name>
     <vendor email="sergey@php.net" url="https://github.com/saundefined/bitrix-idea/">sergey-panteleev</vendor>
 
+    <product-descriptor code="PBITRIXIDEA" release-date="20230801" release-version="20236" optional="true"/>
+
     <depends>com.intellij.modules.platform</depends>
 
     <extensions defaultExtensionNs="com.jetbrains.php">
