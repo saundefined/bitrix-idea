@@ -3,6 +3,10 @@
     <name>Bitrix Idea</name>
     <vendor email="sergey@php.net" url="https://github.com/saundefined/bitrix-idea/">sergey-panteleev</vendor>
 
+    <description><![CDATA[
+        <p>Plugin for <a href="https://www.jetbrains.com/phpstorm">PhpStorm</a> to help the developer navigate the Bitrix CMS core source code.</p>
+    ]]></description>
+
     <depends>com.intellij.modules.platform</depends>
 
     <extensions defaultExtensionNs="com.jetbrains.php">

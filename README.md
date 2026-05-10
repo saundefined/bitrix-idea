@@ -6,10 +6,8 @@
 ![Build](https://github.com/saundefined/bitrix-idea/actions/workflows/build.yml/badge.svg)
 [![License](https://img.shields.io/github/license/saundefined/bitrix-idea?style=flat-square)](https://plugins.jetbrains.com/plugin/14703)
 
-<!-- Plugin description -->
 Plugin for [PhpStorm](https://www.jetbrains.com/phpstorm) to help
 the developer navigate the Bitrix CMS core source code.
-<!-- Plugin description end -->
 
 | Key        | Value                                                  |
 |------------|--------------------------------------------------------|
