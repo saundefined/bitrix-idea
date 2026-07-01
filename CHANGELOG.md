@@ -2,8 +2,11 @@
 
 ## [Unreleased]
 
+## [2026.1.0]
+
 ### Changed
 
+- Updated Bitrix CMS core
 - Update IntelliJ Platform 2.6.0
 - Update IntelliJ Platform 2.4.1
 

@@ -15,3 +15,9 @@ dependencies {
         testFramework(TestFrameworkType.Platform)
     }
 }
+
+intellijPlatform {
+    pluginVerification {
+        freeArgs = listOf("-mute", "TemplateWordInPluginName")
+    }
+}
