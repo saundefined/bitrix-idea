@@ -1,94 +1,151 @@
 name: Release
+
 on:
-  release:
-    types: [prereleased, released]
+  push:
+    tags:
+      - '*'
 
 jobs:
-  release:
-    name: Publish Plugin
+  build-and-test:
+    name: Build & Test
     runs-on: ubuntu-latest
-    permissions:
-      contents: write
-      pull-requests: write
     steps:
+      # Освобождаем место на диске
       - name: Maximize Build Space
         uses: jlumbroso/free-disk-space@v1.3.1
         with:
           tool-cache: false
           large-packages: false
 
-      # Check out the current repository
+      # Клонируем репозиторий с подмодулями
       - name: Fetch Sources
         uses: actions/checkout@v6
         with:
-          ref: ${{ github.event.release.tag_name }}
           submodules: 'true'
           token: ${{ secrets.FETCH_SUBMODULES_PAT }}
 
-      # Set up the Java environment for the next steps
+      # Настраиваем Java
       - name: Setup Java
         uses: actions/setup-java@v5
         with:
           distribution: zulu
           java-version: 21
 
-      # Setup Gradle
+      # Настраиваем Gradle
       - name: Setup Gradle
         uses: gradle/actions/setup-gradle@v6
+
+      # Собираем и тестируем плагин одной командой
+      - name: Build and Test
+        run: ./gradlew buildPlugin check
+
+      # Загружаем результаты тестов в случае ошибки
+      - name: Collect Tests Result
+        if: failure()
+        uses: actions/upload-artifact@v6
         with:
-          cache-read-only: true
+          name: tests-result
+          path: ${{ github.workspace }}/build/reports/tests
+          retention-days: 7
 
-      # Update the Unreleased section with the current release note
-      - name: Patch Changelog
-        if: ${{ github.event.release.body != '' }}
-        env:
-          CHANGELOG: ${{ github.event.release.body }}
+      # Верификация плагина
+      - name: Verify Plugin
+        run: ./gradlew verifyPlugin
+
+      # Загружаем результаты верификации
+      - name: Collect Plugin Verifier Result
+        if: always()
+        uses: actions/upload-artifact@v6
+        with:
+          name: pluginVerifier-result
+          path: ${{ github.workspace }}/build/reports/pluginVerifier
+          retention-days: 7
+
+      # Загружаем собранный плагин в артефакты
+      - name: Upload plugin artifact
+        uses: actions/upload-artifact@v6
+        with:
+          name: plugin
+          path: ${{ github.workspace }}/build/distributions/*.zip
+          retention-days: 7
+
+      # Сохраняем информацию о версии для релиза
+      - name: Get version
+        id: version
         run: |
-          RELEASE_NOTE="./build/tmp/release_note.txt"
-          mkdir -p "$(dirname "$RELEASE_NOTE")"
-          echo "$CHANGELOG" > $RELEASE_NOTE
+          VERSION=$(./gradlew properties --property version --quiet --console=plain | tail -n 1 | cut -f2- -d ' ')
+          echo "version=$VERSION" >> $GITHUB_OUTPUT
 
-          ./gradlew patchChangelog --release-note-file=$RELEASE_NOTE
+    outputs:
+      version: ${{ steps.version.outputs.version }}
 
-      # Publish the plugin to JetBrains Marketplace
-      - name: Publish Plugin
-        env:
-          PUBLISH_TOKEN: ${{ secrets.PUBLISH_TOKEN }}
-          CERTIFICATE_CHAIN: ${{ secrets.CERTIFICATE_CHAIN }}
-          PRIVATE_KEY: ${{ secrets.PRIVATE_KEY }}
-          PRIVATE_KEY_PASSWORD: ${{ secrets.PRIVATE_KEY_PASSWORD }}
-        run: ./gradlew publishPlugin
+  create-release:
+    name: Create Release
+    needs: build-and-test
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      # Клонируем репозиторий для получения changelog
+      - name: Fetch Sources
+        uses: actions/checkout@v6
+        with:
+          fetch-depth: 0
+          token: ${{ secrets.GITHUB_TOKEN }}
 
-      # Upload an artifact as a release asset
-      - name: Upload Release Asset
+      # Получаем версию из тега
+      - name: Get tag version
+        id: tag
+        run: |
+          TAG=${GITHUB_REF#refs/tags/}
+          echo "version=$TAG" >> $GITHUB_OUTPUT
+
+      # Скачиваем собранный плагин из артефактов
+      - name: Download plugin artifact
+        uses: actions/download-artifact@v6
+        with:
+          name: plugin
+          path: ./plugin
+
+      # Удаляем старые черновики релизов
+      - name: Remove Old Release Drafts
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        run: gh release upload ${{ github.event.release.tag_name }} ./build/distributions/*
+        run: |
+          gh api repos/{owner}/{repo}/releases \
+            --jq '.[] | select(.draft == true) | .id' \
+            | xargs -I '{}' gh api -X DELETE repos/{owner}/{repo}/releases/{} || true
 
-      # Create a pull request
-      - name: Create Pull Request
-        if: ${{ steps.properties.outputs.changelog != '' }}
+      # Генерируем заметки к релизу
+      - name: Generate Release Notes
+        id: release_notes
+        run: |
+          RELEASE_NOTE="./release_note.txt"
+          if [ -f "./gradlew" ]; then
+            ./gradlew getChangelog --unreleased --no-header --quiet --console=plain --output-file="$RELEASE_NOTE" || echo "Release notes for version ${{ steps.tag.outputs.version }}" > "$RELEASE_NOTE"
+          else
+            echo "Release notes for version ${{ steps.tag.outputs.version }}" > "$RELEASE_NOTE"
+          fi
+
+      # Создаем релиз с прикрепленным плагином
+      - name: Create Release
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
-          VERSION="${{ github.event.release.tag_name }}"
-          BRANCH="changelog-update-$VERSION"
-          LABEL="release changelog"
-
-          git config user.email "action@github.com"
-          git config user.name "GitHub Action"
-
-          git checkout -b $BRANCH
-          git commit -am "Changelog update - $VERSION"
-          git push --set-upstream origin $BRANCH
+          RELEASE_NOTE="./release_note.txt"
           
-          gh label create "$LABEL" \
-            --description "Pull requests with release changelog update" \
-            --force \
-            || true
-
-          gh pr create \
-            --title "Changelog update - \`$VERSION\`" \
-            --body "Current pull request contains patched \`CHANGELOG.md\` file for the \`$VERSION\` version." \
-            --label "$LABEL" \
-            --head $BRANCH
+          # Ищем zip-файл плагина
+          PLUGIN_ZIP=$(find ./plugin -name "*.zip" | head -n 1)
+          
+          if [ -f "$PLUGIN_ZIP" ] && [ -n "$PLUGIN_ZIP" ]; then
+            echo "Found plugin: $PLUGIN_ZIP"
+            gh release create "${{ steps.tag.outputs.version }}" \
+              --title "${{ steps.tag.outputs.version }}" \
+              --notes-file "$RELEASE_NOTE" \
+              "$PLUGIN_ZIP"
+          else
+            echo "Warning: Plugin zip file not found"
+            gh release create "${{ steps.tag.outputs.version }}" \
+              --title "${{ steps.tag.outputs.version }}" \
+              --notes-file "$RELEASE_NOTE"
+          fi
