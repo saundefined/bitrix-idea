@@ -1,7 +1,7 @@
 package com.github.saundefined.bitrix_idea.validation
 
-class UrlVerifier {
+object UrlVerifier {
     fun verify(input: String): Boolean {
-        return input.matches(Regex("^https?://\\S*\$"))
+        return input.matches(Regex("^https?://\\S+$"))
     }
 }

@@ -1,0 +1,69 @@
+<templateSet group="Bitrix">
+    <template name="loc" value="\Bitrix\Main\Localization\Loc::getMessage('$KEY$')" description="Loc::getMessage" toReformat="true" toShortenFQNames="true">
+        <variable name="KEY" expression="" defaultValue="KEY" alwaysStopAt="true"/>
+        <context>
+            <option name="PHP" value="true"/>
+        </context>
+    </template>
+    <template name="comp" value="$APPLICATION-&gt;IncludeComponent('$COMPONENT$', '$TEMPLATE$', [$PARAMS$]);" description="Include Bitrix component" toReformat="true" toShortenFQNames="true">
+        <variable name="COMPONENT" expression="" defaultValue="vendor:component" alwaysStopAt="true"/>
+        <variable name="TEMPLATE" expression="" defaultValue=".default" alwaysStopAt="true"/>
+        <variable name="PARAMS" expression="" defaultValue="'PARAM' =&gt; 'VALUE'" alwaysStopAt="true"/>
+        <context>
+            <option name="PHP" value="true"/>
+        </context>
+    </template>
+    <template name="module" value="\Bitrix\Main\Loader::includeModule('$MODULE$');" description="Include Bitrix module" toReformat="true" toShortenFQNames="true">
+        <variable name="MODULE" expression="" defaultValue="vendor.module" alwaysStopAt="true"/>
+        <context>
+            <option name="PHP" value="true"/>
+        </context>
+    </template>
+    <template name="event" value="\Bitrix\Main\EventManager::getInstance()-&gt;registerEventHandler('$MODULE$', '$EVENT$', '$MODULE$', $HANDLER$::class, '$METHOD$');" description="Register D7 event handler" toReformat="true" toShortenFQNames="true">
+        <variable name="MODULE" expression="" defaultValue="vendor.module" alwaysStopAt="true"/>
+        <variable name="EVENT" expression="" defaultValue="OnBeforeProlog" alwaysStopAt="true"/>
+        <variable name="HANDLER" expression="" defaultValue="\Vendor\Module\EventHandler" alwaysStopAt="true"/>
+        <variable name="METHOD" expression="" defaultValue="handle" alwaysStopAt="true"/>
+        <context>
+            <option name="PHP" value="true"/>
+        </context>
+    </template>
+    <template name="agent" value="\CAgent::AddAgent($AGENT$::class . '::run();', '$MODULE$', 'N', $INTERVAL$);" description="Register Bitrix agent" toReformat="true" toShortenFQNames="true">
+        <variable name="AGENT" expression="" defaultValue="\Vendor\Module\Agent" alwaysStopAt="true"/>
+        <variable name="MODULE" expression="" defaultValue="vendor.module" alwaysStopAt="true"/>
+        <variable name="INTERVAL" expression="" defaultValue="3600" alwaysStopAt="true"/>
+        <context>
+            <option name="PHP" value="true"/>
+        </context>
+    </template>
+    <template name="bxcache" value="$cache = \Bitrix\Main\Data\Cache::createInstance();&#10;if ($cache-&gt;initCache($CACHE_TIME$, '$CACHE_KEY$', '$CACHE_DIR$')) {&#10;    $vars = $cache-&gt;getVars();&#10;} elseif ($cache-&gt;startDataCache()) {&#10;    $cache-&gt;endDataCache($vars);&#10;}" description="Bitrix managed cache" toReformat="true" toShortenFQNames="true">
+        <variable name="CACHE_TIME" expression="" defaultValue="3600" alwaysStopAt="true"/>
+        <variable name="CACHE_KEY" expression="" defaultValue="cache_key" alwaysStopAt="true"/>
+        <variable name="CACHE_DIR" expression="" defaultValue="/cache_dir" alwaysStopAt="true"/>
+        <context>
+            <option name="PHP" value="true"/>
+        </context>
+    </template>
+    <template name="app" value="\Bitrix\Main\Application::getInstance()" description="Bitrix Application" toReformat="true" toShortenFQNames="true">
+        <context>
+            <option name="PHP" value="true"/>
+        </context>
+    </template>
+    <template name="request" value="\Bitrix\Main\Context::getCurrent()-&gt;getRequest()" description="Bitrix Request" toReformat="true" toShortenFQNames="true">
+        <context>
+            <option name="PHP" value="true"/>
+        </context>
+    </template>
+    <template name="db" value="\Bitrix\Main\Application::getConnection()" description="Bitrix database connection" toReformat="true" toShortenFQNames="true">
+        <context>
+            <option name="PHP" value="true"/>
+        </context>
+    </template>
+    <template name="orm" value="$ENTITY$::query()-&gt;setSelect(['ID'])-&gt;where('ID', $ID$)-&gt;fetchObject();" description="Bitrix ORM query" toReformat="true" toShortenFQNames="true">
+        <variable name="ENTITY" expression="" defaultValue="\Vendor\Module\ItemTable" alwaysStopAt="true"/>
+        <variable name="ID" expression="" defaultValue="1" alwaysStopAt="true"/>
+        <context>
+            <option name="PHP" value="true"/>
+        </context>
+    </template>
+</templateSet>

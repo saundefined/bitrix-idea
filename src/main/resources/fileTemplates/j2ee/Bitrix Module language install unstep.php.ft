@@ -1,0 +1,3 @@
+<?php
+
+${DS}MESS['${UPPER_CASED_MODULE_NAME}_UNINSTALL_SUCCESS'] = 'Модуль удалён';

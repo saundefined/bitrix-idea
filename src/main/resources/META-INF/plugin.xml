@@ -8,12 +8,12 @@
     ]]></description>
 
     <depends>com.intellij.modules.platform</depends>
-
-    <extensions defaultExtensionNs="com.jetbrains.php">
-        <libraryRoot id="bitrix-idea-library" path="/bitrix-idea-library/" runtime="false"/>
-    </extensions>
+    <!-- PHP insight is optional so the plugin also installs in PhpStorm Lite / IDE without PHP. -->
+    <depends optional="true" config-file="bitrix-php.xml">com.jetbrains.php</depends>
 
     <extensions defaultExtensionNs="com.intellij">
+        <additionalLibraryRootsProvider
+                implementation="com.github.saundefined.bitrix_idea.library.BitrixLibraryRootsProvider"/>
         <fileTemplateGroup
                 implementation="com.github.saundefined.bitrix_idea.templates.module.BitrixModuleFileTemplateGroupFactory"/>
         <fileTemplateGroup
@@ -22,14 +22,25 @@
                 implementation="com.github.saundefined.bitrix_idea.templates.template.BitrixTemplateFileTemplateGroupFactory"/>
         <fileTemplateGroup
                 implementation="com.github.saundefined.bitrix_idea.templates.gitignore.BitrixModuleFileTemplateGroupFactory"/>
+        <projectViewNodeDecorator
+                implementation="com.github.saundefined.bitrix_idea.toolwindow.BitrixProjectViewNodeDecorator"/>
+        <toolWindow
+                id="Bitrix"
+                anchor="right"
+                icon="/icons/bitrix.svg"
+                factoryClass="com.github.saundefined.bitrix_idea.toolwindow.BitrixToolWindowFactory"/>
         <notificationGroup id="Bitrix Idea Plugin" displayType="BALLOON"/>
+        <notificationGroup id="Bitrix Idea Framework" displayType="BALLOON"/>
         <postStartupActivity implementation="com.github.saundefined.bitrix_idea.activity.NotificationStartupActivity"/>
-        <applicationConfigurable
-                parentId="tools"
-                instance="com.github.saundefined.bitrix_idea.settings.ApplicationSettingsConfigurable"
-                id="com.github.saundefined.bitrix_idea.settings.ApplicationSettingsConfigurable"
-                displayName="Bitrix Idea"/>
+        <postStartupActivity implementation="com.github.saundefined.bitrix_idea.activity.BitrixProjectDetectionActivity"/>
+        <postStartupActivity implementation="com.github.saundefined.bitrix_idea.roots.BitrixSourceRootsStartupActivity"/>
+        <projectConfigurable
+                parentId="settings.php.frameworks"
+                instance="com.github.saundefined.bitrix_idea.settings.BitrixProjectConfigurable"
+                id="com.github.saundefined.bitrix_idea.settings.BitrixProjectConfigurable"
+                displayName="Bitrix"/>
         <applicationService serviceImplementation="com.github.saundefined.bitrix_idea.settings.AppSettingsState"/>
+        <projectService serviceImplementation="com.github.saundefined.bitrix_idea.settings.BitrixProjectSettings"/>
     </extensions>
 
     <actions>
@@ -44,6 +55,34 @@
                     class="com.github.saundefined.bitrix_idea.actions.CreateGitignoreAction"
                     id="com.github.saundefined.bitrix_idea.actions.CreateGitignoreAction"
                     text=".gitignore"
+                    icon="icons.BitrixIdeaIcons.Bitrix"
+            >
+            </action>
+            <action
+                    class="com.github.saundefined.bitrix_idea.actions.CreateD7ClassAction"
+                    id="com.github.saundefined.bitrix_idea.actions.CreateD7ClassAction"
+                    text="D7-класс"
+                    icon="icons.BitrixIdeaIcons.Bitrix"
+            >
+            </action>
+            <action
+                    class="com.github.saundefined.bitrix_idea.actions.CreateOrmEntityAction"
+                    id="com.github.saundefined.bitrix_idea.actions.CreateOrmEntityAction"
+                    text="ORM-сущность"
+                    icon="icons.BitrixIdeaIcons.Bitrix"
+            >
+            </action>
+            <action
+                    class="com.github.saundefined.bitrix_idea.actions.CreateComplexComponentAction"
+                    id="com.github.saundefined.bitrix_idea.actions.CreateComplexComponentAction"
+                    text="Комплексный компонент"
+                    icon="icons.BitrixIdeaIcons.Bitrix"
+            >
+            </action>
+            <action
+                    class="com.github.saundefined.bitrix_idea.actions.CreateComponentTemplateAction"
+                    id="com.github.saundefined.bitrix_idea.actions.CreateComponentTemplateAction"
+                    text="Шаблон компонента"
                     icon="icons.BitrixIdeaIcons.Bitrix"
             >
             </action>

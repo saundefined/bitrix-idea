@@ -1,0 +1,15 @@
+<?php
+
+use Bitrix\Main\Localization\Loc;
+
+Loc::loadMessages(__FILE__);
+
+return [
+    [
+        'parent_menu' => 'global_menu_services',
+        'section' => '${SNACK_CASED_MODULE_NAME}',
+        'title' => Loc::getMessage('${UPPER_CASED_MODULE_NAME}_MENU_TITLE'),
+        'items_id' => 'menu_${SNACK_CASED_MODULE_NAME}',
+        'items' => [],
+    ],
+];

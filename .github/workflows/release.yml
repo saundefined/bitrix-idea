@@ -3,149 +3,105 @@ name: Release
 on:
   push:
     tags:
-      - '*'
+      - 'v[0-9]*'
+      - '[0-9]*'
+
+concurrency:
+  group: release
+  cancel-in-progress: false
+
+permissions:
+  contents: read
 
 jobs:
   build-and-test:
-    name: Build & Test
-    runs-on: ubuntu-latest
-    steps:
-      # Освобождаем место на диске
-      - name: Maximize Build Space
-        uses: jlumbroso/free-disk-space@v1.3.1
-        with:
-          tool-cache: false
-          large-packages: false
-
-      # Клонируем репозиторий с подмодулями
-      - name: Fetch Sources
-        uses: actions/checkout@v6
-        with:
-          submodules: 'true'
-          token: ${{ secrets.FETCH_SUBMODULES_PAT }}
-
-      # Настраиваем Java
-      - name: Setup Java
-        uses: actions/setup-java@v5
-        with:
-          distribution: zulu
-          java-version: 21
-
-      # Настраиваем Gradle
-      - name: Setup Gradle
-        uses: gradle/actions/setup-gradle@v6
-
-      # Собираем и тестируем плагин одной командой
-      - name: Build and Test
-        run: ./gradlew buildPlugin check
-
-      # Загружаем результаты тестов в случае ошибки
-      - name: Collect Tests Result
-        if: failure()
-        uses: actions/upload-artifact@v6
-        with:
-          name: tests-result
-          path: ${{ github.workspace }}/build/reports/tests
-          retention-days: 7
-
-      # Верификация плагина
-      - name: Verify Plugin
-        run: ./gradlew verifyPlugin
-
-      # Загружаем результаты верификации
-      - name: Collect Plugin Verifier Result
-        if: always()
-        uses: actions/upload-artifact@v6
-        with:
-          name: pluginVerifier-result
-          path: ${{ github.workspace }}/build/reports/pluginVerifier
-          retention-days: 7
-
-      # Загружаем собранный плагин в артефакты
-      - name: Upload plugin artifact
-        uses: actions/upload-artifact@v6
-        with:
-          name: plugin
-          path: ${{ github.workspace }}/build/distributions/*.zip
-          retention-days: 7
-
-      # Сохраняем информацию о версии для релиза
-      - name: Get version
-        id: version
-        run: |
-          VERSION=$(./gradlew properties --property version --quiet --console=plain | tail -n 1 | cut -f2- -d ' ')
-          echo "version=$VERSION" >> $GITHUB_OUTPUT
-
-    outputs:
-      version: ${{ steps.version.outputs.version }}
+    uses: ./.github/workflows/build-and-test.yml
+    secrets:
+      FETCH_SUBMODULES_PAT: ${{ secrets.FETCH_SUBMODULES_PAT }}
 
   create-release:
     name: Create Release
     needs: build-and-test
     runs-on: ubuntu-latest
+    timeout-minutes: 20
     permissions:
       contents: write
+
     steps:
-      # Клонируем репозиторий для получения changelog
-      - name: Fetch Sources
+      - name: Checkout
         uses: actions/checkout@v6
         with:
           fetch-depth: 0
-          token: ${{ secrets.GITHUB_TOKEN }}
+          persist-credentials: false
 
-      # Получаем версию из тега
-      - name: Get tag version
+      - name: Validate tag and get version
         id: tag
         run: |
-          TAG=${GITHUB_REF#refs/tags/}
-          echo "version=$TAG" >> $GITHUB_OUTPUT
+          set -euo pipefail
+          TAG="${GITHUB_REF#refs/tags/}"
+          PROJECT_VERSION="$(sed -n 's/^version=//p' gradle.properties | tr -d '[:space:]')"
 
-      # Скачиваем собранный плагин из артефактов
+          if [[ -z "$PROJECT_VERSION" ]]; then
+            echo "Could not read version from gradle.properties" >&2
+            exit 1
+          fi
+
+          if [[ "$TAG" != "$PROJECT_VERSION" && "$TAG" != "v$PROJECT_VERSION" ]]; then
+            echo "Tag '$TAG' does not match gradle.properties version '$PROJECT_VERSION'" >&2
+            exit 1
+          fi
+
+          echo "version=$TAG" >> "$GITHUB_OUTPUT"
+
       - name: Download plugin artifact
         uses: actions/download-artifact@v6
         with:
           name: plugin
           path: ./plugin
 
-      # Удаляем старые черновики релизов
-      - name: Remove Old Release Drafts
+      - name: Setup Java
+        uses: actions/setup-java@v5
+        with:
+          distribution: zulu
+          java-version: 21
+
+      - name: Setup Gradle
+        uses: gradle/actions/setup-gradle@v6
+
+      - name: Remove old release drafts
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
-          gh api repos/{owner}/{repo}/releases \
+          set -euo pipefail
+          gh api --paginate repos/{owner}/{repo}/releases \
             --jq '.[] | select(.draft == true) | .id' \
-            | xargs -I '{}' gh api -X DELETE repos/{owner}/{repo}/releases/{} || true
+            | xargs -r -I '{}' gh api -X DELETE repos/{owner}/{repo}/releases/{} || true
 
-      # Генерируем заметки к релизу
-      - name: Generate Release Notes
-        id: release_notes
+      - name: Generate release notes
         run: |
-          RELEASE_NOTE="./release_note.txt"
-          if [ -f "./gradlew" ]; then
-            ./gradlew getChangelog --unreleased --no-header --quiet --console=plain --output-file="$RELEASE_NOTE" || echo "Release notes for version ${{ steps.tag.outputs.version }}" > "$RELEASE_NOTE"
-          else
-            echo "Release notes for version ${{ steps.tag.outputs.version }}" > "$RELEASE_NOTE"
+          set -euo pipefail
+          ./gradlew getChangelog --unreleased --no-header --quiet --console=plain --output-file=release_note.txt \
+            || echo "Release notes for version ${{ steps.tag.outputs.version }}" > release_note.txt
+
+          if [[ ! -s release_note.txt ]]; then
+            echo "Release notes are empty; add entries under '## [Unreleased]' in CHANGELOG.md" >&2
+            exit 1
           fi
 
-      # Создаем релиз с прикрепленным плагином
-      - name: Create Release
+      - name: Create release
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
-          RELEASE_NOTE="./release_note.txt"
-          
-          # Ищем zip-файл плагина
-          PLUGIN_ZIP=$(find ./plugin -name "*.zip" | head -n 1)
-          
-          if [ -f "$PLUGIN_ZIP" ] && [ -n "$PLUGIN_ZIP" ]; then
-            echo "Found plugin: $PLUGIN_ZIP"
-            gh release create "${{ steps.tag.outputs.version }}" \
-              --title "${{ steps.tag.outputs.version }}" \
-              --notes-file "$RELEASE_NOTE" \
-              "$PLUGIN_ZIP"
-          else
-            echo "Warning: Plugin zip file not found"
-            gh release create "${{ steps.tag.outputs.version }}" \
-              --title "${{ steps.tag.outputs.version }}" \
-              --notes-file "$RELEASE_NOTE"
+          set -euo pipefail
+          PLUGIN_ZIP="$(find ./plugin -name '*.zip' -print -quit)"
+
+          if [[ -z "$PLUGIN_ZIP" ]]; then
+            echo "Plugin ZIP was not produced by the build" >&2
+            exit 1
           fi
+
+          gh release create "${{ steps.tag.outputs.version }}" \
+            --title "${{ steps.tag.outputs.version }}" \
+            --notes-file release_note.txt \
+            --verify-tag \
+            "$PLUGIN_ZIP"

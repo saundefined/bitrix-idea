@@ -1,17 +1,26 @@
 # Dependabot configuration:
-# https://docs.github.com/en/free-pro-team@latest/github/administering-a-repository/configuration-options-for-dependency-updates
+# https://docs.github.com/en/code-security/dependabot/dependabot-version-updates/configuration-options-for-the-dependabot.yml-file
 
 version: 2
 updates:
   # Maintain dependencies for Gradle dependencies
   - package-ecosystem: "gradle"
     directory: "/"
-    target-branch: "next"
+    target-branch: "main"
     schedule:
-      interval: "daily"
+      interval: "weekly"
+    groups:
+      gradle-dependencies:
+        patterns:
+          - "*"
+
   # Maintain dependencies for GitHub Actions
   - package-ecosystem: "github-actions"
     directory: "/"
-    target-branch: "next"
+    target-branch: "main"
     schedule:
-      interval: "daily"
+      interval: "weekly"
+    groups:
+      github-actions:
+        patterns:
+          - "*"

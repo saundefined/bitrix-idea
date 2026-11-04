@@ -1,0 +1,107 @@
+<idea-plugin>
+    <!-- Подключается только при наличии PHP-плагина (PhpStorm, PhpStorm Lite, IDEA Ultimate с PHP). -->
+    <extensions defaultExtensionNs="com.intellij">
+        <psi.referenceContributor
+                language="PHP"
+                implementation="com.github.saundefined.bitrix_idea.php.BitrixReferenceContributor"/>
+        <completion.contributor
+                language="PHP"
+                implementationClass="com.github.saundefined.bitrix_idea.php.BitrixCompletionContributor"/>
+        <codeInsight.lineMarkerProvider
+                language="PHP"
+                implementationClass="com.github.saundefined.bitrix_idea.php.BitrixLineMarkerProvider"/>
+        <lang.foldingBuilder
+                language="PHP"
+                implementationClass="com.github.saundefined.bitrix_idea.php.BitrixLangFoldingBuilder"/>
+        <lang.documentationProvider
+                language="PHP"
+                implementationClass="com.github.saundefined.bitrix_idea.php.BitrixDocumentationProvider"/>
+        <findUsagesHandlerFactory
+                order="first"
+                implementation="com.github.saundefined.bitrix_idea.php.BitrixLangFindUsagesHandlerFactory"/>
+        <renamePsiElementProcessor
+                order="first"
+                implementation="com.github.saundefined.bitrix_idea.php.BitrixLangKeyRenameProcessor"/>
+        <localInspection
+                language="PHP"
+                shortName="BitrixMissingLangMessage"
+                displayName="Bitrix: missing language message"
+                groupName="Bitrix"
+                enabledByDefault="true"
+                level="WARNING"
+                implementationClass="com.github.saundefined.bitrix_idea.php.inspections.MissingLangMessageInspection"/>
+        <localInspection
+                language="PHP"
+                shortName="BitrixUnknownModule"
+                displayName="Bitrix: unknown module"
+                groupName="Bitrix"
+                enabledByDefault="true"
+                level="WARNING"
+                implementationClass="com.github.saundefined.bitrix_idea.php.inspections.UnknownModuleInspection"/>
+        <localInspection
+                language="PHP"
+                shortName="BitrixUnknownComponent"
+                displayName="Bitrix: unknown component"
+                groupName="Bitrix"
+                enabledByDefault="true"
+                level="WARNING"
+                implementationClass="com.github.saundefined.bitrix_idea.php.inspections.UnknownComponentInspection"/>
+        <localInspection
+                language="PHP"
+                shortName="BitrixMissingComponentTemplate"
+                displayName="Bitrix: missing component template"
+                groupName="Bitrix"
+                enabledByDefault="true"
+                level="WEAK_WARNING"
+                implementationClass="com.github.saundefined.bitrix_idea.php.inspections.MissingComponentTemplateInspection"/>
+        <localInspection
+                language="PHP"
+                shortName="BitrixMissingComponentLang"
+                displayName="Bitrix: missing component lang"
+                groupName="Bitrix"
+                enabledByDefault="true"
+                level="WEAK_WARNING"
+                implementationClass="com.github.saundefined.bitrix_idea.php.inspections.MissingComponentLangInspection"/>
+        <localInspection
+                language="PHP"
+                shortName="BitrixMissingSettingsClass"
+                displayName="Bitrix: missing class in settings"
+                groupName="Bitrix"
+                enabledByDefault="true"
+                level="WEAK_WARNING"
+                implementationClass="com.github.saundefined.bitrix_idea.php.inspections.MissingSettingsClassInspection"/>
+        <localInspection
+                language="PHP"
+                shortName="BitrixMissingIncludeGuard"
+                displayName="Bitrix: missing include guard"
+                groupName="Bitrix"
+                enabledByDefault="true"
+                level="WEAK_WARNING"
+                implementationClass="com.github.saundefined.bitrix_idea.php.inspections.MissingIncludeGuardInspection"/>
+        <localInspection
+                language="PHP"
+                shortName="BitrixUnknownComponentParameter"
+                displayName="Bitrix: unknown component parameter"
+                groupName="Bitrix"
+                enabledByDefault="true"
+                level="WEAK_WARNING"
+                implementationClass="com.github.saundefined.bitrix_idea.php.inspections.UnknownComponentParameterInspection"/>
+        <localInspection
+                language="PHP"
+                shortName="BitrixDeprecatedApi"
+                displayName="Bitrix: legacy API"
+                groupName="Bitrix"
+                enabledByDefault="true"
+                level="WEAK_WARNING"
+                implementationClass="com.github.saundefined.bitrix_idea.php.inspections.DeprecatedApiInspection"/>
+        <localInspection
+                language="PHP"
+                shortName="BitrixLangSync"
+                displayName="Bitrix: language files sync"
+                groupName="Bitrix"
+                enabledByDefault="true"
+                level="WEAK_WARNING"
+                implementationClass="com.github.saundefined.bitrix_idea.php.inspections.LangSyncInspection"/>
+        <defaultLiveTemplates file="/liveTemplates/Bitrix.xml"/>
+    </extensions>
+</idea-plugin>

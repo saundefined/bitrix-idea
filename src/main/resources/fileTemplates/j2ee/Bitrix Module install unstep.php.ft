@@ -1,0 +1,11 @@
+<?php
+
+use Bitrix\Main\Localization\Loc;
+
+Loc::loadMessages(__FILE__);
+
+if (!check_bitrix_sessid()) {
+    return;
+}
+
+CAdminMessage::ShowNote(Loc::getMessage('${UPPER_CASED_MODULE_NAME}_UNINSTALL_SUCCESS'));

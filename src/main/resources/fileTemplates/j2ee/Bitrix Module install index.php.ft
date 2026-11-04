@@ -1,5 +1,8 @@
 <?php
         
+use Bitrix\Main\Application;
+use Bitrix\Main\IO\Directory;
+use Bitrix\Main\Loader;
 use Bitrix\Main\Localization\Loc;
 use Bitrix\Main\ModuleManager;
 
@@ -33,10 +36,23 @@ class ${SNACK_CASED_MODULE_NAME} extends CModule
 
     public function InstallFiles()
     {
+${MODULE_INSTALL_FILES}
     }
     
     public function InstallDB()
     {
+        Loader::includeModule(${DS}this->MODULE_ID);
+
+        if (file_exists(__DIR__.'/orm.php')) {
+            foreach (require __DIR__.'/orm.php' as ${DS}entity) {
+                ${DS}entity->createDbTable();
+            }
+        }
+
+        global ${DS}DB;
+        if (file_exists(__DIR__.'/db/mysql/install.sql')) {
+            ${DS}DB->RunSQLBatch(__DIR__.'/db/mysql/install.sql');
+        }
     }
     
     public function InstallEvents()
@@ -57,10 +73,27 @@ class ${SNACK_CASED_MODULE_NAME} extends CModule
     
     public function UnInstallDB()
     {
+        Loader::includeModule(${DS}this->MODULE_ID);
+
+        if (file_exists(__DIR__.'/orm.php')) {
+            ${DS}connection = Application::getConnection();
+            foreach (require __DIR__.'/orm.php' as ${DS}entity) {
+                ${DS}tableName = ${DS}entity->getDBTableName();
+                if (${DS}connection->isTableExists(${DS}tableName)) {
+                    ${DS}connection->dropTable(${DS}tableName);
+                }
+            }
+        }
+
+        global ${DS}DB;
+        if (file_exists(__DIR__.'/db/mysql/uninstall.sql')) {
+            ${DS}DB->RunSQLBatch(__DIR__.'/db/mysql/uninstall.sql');
+        }
     }
     
     public function UnInstallFiles()
     {
+${MODULE_UNINSTALL_FILES}
     }
     
     public function GetModuleRightList()
@@ -77,23 +110,37 @@ class ${SNACK_CASED_MODULE_NAME} extends CModule
     
     public function DoInstall()
     {
-        ${DS}this->InstallFiles();
+        global ${DS}USER, ${DS}APPLICATION;
+
+        if (!${DS}USER->IsAdmin()) {
+            return;
+        }
+
+        ModuleManager::registerModule(${DS}this->MODULE_ID);
+
         ${DS}this->InstallDB();
+        ${DS}this->InstallFiles();
         ${DS}this->InstallEvents();
         ${DS}this->InstallTasks();
-        
-        ModuleManager::registerModule(${DS}this->MODULE_ID);
-        
-        return true;
+
+${MODULE_INSTALL_RESULT_CALL}
     }
-    
+
     public function DoUninstall()
     {
+        global ${DS}USER, ${DS}APPLICATION;
+
+        if (!${DS}USER->IsAdmin()) {
+            return;
+        }
+
         ${DS}this->UnInstallTasks();
         ${DS}this->UnInstallEvents();
         ${DS}this->UnInstallDB();
         ${DS}this->UnInstallFiles();
-        
+
         ModuleManager::unRegisterModule(${DS}this->MODULE_ID);
+
+${MODULE_UNINSTALL_RESULT_CALL}
     }
 }

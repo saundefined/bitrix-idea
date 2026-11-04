@@ -2,74 +2,19 @@ name: Build
 
 on:
   push:
-    branches: [ main ]
+    branches: [main]
   pull_request:
+  workflow_dispatch:
 
 concurrency:
   group: ${{ github.workflow }}-${{ github.event.pull_request.number || github.ref }}
   cancel-in-progress: true
 
+permissions:
+  contents: read
+
 jobs:
-  # Единая сборка и тестирование
   build-and-test:
-    name: Build & Test
-    runs-on: ubuntu-latest
-    steps:
-      # Освобождаем место на диске
-      - name: Maximize Build Space
-        uses: jlumbroso/free-disk-space@v1.3.1
-        with:
-          tool-cache: false
-          large-packages: false
-
-      # Клонируем репозиторий с подмодулями
-      - name: Fetch Sources
-        uses: actions/checkout@v6
-        with:
-          submodules: 'true'
-          token: ${{ secrets.FETCH_SUBMODULES_PAT }}
-
-      # Настраиваем Java
-      - name: Setup Java
-        uses: actions/setup-java@v5
-        with:
-          distribution: zulu
-          java-version: 21
-
-      # Настраиваем Gradle
-      - name: Setup Gradle
-        uses: gradle/actions/setup-gradle@v6
-
-      # Собираем и тестируем плагин одной командой
-      - name: Build and Test
-        run: ./gradlew buildPlugin check
-
-      # Загружаем результаты тестов в случае ошибки
-      - name: Collect Tests Result
-        if: failure()
-        uses: actions/upload-artifact@v6
-        with:
-          name: tests-result
-          path: ${{ github.workspace }}/build/reports/tests
-          retention-days: 7
-
-      # Верификация плагина
-      - name: Verify Plugin
-        run: ./gradlew verifyPlugin
-
-      # Загружаем результаты верификации
-      - name: Collect Plugin Verifier Result
-        if: always()
-        uses: actions/upload-artifact@v6
-        with:
-          name: pluginVerifier-result
-          path: ${{ github.workspace }}/build/reports/pluginVerifier
-          retention-days: 7
-
-      # Загружаем собранный плагин в артефакты
-      - name: Upload plugin artifact
-        uses: actions/upload-artifact@v6
-        with:
-          name: plugin
-          path: ${{ github.workspace }}/build/distributions/*.zip
-          retention-days: 7
+    uses: ./.github/workflows/build-and-test.yml
+    secrets:
+      FETCH_SUBMODULES_PAT: ${{ secrets.FETCH_SUBMODULES_PAT }}

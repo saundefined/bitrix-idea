@@ -28,6 +28,7 @@ To install, go to Settings > Plugins and search for "Bitrix Idea".
 The plugin can be installed on following IntelliJ-based:
 
 * PhpStorm 2025.2+
+* PhpStorm Lite 2025.2+ (PHP insight is loaded only when the PHP plugin is available)
 
 ## Release versions schema
 

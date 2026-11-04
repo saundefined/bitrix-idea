@@ -1,9 +1,28 @@
 <?php
-        
+
+if (!defined('B_PROLOG_INCLUDED') || B_PROLOG_INCLUDED !== true) {
+    die();
+}
+
 class ${CAMEL_COMPONENT_NAME}Component extends \CBitrixComponent
 {
-    public function executeComponent()
+    public function onPrepareComponentParams(${DS}arParams): array
     {
-        ${DS}this->includeComponentTemplate();
+        ${DS}arParams['CACHE_TIME'] = (int)(${DS}arParams['CACHE_TIME'] ?? 3600);
+
+        return ${DS}arParams;
+    }
+
+    public function executeComponent(): void
+    {
+        if (${DS}this->startResultCache()) {
+            ${DS}this->initResult();
+            ${DS}this->includeComponentTemplate();
+        }
+    }
+
+    private function initResult(): void
+    {
+        ${DS}this->arResult = [];
     }
 }

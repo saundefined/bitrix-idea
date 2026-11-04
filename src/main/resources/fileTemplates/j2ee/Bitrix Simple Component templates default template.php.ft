@@ -1,5 +1,18 @@
 <?php
-        
+
+use Bitrix\Main\Localization\Loc;
+
 if (!defined('B_PROLOG_INCLUDED') || B_PROLOG_INCLUDED !== true) {
     die();
 }
+
+Loc::loadMessages(__FILE__);
+
+/**
+ * @var array ${DS}arParams
+ * @var array ${DS}arResult
+ */
+?>
+<div class="${COMPONENT_CSS_CLASS}">
+    <h2><?= htmlspecialcharsbx(Loc::getMessage('${UPPERCASE_COMPONENT_NAME}_TEMPLATE_TITLE')) ?></h2>
+</div>

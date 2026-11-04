@@ -1,27 +1,19 @@
 package com.github.saundefined.bitrix_idea.templates.module
 
-import icons.BitrixIdeaIcons
+import com.github.saundefined.bitrix_idea.templates.BitrixTemplateNames
 import com.intellij.ide.fileTemplates.FileTemplateDescriptor
 import com.intellij.ide.fileTemplates.FileTemplateGroupDescriptor
 import com.intellij.ide.fileTemplates.FileTemplateGroupDescriptorFactory
+import icons.BitrixIdeaIcons
 
 class BitrixModuleFileTemplateGroupFactory : FileTemplateGroupDescriptorFactory {
     override fun getFileTemplatesDescriptor(): FileTemplateGroupDescriptor {
-        val group = FileTemplateGroupDescriptor("Bitrix Module", BitrixIdeaIcons.Bitrix)
-        group.addTemplate(FileTemplateDescriptor(BITRIX_MODULE_SETTINGS_TEMPLATE))
-        group.addTemplate(FileTemplateDescriptor(BITRIX_MODULE_DEFAULT_OPTION_TEMPLATE))
-        group.addTemplate(FileTemplateDescriptor(BITRIX_MODULE_INCLUDE_TEMPLATE))
-        group.addTemplate(FileTemplateDescriptor(BITRIX_MODULE_OPTIONS_TEMPLATE))
-        group.addTemplate(FileTemplateDescriptor(BITRIX_MODULE_PROLOG_TEMPLATE))
-
-        return group
-    }
-
-    companion object {
-        const val BITRIX_MODULE_SETTINGS_TEMPLATE = "Bitrix Module .settings.php"
-        const val BITRIX_MODULE_DEFAULT_OPTION_TEMPLATE = "Bitrix Module default_option.php"
-        const val BITRIX_MODULE_INCLUDE_TEMPLATE = "Bitrix Module include.php"
-        const val BITRIX_MODULE_OPTIONS_TEMPLATE = "Bitrix Module options.php"
-        const val BITRIX_MODULE_PROLOG_TEMPLATE = "Bitrix Module prolog.php"
+        return FileTemplateGroupDescriptor(BitrixTemplateNames.MODULE, BitrixIdeaIcons.Bitrix).apply {
+            addTemplate(FileTemplateDescriptor(BitrixTemplateNames.MODULE_SETTINGS))
+            addTemplate(FileTemplateDescriptor(BitrixTemplateNames.MODULE_DEFAULT_OPTION))
+            addTemplate(FileTemplateDescriptor(BitrixTemplateNames.MODULE_INCLUDE))
+            addTemplate(FileTemplateDescriptor(BitrixTemplateNames.MODULE_OPTIONS))
+            addTemplate(FileTemplateDescriptor(BitrixTemplateNames.MODULE_PROLOG))
+        }
     }
 }

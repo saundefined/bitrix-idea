@@ -1,7 +1,7 @@
 package com.github.saundefined.bitrix_idea.validation
 
-class ComponentSimpleCodeVerifier {
+object ComponentSimpleCodeVerifier {
     fun verify(input: String): Boolean {
-        return input.matches(Regex("^[a-zA-Z0-9_.]+[a-zA-Z0-9]+\$")) && input.isNotBlank()
+        return input.matches(Regex("^[a-z][a-z0-9]*([._-][a-z0-9]+)*$"))
     }
 }

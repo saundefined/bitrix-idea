@@ -1,0 +1,23 @@
+<?php
+
+namespace ${NAMESPACE};
+
+${IMPORTS}
+
+class ${CLASS_NAME} extends DataManager
+{
+${TRAITS}${EXTRA_METHODS}
+    public static function getTableName(): string
+    {
+        return '${TABLE_NAME}';
+    }
+
+${FULL_STACK_METHODS}
+    public static function getMap(): array
+    {
+        return [
+${FIELDS}
+        ];
+    }
+${EVENT_HANDLERS}
+}

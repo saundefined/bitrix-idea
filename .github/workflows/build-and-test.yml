@@ -1,0 +1,74 @@
+name: Build & Test
+
+on:
+  workflow_call:
+    secrets:
+      FETCH_SUBMODULES_PAT:
+        required: false
+
+permissions:
+  contents: read
+
+jobs:
+  build:
+    name: Build, Test & Verify
+    runs-on: ubuntu-latest
+    timeout-minutes: 60
+
+    steps:
+      - name: Maximize build space
+        uses: jlumbroso/free-disk-space@v1.3.1
+        with:
+          tool-cache: false
+          large-packages: false
+
+      - name: Checkout
+        uses: actions/checkout@v6
+        with:
+          submodules: recursive
+          token: ${{ secrets.FETCH_SUBMODULES_PAT || github.token }}
+          persist-credentials: false
+
+      - name: Validate Gradle wrapper
+        uses: gradle/actions/wrapper-validation@v6
+
+      - name: Setup Java
+        uses: actions/setup-java@v5
+        with:
+          distribution: zulu
+          java-version: 21
+
+      - name: Setup Gradle
+        uses: gradle/actions/setup-gradle@v6
+
+      - name: Build and test
+        run: ./gradlew buildPlugin check --stacktrace --console=plain
+
+      - name: Collect test results
+        if: failure()
+        uses: actions/upload-artifact@v6
+        with:
+          name: tests-result
+          path: build/reports/tests
+          retention-days: 7
+          if-no-files-found: ignore
+
+      - name: Verify plugin
+        run: ./gradlew verifyPlugin --stacktrace --console=plain
+
+      - name: Collect plugin verifier result
+        if: always()
+        uses: actions/upload-artifact@v6
+        with:
+          name: pluginVerifier-result
+          path: build/reports/pluginVerifier
+          retention-days: 7
+          if-no-files-found: ignore
+
+      - name: Upload plugin artifact
+        uses: actions/upload-artifact@v6
+        with:
+          name: plugin
+          path: build/distributions/*.zip
+          retention-days: 7
+          if-no-files-found: error

@@ -1,0 +1,3 @@
+<?php
+
+${DS}MESS['${UPPER_CASED_MODULE_NAME}_INSTALL_SUCCESS'] = 'Модуль установлен';
