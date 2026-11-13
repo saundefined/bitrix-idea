@@ -1,3 +1,4 @@
+import org.jetbrains.intellij.platform.gradle.IntelliJPlatformType
 import org.jetbrains.intellij.platform.gradle.TestFrameworkType
 
 plugins {
@@ -47,6 +48,9 @@ intellijPlatform {
     // Инструментирование не требуется и требует загрузки ant-tasks из сети.
     instrumentCode.set(false)
     pluginVerification {
+        ides {
+            create(IntelliJPlatformType.PhpStorm, platformVersion)
+        }
         freeArgs = listOf("-mute", "TemplateWordInPluginName")
     }
 }
