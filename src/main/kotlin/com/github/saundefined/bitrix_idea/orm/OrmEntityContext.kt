@@ -17,6 +17,30 @@ data class OrmEntityContext(
  * - `vendor` -> `Bitrix\Vendor`
  */
 object OrmEntityContextResolver {
+    /**
+     * Корень модуля для любого пути внутри `local/modules/<id>` или `bitrix/modules/<id>`.
+     */
+    fun resolveModuleRoot(path: String): String? {
+        val segments = path.split('/').filter { it.isNotEmpty() }
+        for (index in 1 until segments.size - 1) {
+            if (segments[index] != "modules") continue
+            val source = segments[index - 1]
+            if (source != "local" && source != "bitrix") continue
+            return "/" + segments.take(index + 2).joinToString("/")
+        }
+        return null
+    }
+
+    fun resolveModuleId(path: String): String? {
+        val segments = path.split('/').filter { it.isNotEmpty() }
+        for (index in 1 until segments.size - 1) {
+            if (segments[index] != "modules") continue
+            if (segments[index - 1] != "local" && segments[index - 1] != "bitrix") continue
+            return segments.getOrNull(index + 1)
+        }
+        return null
+    }
+
     fun resolvePath(path: String): OrmEntityContext {
         val segments = path.split('/').filter { it.isNotEmpty() }
 
