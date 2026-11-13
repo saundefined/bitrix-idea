@@ -52,154 +52,168 @@
     </extensions>
 
     <actions>
-        <group
-                id="com.github.saundefined.bitrix_idea.actions.BitrixIdeaMenu"
-                text="Bitrix Idea"
-                popup="true"
-                icon="icons.BitrixIdeaIcons.Bitrix"
-        >
-            <add-to-group group-id="NewGroup" anchor="first"/>
-            <action
+
+<action
                     class="com.github.saundefined.bitrix_idea.actions.CreateGitignoreAction"
                     id="com.github.saundefined.bitrix_idea.actions.CreateGitignoreAction"
                     text=".gitignore"
                     icon="icons.BitrixIdeaIcons.Bitrix"
             >
             </action>
-            <action
+
+<action
                     class="com.github.saundefined.bitrix_idea.actions.CreateD7ClassAction"
                     id="com.github.saundefined.bitrix_idea.actions.CreateD7ClassAction"
                     text="D7-класс"
                     icon="icons.BitrixIdeaIcons.Bitrix"
             >
             </action>
-            <action
+
+<action
                     class="com.github.saundefined.bitrix_idea.actions.CreateOrmEntityAction"
                     id="com.github.saundefined.bitrix_idea.actions.CreateOrmEntityAction"
                     text="ORM-сущность"
                     icon="icons.BitrixIdeaIcons.Bitrix"
             >
             </action>
-            <action
+
+<action
                     class="com.github.saundefined.bitrix_idea.actions.CreateComplexComponentAction"
                     id="com.github.saundefined.bitrix_idea.actions.CreateComplexComponentAction"
                     text="Комплексный компонент"
                     icon="icons.BitrixIdeaIcons.Bitrix"
             >
             </action>
-            <action
+
+<action
                     class="com.github.saundefined.bitrix_idea.actions.CreateComponentTemplateAction"
                     id="com.github.saundefined.bitrix_idea.actions.CreateComponentTemplateAction"
                     text="Шаблон компонента"
                     icon="icons.BitrixIdeaIcons.Bitrix"
             >
             </action>
-            <action
+
+<action
                     class="com.github.saundefined.bitrix_idea.actions.CreateComponentOverrideAction"
                     id="com.github.saundefined.bitrix_idea.actions.CreateComponentOverrideAction"
                     text="Переопределить шаблон компонента"
                     icon="icons.BitrixIdeaIcons.Bitrix"
             >
             </action>
-            <action
+
+<action
                     class="com.github.saundefined.bitrix_idea.actions.CreateComponentParametersAction"
                     id="com.github.saundefined.bitrix_idea.actions.CreateComponentParametersAction"
                     text="Параметры компонента"
                     icon="icons.BitrixIdeaIcons.Bitrix"
             >
             </action>
-            <action
+
+<action
                     class="com.github.saundefined.bitrix_idea.actions.CreateEventHandlerAction"
                     id="com.github.saundefined.bitrix_idea.actions.CreateEventHandlerAction"
                     text="Обработчик события"
                     icon="icons.BitrixIdeaIcons.Bitrix"
             >
             </action>
-            <action
+
+<action
                     class="com.github.saundefined.bitrix_idea.actions.CreateAgentAction"
                     id="com.github.saundefined.bitrix_idea.actions.CreateAgentAction"
                     text="Агент"
                     icon="icons.BitrixIdeaIcons.Bitrix"
             >
             </action>
-            <action
+
+<action
                     class="com.github.saundefined.bitrix_idea.actions.CreateServiceAction"
                     id="com.github.saundefined.bitrix_idea.actions.CreateServiceAction"
                     text="Сервис с интерфейсом"
                     icon="icons.BitrixIdeaIcons.Bitrix"
             >
             </action>
-            <action
+
+<action
                     class="com.github.saundefined.bitrix_idea.actions.CreateComponentClassAction"
                     id="com.github.saundefined.bitrix_idea.actions.CreateComponentClassAction"
                     text="Класс компонента"
                     icon="icons.BitrixIdeaIcons.Bitrix"
             >
             </action>
-            <action
+
+<action
                     class="com.github.saundefined.bitrix_idea.actions.CreateOptionsPageAction"
                     id="com.github.saundefined.bitrix_idea.actions.CreateOptionsPageAction"
                     text="Страница настроек модуля"
                     icon="icons.BitrixIdeaIcons.Bitrix"
             >
             </action>
-            <action
+
+<action
                     class="com.github.saundefined.bitrix_idea.actions.CreateAdminPageAction"
                     id="com.github.saundefined.bitrix_idea.actions.CreateAdminPageAction"
                     text="Admin-страница"
                     icon="icons.BitrixIdeaIcons.Bitrix"
             >
             </action>
-            <action
+
+<action
                     class="com.github.saundefined.bitrix_idea.actions.CreateRestControllerAction"
                     id="com.github.saundefined.bitrix_idea.actions.CreateRestControllerAction"
                     text="REST-контроллер"
                     icon="icons.BitrixIdeaIcons.Bitrix"
             >
             </action>
-            <action
+
+<action
                     class="com.github.saundefined.bitrix_idea.actions.CreateConsoleCommandAction"
                     id="com.github.saundefined.bitrix_idea.actions.CreateConsoleCommandAction"
                     text="Консольная команда"
                     icon="icons.BitrixIdeaIcons.Bitrix"
             >
             </action>
-            <action
+
+<action
                     class="com.github.saundefined.bitrix_idea.actions.CreateUiPagesAction"
                     id="com.github.saundefined.bitrix_idea.actions.CreateUiPagesAction"
                     text="Bitrix UI-страницы"
                     icon="icons.BitrixIdeaIcons.Bitrix"
             >
             </action>
-            <action
+
+<action
                     class="com.github.saundefined.bitrix_idea.actions.MoveComponentToLocalAction"
                     id="com.github.saundefined.bitrix_idea.actions.MoveComponentToLocalAction"
                     text="Переместить компонент в local"
                     icon="icons.BitrixIdeaIcons.Bitrix"
             >
             </action>
-            <action
+
+<action
                     class="com.github.saundefined.bitrix_idea.actions.ConvertSimpleComponentToComplexAction"
                     id="com.github.saundefined.bitrix_idea.actions.ConvertSimpleComponentToComplexAction"
                     text="Сделать компонент комплексным"
                     icon="icons.BitrixIdeaIcons.Bitrix"
             >
             </action>
-            <action
+
+<action
                     class="com.github.saundefined.bitrix_idea.actions.CopyTemplateToLocalAction"
                     id="com.github.saundefined.bitrix_idea.actions.CopyTemplateToLocalAction"
                     text="Копировать шаблон в local"
                     icon="icons.BitrixIdeaIcons.Bitrix"
             >
             </action>
-            <action
+
+<action
                     class="com.github.saundefined.bitrix_idea.actions.ShowTemplateChainAction"
                     id="com.github.saundefined.bitrix_idea.actions.ShowTemplateChainAction"
                     text="Цепочка шаблонов"
                     icon="icons.BitrixIdeaIcons.Bitrix"
             >
             </action>
-            <action
+
+<action
                     class="com.github.saundefined.bitrix_idea.actions.SettingsStructureAction"
                     id="com.github.saundefined.bitrix_idea.actions.SettingsStructureAction"
                     text="Структура .settings.php"
@@ -207,7 +221,8 @@
             >
                 <add-to-group group-id="EditorPopupMenu" anchor="last"/>
             </action>
-            <action
+
+<action
                     class="com.github.saundefined.bitrix_idea.actions.EditSettingsFileAction"
                     id="com.github.saundefined.bitrix_idea.actions.EditSettingsFileAction"
                     text="Редактор .settings.php"
@@ -215,7 +230,8 @@
             >
                 <add-to-group group-id="EditorPopupMenu" anchor="last"/>
             </action>
-            <action
+
+<action
                     class="com.github.saundefined.bitrix_idea.actions.ExtractComponentAction"
                     id="com.github.saundefined.bitrix_idea.actions.ExtractComponentAction"
                     text="Извлечь компонент"
@@ -223,7 +239,8 @@
             >
                 <add-to-group group-id="EditorPopupMenu" anchor="last"/>
             </action>
-            <action
+
+<action
                     class="com.github.saundefined.bitrix_idea.actions.ShowLangTranslationsAction"
                     id="com.github.saundefined.bitrix_idea.actions.ShowLangTranslationsAction"
                     text="Таблица переводов"
@@ -231,29 +248,32 @@
             >
                 <add-to-group group-id="EditorPopupMenu" anchor="last"/>
             </action>
-            <action
+
+<action
                     class="com.github.saundefined.bitrix_idea.actions.CreateSimpleComponentAction"
                     id="com.github.saundefined.bitrix_idea.actions.CreateSimpleComponentAction"
                     text="Простой компонент"
                     icon="icons.BitrixIdeaIcons.Bitrix"
             >
             </action>
-            <action
+
+<action
                     class="com.github.saundefined.bitrix_idea.actions.CreateTemplateAction"
                     id="com.github.saundefined.bitrix_idea.actions.CreateTemplateAction"
                     text="Шаблон"
                     icon="icons.BitrixIdeaIcons.Bitrix"
             >
             </action>
-            <action
+
+<action
                     class="com.github.saundefined.bitrix_idea.actions.CreateModuleAction"
                     id="com.github.saundefined.bitrix_idea.actions.CreateModuleAction"
                     text="Модуль"
                     icon="icons.BitrixIdeaIcons.Bitrix"
             >
             </action>
-            <separator/>
-            <action
+
+<action
                     class="com.github.saundefined.bitrix_idea.actions.AddAjaxActionAction"
                     id="com.github.saundefined.bitrix_idea.actions.AddAjaxActionAction"
                     text="Добавить AJAX-действие"
@@ -261,6 +281,57 @@
             >
                 <add-to-group group-id="EditorPopupMenu" anchor="last"/>
             </action>
+
+
+        <group
+                id="com.github.saundefined.bitrix_idea.actions.BitrixIdeaMenu"
+                text="Bitrix Idea"
+                popup="true"
+                icon="icons.BitrixIdeaIcons.Bitrix"
+        >
+            <add-to-group group-id="NewGroup" anchor="first"/>
+            <group id="com.github.saundefined.bitrix_idea.actions.BitrixIdeaMenuComponents" text="Компоненты" popup="true">
+            <reference ref="com.github.saundefined.bitrix_idea.actions.CreateSimpleComponentAction"/>
+            <reference ref="com.github.saundefined.bitrix_idea.actions.CreateComplexComponentAction"/>
+            <reference ref="com.github.saundefined.bitrix_idea.actions.CreateComponentClassAction"/>
+            <reference ref="com.github.saundefined.bitrix_idea.actions.CreateComponentParametersAction"/>
+            <reference ref="com.github.saundefined.bitrix_idea.actions.CreateComponentTemplateAction"/>
+            <reference ref="com.github.saundefined.bitrix_idea.actions.CreateComponentOverrideAction"/>
+            <reference ref="com.github.saundefined.bitrix_idea.actions.ExtractComponentAction"/>
+            </group>
+            <group id="com.github.saundefined.bitrix_idea.actions.BitrixIdeaMenuModule" text="Модуль" popup="true">
+            <reference ref="com.github.saundefined.bitrix_idea.actions.CreateModuleAction"/>
+            <reference ref="com.github.saundefined.bitrix_idea.actions.CreateOptionsPageAction"/>
+            <reference ref="com.github.saundefined.bitrix_idea.actions.CreateAdminPageAction"/>
+            <reference ref="com.github.saundefined.bitrix_idea.actions.CreateUiPagesAction"/>
+            </group>
+            <group id="com.github.saundefined.bitrix_idea.actions.BitrixIdeaMenuD7Orm" text="D7 / ORM" popup="true">
+            <reference ref="com.github.saundefined.bitrix_idea.actions.CreateD7ClassAction"/>
+            <reference ref="com.github.saundefined.bitrix_idea.actions.CreateOrmEntityAction"/>
+            <reference ref="com.github.saundefined.bitrix_idea.actions.CreateServiceAction"/>
+            <reference ref="com.github.saundefined.bitrix_idea.actions.CreateRestControllerAction"/>
+            <reference ref="com.github.saundefined.bitrix_idea.actions.CreateConsoleCommandAction"/>
+            </group>
+            <group id="com.github.saundefined.bitrix_idea.actions.BitrixIdeaMenuEvents" text="События и агенты" popup="true">
+            <reference ref="com.github.saundefined.bitrix_idea.actions.CreateEventHandlerAction"/>
+            <reference ref="com.github.saundefined.bitrix_idea.actions.CreateAgentAction"/>
+            </group>
+            <group id="com.github.saundefined.bitrix_idea.actions.BitrixIdeaMenuRefactoring" text="Рефакторинг компонентов" popup="true">
+            <reference ref="com.github.saundefined.bitrix_idea.actions.MoveComponentToLocalAction"/>
+            <reference ref="com.github.saundefined.bitrix_idea.actions.ConvertSimpleComponentToComplexAction"/>
+            <reference ref="com.github.saundefined.bitrix_idea.actions.CopyTemplateToLocalAction"/>
+            <reference ref="com.github.saundefined.bitrix_idea.actions.ShowTemplateChainAction"/>
+            </group>
+            <group id="com.github.saundefined.bitrix_idea.actions.BitrixIdeaMenuSiteTemplates" text="Шаблоны сайта" popup="true">
+            <reference ref="com.github.saundefined.bitrix_idea.actions.CreateTemplateAction"/>
+            </group>
+            <group id="com.github.saundefined.bitrix_idea.actions.BitrixIdeaMenuTools" text="Инструменты" popup="true">
+            <reference ref="com.github.saundefined.bitrix_idea.actions.EditSettingsFileAction"/>
+            <reference ref="com.github.saundefined.bitrix_idea.actions.SettingsStructureAction"/>
+            <reference ref="com.github.saundefined.bitrix_idea.actions.ShowLangTranslationsAction"/>
+            <reference ref="com.github.saundefined.bitrix_idea.actions.AddAjaxActionAction"/>
+            <reference ref="com.github.saundefined.bitrix_idea.actions.CreateGitignoreAction"/>
+            </group>
         </group>
 
         <group
@@ -287,7 +358,7 @@
             <reference ref="com.github.saundefined.bitrix_idea.actions.CopyTemplateToLocalAction"/>
             <reference ref="com.github.saundefined.bitrix_idea.actions.ShowTemplateChainAction"/>
         </group>
-    </actions>
+        </actions>
 
     <resource-bundle>messages.BitrixIdeaBundle</resource-bundle>
 </idea-plugin>
