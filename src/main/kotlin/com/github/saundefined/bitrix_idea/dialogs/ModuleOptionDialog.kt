@@ -7,9 +7,9 @@ import com.intellij.openapi.ui.ComboBox
 import com.intellij.openapi.ui.DialogWrapper
 import com.intellij.openapi.ui.ValidationInfo
 import com.intellij.ui.SimpleListCellRenderer
+import com.intellij.ui.components.JBTextField
 import com.intellij.ui.dsl.builder.AlignX
 import com.intellij.ui.dsl.builder.RowLayout
-import com.intellij.ui.dsl.builder.bindText
 import com.intellij.ui.dsl.builder.panel
 import java.util.Locale
 import javax.swing.JComponent
@@ -18,22 +18,20 @@ class ModuleOptionDialog(
     initial: ModuleOptionSpec,
     private val existingKeys: Set<String>,
 ) : DialogWrapper(true) {
-    private var key: String = initial.key
-    private var name: String = initial.name
-    private var defaultValue: String = initial.defaultValue
+    private val keyField = JBTextField(initial.key)
+    private val nameField = JBTextField(initial.name)
+    private val defaultField = JBTextField(initial.defaultValue)
     private val typeCombo = ComboBox(ModuleOptionType.entries.toTypedArray())
     private val initialKey = initial.key.trim().lowercase(Locale.ROOT)
 
     private val contentPanel = panel {
         row(message("create.options.key")) {
-            textField()
-                .bindText(::key)
+            cell(keyField)
                 .focused()
                 .align(AlignX.FILL)
         }.layout(RowLayout.PARENT_GRID)
         row(message("create.options.name")) {
-            textField()
-                .bindText(::name)
+            cell(nameField)
                 .align(AlignX.FILL)
         }.layout(RowLayout.PARENT_GRID)
         row(message("create.options.type")) {
@@ -41,8 +39,7 @@ class ModuleOptionDialog(
                 .align(AlignX.FILL)
         }.layout(RowLayout.PARENT_GRID)
         row(message("create.options.default")) {
-            textField()
-                .bindText(::defaultValue)
+            cell(defaultField)
                 .align(AlignX.FILL)
         }.layout(RowLayout.PARENT_GRID)
     }
@@ -59,24 +56,25 @@ class ModuleOptionDialog(
     override fun createCenterPanel(): JComponent = contentPanel
 
     override fun doValidate(): ValidationInfo? {
-        contentPanel.apply()
-        val normalized = key.trim().lowercase(Locale.ROOT)
+        val normalized = keyField.text.trim().lowercase(Locale.ROOT)
         if (!normalized.matches(Regex("^[a-z][a-z0-9_]*$"))) {
-            return ValidationInfo(message("create.options.key.validation"), null)
+            return ValidationInfo(message("create.options.key.validation"), keyField)
         }
         if (normalized in existingKeys && normalized != initialKey) {
-            return ValidationInfo(message("create.options.key.duplicate"), null)
+            return ValidationInfo(message("create.options.key.duplicate"), keyField)
         }
-        if (name.isBlank()) return ValidationInfo(message("create.options.name.validation"), null)
+        if (nameField.text.isBlank()) {
+            return ValidationInfo(message("create.options.name.validation"), nameField)
+        }
         return null
     }
 
     override fun doOKAction() {
         result = ModuleOptionSpec(
-            key = key.trim().lowercase(Locale.ROOT),
-            name = name.trim(),
+            key = keyField.text.trim().lowercase(Locale.ROOT),
+            name = nameField.text.trim(),
             type = typeCombo.selectedItem as? ModuleOptionType ?: ModuleOptionType.TEXT,
-            defaultValue = defaultValue.trim(),
+            defaultValue = defaultField.text.trim(),
         )
         super.doOKAction()
     }
