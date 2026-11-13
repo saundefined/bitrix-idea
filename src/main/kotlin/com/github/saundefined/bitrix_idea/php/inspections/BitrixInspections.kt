@@ -3,6 +3,8 @@ package com.github.saundefined.bitrix_idea.php.inspections
 import com.github.saundefined.bitrix_idea.BitrixIdeaBundle.message
 import com.github.saundefined.bitrix_idea.php.BitrixComponentParameters
 import com.github.saundefined.bitrix_idea.php.BitrixCoreModules
+import com.github.saundefined.bitrix_idea.php.BitrixLangSearch
+import com.github.saundefined.bitrix_idea.php.BitrixLangUsageIndex
 import com.github.saundefined.bitrix_idea.php.BitrixPhp
 import com.github.saundefined.bitrix_idea.settings.AppSettingsState
 import com.github.saundefined.bitrix_idea.settings.BitrixProjectSettings
@@ -135,6 +137,51 @@ class MissingIncludeGuardInspection : LocalInspectionTool() {
             "result_modifier.php",
             "component_epilog.php",
         )
+    }
+}
+
+class UnusedLangMessageInspection : LocalInspectionTool() {
+    override fun buildVisitor(holder: ProblemsHolder, isOnTheFly: Boolean): PsiElementVisitor {
+        return object : PhpElementVisitor() {
+            override fun visitPhpFile(file: PhpFile) {
+                val virtualFile = file.virtualFile ?: return
+                if (!virtualFile.path.contains("/local/") || !virtualFile.path.contains("/lang/")) return
+                val used = BitrixLangUsageIndex.usedKeys(file.project)
+                PsiTreeUtil.findChildrenOfType(file, StringLiteralExpression::class.java).forEach { literal ->
+                    if (!BitrixLangSearch.isLangDefinition(literal)) return@forEach
+                    val key = literal.contents
+                    if (key.isNotBlank() && key !in used) {
+                        holder.registerProblem(
+                            literal,
+                            message("inspection.lang.unused.message", key),
+                            ProblemHighlightType.WEAK_WARNING,
+                        )
+                    }
+                }
+            }
+        }
+    }
+}
+
+class DuplicateLangMessageInspection : LocalInspectionTool() {
+    override fun buildVisitor(holder: ProblemsHolder, isOnTheFly: Boolean): PsiElementVisitor {
+        return object : PhpElementVisitor() {
+            override fun visitPhpFile(file: PhpFile) {
+                val seen = mutableSetOf<String>()
+                PsiTreeUtil.findChildrenOfType(file, StringLiteralExpression::class.java).forEach { literal ->
+                    if (!BitrixLangSearch.isLangDefinition(literal)) return@forEach
+                    val key = literal.contents
+                    if (key.isBlank()) return@forEach
+                    if (!seen.add(key)) {
+                        holder.registerProblem(
+                            literal,
+                            message("inspection.lang.duplicate.message", key),
+                            ProblemHighlightType.WEAK_WARNING,
+                        )
+                    }
+                }
+            }
+        }
     }
 }
 

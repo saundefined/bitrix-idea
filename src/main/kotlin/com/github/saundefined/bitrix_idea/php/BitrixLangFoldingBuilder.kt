@@ -1,5 +1,6 @@
 package com.github.saundefined.bitrix_idea.php
 
+import com.github.saundefined.bitrix_idea.settings.BitrixProjectSettings
 import com.intellij.lang.ASTNode
 import com.intellij.lang.folding.FoldingBuilderEx
 import com.intellij.lang.folding.FoldingDescriptor
@@ -21,13 +22,15 @@ class BitrixLangFoldingBuilder : FoldingBuilderEx() {
         quick: Boolean,
     ): Array<FoldingDescriptor> {
         val result = mutableListOf<FoldingDescriptor>()
+        val settings = BitrixProjectSettings.getInstance(root.project)
+        if (!settings.langFoldingEnabled) return emptyArray()
 
         PsiTreeUtil.findChildrenOfType(root, FunctionReference::class.java).forEach { call ->
             if (!BitrixPhp.isGetMessage(call)) return@forEach
             val keyLiteral = call.parameterList?.getParameter(0) as? StringLiteralExpression ?: return@forEach
             val key = keyLiteral.contents
             if (key.isBlank()) return@forEach
-            val phrase = BitrixLangMessages.value(root.project, key) ?: return@forEach
+            val phrase = BitrixLangMessages.value(root.project, key, settings.langHintLanguage) ?: return@forEach
             if (phrase.isBlank()) return@forEach
 
             result += FoldingDescriptor(

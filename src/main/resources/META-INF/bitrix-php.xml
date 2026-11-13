@@ -48,6 +48,22 @@
                 implementationClass="com.github.saundefined.bitrix_idea.php.inspections.UnknownComponentInspection"/>
         <localInspection
                 language="PHP"
+                shortName="BitrixUnusedLangMessage"
+                displayName="Bitrix: unused language message"
+                groupName="Bitrix"
+                enabledByDefault="false"
+                level="WEAK_WARNING"
+                implementationClass="com.github.saundefined.bitrix_idea.php.inspections.UnusedLangMessageInspection"/>
+        <localInspection
+                language="PHP"
+                shortName="BitrixDuplicateLangMessage"
+                displayName="Bitrix: duplicate language message"
+                groupName="Bitrix"
+                enabledByDefault="true"
+                level="WEAK_WARNING"
+                implementationClass="com.github.saundefined.bitrix_idea.php.inspections.DuplicateLangMessageInspection"/>
+        <localInspection
+                language="PHP"
                 shortName="BitrixMissingComponentTemplate"
                 displayName="Bitrix: missing component template"
                 groupName="Bitrix"

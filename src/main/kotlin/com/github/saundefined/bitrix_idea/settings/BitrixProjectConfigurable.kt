@@ -58,6 +58,18 @@ class BitrixProjectConfigurable(private val project: Project) : Configurable {
                 comment(message("settings.bitrix.toolwindow.description"))
             }
             row {
+                checkBox(message("settings.bitrix.lang.folding"))
+                    .bindSelected(settings::langFoldingEnabled)
+            }
+            row(message("settings.bitrix.lang.language")) {
+                textField()
+                    .bindText(settings::langHintLanguage)
+                    .align(AlignX.FILL)
+            }.layout(RowLayout.PARENT_GRID)
+            row {
+                comment(message("settings.bitrix.lang.language.description"))
+            }
+            row {
                 comment(
                     message(
                         "settings.bitrix.version",

@@ -15,10 +15,22 @@ class BitrixDocumentationProvider : AbstractDocumentationProvider() {
         val index = BitrixPhp.argumentIndex(literal) ?: return null
 
         return when {
+            BitrixPhp.isGetMessage(call) && index == 0 -> langDoc(literal.project, literal.contents)
             BitrixPhp.isIncludeComponent(call) && index == 0 -> componentDoc(literal.project, literal.contents)
             BitrixPhp.isIncludeComponent(call) && index == 1 -> templateDoc(literal.project, call, literal.contents)
             BitrixPhp.isIncludeModule(call) && index == 0 -> moduleDoc(literal.project, literal.contents)
             else -> null
+        }
+    }
+
+    private fun langDoc(project: Project, key: String): String {
+        val translations = BitrixLangMessages.translations(project, key)
+        if (translations.isEmpty()) return "<b>$key</b><br>${message("documentation.not.found")}"
+        return buildString {
+            append("<b>$key</b>")
+            translations.forEach { (language, value) ->
+                append("<br><b>$language:</b> $value")
+            }
         }
     }
 

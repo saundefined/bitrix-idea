@@ -26,6 +26,16 @@ class BitrixProjectSettings : PersistentStateComponent<BitrixProjectSettings> {
     var bitrixToolWindowEnabled: Boolean = true
 
     /**
+     * Показывать текст lang-фразы вместо Loc::getMessage(...).
+     */
+    var langFoldingEnabled: Boolean = true
+
+    /**
+     * Предпочитаемый язык lang-подсказок. Пусто — первый найденный.
+     */
+    var langHintLanguage: String = "ru"
+
+    /**
      * Каталог, содержащий `bitrix` и `local`, относительно корня проекта.
      * Пустое значение означает корень проекта. Примеры: `www`, `public`, `../site`.
      */
