@@ -76,6 +76,7 @@ class ComponentParameterDialog(
     override fun createCenterPanel(): JComponent = contentPanel
 
     override fun doValidate(): ValidationInfo? {
+        contentPanel.apply()
         val normalized = key.trim().uppercase(Locale.ROOT)
         if (!normalized.matches(Regex("^[A-Z][A-Z0-9_]*$"))) {
             return ValidationInfo(message("create.parameters.key.validation"), null)

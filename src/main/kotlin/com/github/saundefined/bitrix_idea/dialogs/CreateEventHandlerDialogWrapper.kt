@@ -94,6 +94,7 @@ class CreateEventHandlerDialogWrapper(
     override fun createCenterPanel(): JComponent = contentPanel
 
     override fun doValidate(): ValidationInfo? {
+        contentPanel.apply()
         val selectedEvent = (eventCombo.selectedItem as? String)?.trim().orEmpty()
         if (selectedEvent.isBlank()) return ValidationInfo(message("create.event.validation.event"), eventCombo)
         if (!className.matches(Regex("^[A-Z][A-Za-z0-9]*$"))) {

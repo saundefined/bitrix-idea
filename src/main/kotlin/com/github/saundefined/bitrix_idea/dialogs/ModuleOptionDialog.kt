@@ -59,6 +59,7 @@ class ModuleOptionDialog(
     override fun createCenterPanel(): JComponent = contentPanel
 
     override fun doValidate(): ValidationInfo? {
+        contentPanel.apply()
         val normalized = key.trim().lowercase(Locale.ROOT)
         if (!normalized.matches(Regex("^[a-z][a-z0-9_]*$"))) {
             return ValidationInfo(message("create.options.key.validation"), null)

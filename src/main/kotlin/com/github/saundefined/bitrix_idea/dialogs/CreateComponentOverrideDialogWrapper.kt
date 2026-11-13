@@ -84,6 +84,7 @@ class CreateComponentOverrideDialogWrapper(
     override fun createCenterPanel(): JComponent = contentPanel
 
     override fun doValidate(): ValidationInfo? {
+        contentPanel.apply()
         if (!componentId.matches(Regex("^[A-Za-z0-9_.-]+:[A-Za-z0-9_.-]+$"))) {
             return ValidationInfo(message("create.override.component.validation"), null)
         }

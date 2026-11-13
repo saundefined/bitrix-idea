@@ -67,6 +67,7 @@ class CreateServiceDialogWrapper(
     override fun createCenterPanel(): JComponent = contentPanel
 
     override fun doValidate(): ValidationInfo? {
+        contentPanel.apply()
         if (!interfaceName.matches(Regex("^[A-Z][A-Za-z0-9]*$"))) {
             return ValidationInfo(message("create.service.validation.interface"), null)
         }

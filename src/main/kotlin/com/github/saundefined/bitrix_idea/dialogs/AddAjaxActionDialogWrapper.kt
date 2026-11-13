@@ -55,6 +55,7 @@ class AddAjaxActionDialogWrapper(
     override fun createCenterPanel(): JComponent = contentPanel
 
     override fun doValidate(): ValidationInfo? {
+        contentPanel.apply()
         val name = actionName.trim().removeSuffix("Action")
         if (!name.matches(Regex("^[a-zA-Z_][A-Za-z0-9_]*$"))) {
             return ValidationInfo(message("add.ajax.action.validation.name"), null)

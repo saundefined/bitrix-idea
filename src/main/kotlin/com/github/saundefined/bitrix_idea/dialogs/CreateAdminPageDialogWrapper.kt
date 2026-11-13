@@ -78,6 +78,7 @@ class CreateAdminPageDialogWrapper(
     override fun createCenterPanel(): JComponent = contentPanel
 
     override fun doValidate(): ValidationInfo? {
+        contentPanel.apply()
         if (!pageFile.matches(Regex("^[A-Za-z0-9_.-]+\\.php$"))) {
             return ValidationInfo(message("create.admin.page.validation"), null)
         }

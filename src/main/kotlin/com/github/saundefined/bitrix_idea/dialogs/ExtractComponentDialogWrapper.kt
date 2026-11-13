@@ -78,6 +78,7 @@ class ExtractComponentDialogWrapper(
     override fun createCenterPanel(): JComponent = contentPanel
 
     override fun doValidate(): ValidationInfo? {
+        contentPanel.apply()
         if (!vendor.matches(Regex("^[a-z][a-z0-9_.-]*$"))) return ValidationInfo(message("extract.vendor.validation"), null)
         if (!code.matches(Regex("^[a-z][a-z0-9_.-]*$"))) return ValidationInfo(message("extract.code.validation"), null)
         if (selectedText.isBlank()) return ValidationInfo(message("extract.selection.validation"), null)
