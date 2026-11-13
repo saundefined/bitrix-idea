@@ -19,9 +19,7 @@ class BitrixReferenceContributor : PsiReferenceContributor() {
                     context: ProcessingContext,
                 ): Array<PsiReference> {
                     val literal = element as? StringLiteralExpression ?: return PsiReference.EMPTY_ARRAY
-                    val call = BitrixPhp.directCall(literal) ?: return PsiReference.EMPTY_ARRAY
-                    val index = BitrixPhp.argumentIndex(literal) ?: return PsiReference.EMPTY_ARRAY
-                    val targets = BitrixTargets.resolve(literal, call, index)
+                    val targets = BitrixTargets.resolveLiteral(literal)
                     if (targets.isEmpty()) return PsiReference.EMPTY_ARRAY
                     return arrayOf(BitrixPolyReference(literal, targets))
                 }
@@ -47,6 +45,41 @@ private class BitrixPolyReference(
 }
 
 object BitrixTargets {
+    /**
+     * Все переходы для строкового литерала: аргументы вызовов Bitrix,
+     * ссылки на параметры компонента и обработчики из `.settings.php`.
+     */
+    fun resolveLiteral(literal: StringLiteralExpression): Array<PsiElement> {
+        val call = BitrixPhp.directCall(literal)
+        if (call != null) {
+            val index = BitrixPhp.argumentIndex(literal)
+            if (index != null) {
+                val targets = resolve(literal, call, index)
+                if (targets.isNotEmpty()) return targets
+            }
+        }
+        parameterTargets(literal)?.let { return arrayOf(it) }
+        settingsTargets(literal)?.let { return it }
+        return emptyArray()
+    }
+
+    private fun parameterTargets(literal: StringLiteralExpression): PsiElement? {
+        return BitrixComponentMeta.parameterForLiteral(literal)?.second?.target
+    }
+
+    /**
+     * В `.settings.php` обработчики событий и агенты задаются строками вида
+     * `Vendor\Module\Handlers::method`, поэтому разрешаем их как callable.
+     */
+    private fun settingsTargets(literal: StringLiteralExpression): Array<PsiElement>? {
+        val file = literal.containingFile.virtualFile ?: return null
+        if (file.name != ".settings.php") return null
+        val value = literal.contents
+        if (!value.contains("::")) return null
+        val targets = callableTargets(literal.project, value)
+        return targets.takeIf { it.isNotEmpty() }
+    }
+
     fun resolve(
         literal: StringLiteralExpression,
         call: FunctionReference,
@@ -70,8 +103,10 @@ object BitrixTargets {
 
     private fun componentTargets(project: Project, componentId: String): Array<PsiElement> {
         val component = BitrixProjectStructure.getModel(project).findComponent(componentId) ?: return emptyArray()
-        val files = component.entryFiles().mapNotNull { psiFile(project, it) }
-        if (files.isNotEmpty()) return files.toTypedArray()
+        val metaFiles = listOf(".description.php", ".parameters.php")
+            .mapNotNull { component.directory.findChild(it) }
+        val files = (metaFiles + component.entryFiles()).mapNotNull { psiFile(project, it) }
+        if (files.isNotEmpty()) return files.distinct().toTypedArray()
         return listOfNotNull(psiDirectory(project, component.directory)).toTypedArray()
     }
 

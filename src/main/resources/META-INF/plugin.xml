@@ -24,6 +24,8 @@
                 implementation="com.github.saundefined.bitrix_idea.templates.gitignore.BitrixModuleFileTemplateGroupFactory"/>
         <projectViewNodeDecorator
                 implementation="com.github.saundefined.bitrix_idea.toolwindow.BitrixProjectViewNodeDecorator"/>
+        <gotoSymbolContributor
+                implementation="com.github.saundefined.bitrix_idea.php.BitrixChooseByNameContributor"/>
         <toolWindow
                 id="Bitrix"
                 anchor="right"
