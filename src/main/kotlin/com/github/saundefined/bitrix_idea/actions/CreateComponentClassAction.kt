@@ -11,8 +11,7 @@ class CreateComponentClassAction : CreateBitrixFileAction() {
         val virtualFile = directory.virtualFile
         val isComponent = virtualFile.parent?.parent?.name == "components" ||
             virtualFile.findChild(".description.php") != null ||
-            virtualFile.findChild(".parameters.php") != null ||
-            virtualFile.findChild("template.php") != null
+            virtualFile.findChild(".parameters.php") != null
         if (!isComponent) {
             Messages.showErrorDialog(
                 project,

@@ -88,12 +88,11 @@ class CreateAdminPageDialogWrapper(
 
     override fun doOKAction() {
         val root = moduleRootPath?.let { LocalFileSystem.getInstance().findFileByPath(it) }
-        val admin = root?.findChild("admin")
-        if (root == null || admin == null || moduleId.isBlank()) {
+        if (root == null || moduleId.isBlank()) {
             Messages.showErrorDialog(project, message("create.admin.module.not.found"), title)
             return
         }
-        if (admin.findChild(pageFile) != null) {
+        if (root.findChild("admin")?.findChild(pageFile) != null) {
             val result = Messages.showYesNoDialog(
                 project,
                 message("create.admin.page.exists"),
@@ -128,6 +127,7 @@ class CreateAdminPageDialogWrapper(
         if (!GeneratorPreviewDialogWrapper(project, preview).showAndGet()) return
 
         WriteCommandAction.runWriteCommandAction(project) {
+            val admin = root.findChild("admin") ?: root.createChildDirectory(this, "admin")
             val page = admin.findChild(pageFile) ?: admin.createChildData(this, pageFile)
             VfsUtil.saveText(page, pageText)
             if (addMenu) {
