@@ -37,16 +37,16 @@ class CreateServiceDialogWrapper(
     private val modulePath = OrmEntityContextResolver.resolvePath(directory.virtualFile.path)
     private val namespace = modulePath.namespace
 
+    private val interfaceNameField = JBTextField(interfaceName)
+    private val classNameField = JBTextField(className)
     private val contentPanel = panel {
         row(message("create.service.interface")) {
-            textField()
-                .bindText(::interfaceName)
+            cell(interfaceNameField)
                 .focused()
                 .align(AlignX.FILL)
         }.layout(RowLayout.PARENT_GRID)
         row(message("create.service.class")) {
-            textField()
-                .bindText(::className)
+            cell(classNameField)
                 .align(AlignX.FILL)
         }.layout(RowLayout.PARENT_GRID)
         row {
@@ -67,6 +67,8 @@ class CreateServiceDialogWrapper(
     override fun createCenterPanel(): JComponent = contentPanel
 
     override fun doValidate(): ValidationInfo? {
+        interfaceName = interfaceNameField.text
+        className = classNameField.text
         contentPanel.apply()
         if (!interfaceName.matches(Regex("^[A-Z][A-Za-z0-9]*$"))) {
             return ValidationInfo(message("create.service.validation.interface"), null)
@@ -78,6 +80,8 @@ class CreateServiceDialogWrapper(
     }
 
     override fun doOKAction() {
+        interfaceName = interfaceNameField.text
+        className = classNameField.text
         val interfaceFile = "$interfaceName.php"
         val classFile = "$className.php"
         if (directory.virtualFile.findChild(interfaceFile) != null || directory.virtualFile.findChild(classFile) != null) {

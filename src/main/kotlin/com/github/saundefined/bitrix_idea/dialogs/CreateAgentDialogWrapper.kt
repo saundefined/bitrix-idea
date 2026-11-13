@@ -38,21 +38,21 @@ class CreateAgentDialogWrapper(
     private val modulePath = OrmEntityContextResolver.resolvePath(directory.virtualFile.path)
     private val namespace = modulePath.namespace
 
+    private val classNameField = JBTextField(className)
+    private val methodNameField = JBTextField(methodName)
+    private val intervalField = JBTextField(interval)
     private val contentPanel = panel {
         row(message("create.agent.class")) {
-            textField()
-                .bindText(::className)
+            cell(classNameField)
                 .focused()
                 .align(AlignX.FILL)
         }.layout(RowLayout.PARENT_GRID)
         row(message("create.agent.method")) {
-            textField()
-                .bindText(::methodName)
+            cell(methodNameField)
                 .align(AlignX.FILL)
         }.layout(RowLayout.PARENT_GRID)
         row(message("create.agent.interval")) {
-            textField()
-                .bindText(::interval)
+            cell(intervalField)
                 .align(AlignX.FILL)
         }.layout(RowLayout.PARENT_GRID)
         row {
@@ -73,6 +73,9 @@ class CreateAgentDialogWrapper(
     override fun createCenterPanel(): JComponent = contentPanel
 
     override fun doValidate(): ValidationInfo? {
+        className = classNameField.text
+        methodName = methodNameField.text
+        interval = intervalField.text
         contentPanel.apply()
         if (!className.matches(Regex("^[A-Z][A-Za-z0-9]*$"))) {
             return ValidationInfo(message("create.event.validation.class"), null)
@@ -87,6 +90,9 @@ class CreateAgentDialogWrapper(
     }
 
     override fun doOKAction() {
+        className = classNameField.text
+        methodName = methodNameField.text
+        interval = intervalField.text
         val fileName = "$className.php"
         if (directory.virtualFile.findChild(fileName) != null) {
             Messages.showErrorDialog(project, message("create.event.file.exists"), title)

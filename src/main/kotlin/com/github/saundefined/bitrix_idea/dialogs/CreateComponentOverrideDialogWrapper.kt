@@ -32,21 +32,21 @@ class CreateComponentOverrideDialogWrapper(
 
     private val siteCombo = ComboBox<String>()
 
+    private val componentIdField = JBTextField(componentId)
+    private val sourceTemplateField = JBTextField(sourceTemplate)
+    private val targetTemplateField = JBTextField(targetTemplate)
     private val contentPanel = panel {
         row(message("create.override.component")) {
-            textField()
-                .bindText(::componentId)
+            cell(componentIdField)
                 .focused()
                 .align(AlignX.FILL)
         }.layout(RowLayout.PARENT_GRID)
         row(message("create.override.source.template")) {
-            textField()
-                .bindText(::sourceTemplate)
+            cell(sourceTemplateField)
                 .align(AlignX.FILL)
         }.layout(RowLayout.PARENT_GRID)
         row(message("create.override.target.template")) {
-            textField()
-                .bindText(::targetTemplate)
+            cell(targetTemplateField)
                 .align(AlignX.FILL)
         }.layout(RowLayout.PARENT_GRID)
         row(message("create.override.site.template")) {
@@ -74,6 +74,7 @@ class CreateComponentOverrideDialogWrapper(
             val components = virtualFile.parent
             if (virtualFile.name != "components" && components?.name == "components") {
                 componentId = "${virtualFile.parent?.name}:${virtualFile.name}"
+                componentIdField.text = componentId
             }
         }
 
@@ -84,6 +85,9 @@ class CreateComponentOverrideDialogWrapper(
     override fun createCenterPanel(): JComponent = contentPanel
 
     override fun doValidate(): ValidationInfo? {
+        componentId = componentIdField.text
+        sourceTemplate = sourceTemplateField.text
+        targetTemplate = targetTemplateField.text
         contentPanel.apply()
         if (!componentId.matches(Regex("^[A-Za-z0-9_.-]+:[A-Za-z0-9_.-]+$"))) {
             return ValidationInfo(message("create.override.component.validation"), null)
@@ -95,6 +99,9 @@ class CreateComponentOverrideDialogWrapper(
     }
 
     override fun doOKAction() {
+        componentId = componentIdField.text
+        sourceTemplate = sourceTemplateField.text
+        targetTemplate = targetTemplateField.text
         val selectedSite = (siteCombo.selectedItem as? String)?.trim().orEmpty()
         if (selectedSite.isBlank()) {
             Messages.showErrorDialog(project, message("create.override.site.validation"), title)

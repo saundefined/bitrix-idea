@@ -12,6 +12,7 @@ import com.intellij.openapi.ui.ValidationInfo
 import com.intellij.openapi.vfs.LocalFileSystem
 import com.intellij.openapi.vfs.VfsUtil
 import com.intellij.psi.PsiDirectory
+import com.intellij.ui.components.JBTextField
 import com.intellij.ui.dsl.builder.AlignX
 import com.intellij.ui.dsl.builder.RowLayout
 import com.intellij.ui.dsl.builder.bindSelected
@@ -37,29 +38,29 @@ class CreateUiPagesDialogWrapper(
     private var pageTitle: String = "Список элементов"
     private var modernGrid: Boolean = true
 
+    private val entityField = JBTextField(entity)
+    private val tableClassField = JBTextField(tableClass)
+    private val fieldsField = JBTextField(fields)
+    private val pageTitleField = JBTextField(pageTitle)
     private val contentPanel = panel {
         row(message("create.ui.module")) {
             label(moduleId.ifBlank { "—" })
         }
         row(message("create.ui.entity")) {
-            textField()
-                .bindText(::entity)
+            cell(entityField)
                 .focused()
                 .align(AlignX.FILL)
         }.layout(RowLayout.PARENT_GRID)
         row(message("create.ui.table")) {
-            textField()
-                .bindText(::tableClass)
+            cell(tableClassField)
                 .align(AlignX.FILL)
         }.layout(RowLayout.PARENT_GRID)
         row(message("create.ui.fields")) {
-            textField()
-                .bindText(::fields)
+            cell(fieldsField)
                 .align(AlignX.FILL)
         }.layout(RowLayout.PARENT_GRID)
         row(message("create.ui.title")) {
-            textField()
-                .bindText(::pageTitle)
+            cell(pageTitleField)
                 .align(AlignX.FILL)
         }.layout(RowLayout.PARENT_GRID)
         row {
@@ -79,6 +80,10 @@ class CreateUiPagesDialogWrapper(
     override fun createCenterPanel(): JComponent = contentPanel
 
     override fun doValidate(): ValidationInfo? {
+        entity = entityField.text
+        tableClass = tableClassField.text
+        fields = fieldsField.text
+        pageTitle = pageTitleField.text
         contentPanel.apply()
         if (!entity.matches(Regex("^[A-Z][A-Za-z0-9]*$"))) {
             return ValidationInfo(message("create.ui.entity.validation"), null)
@@ -91,6 +96,10 @@ class CreateUiPagesDialogWrapper(
     }
 
     override fun doOKAction() {
+        entity = entityField.text
+        tableClass = tableClassField.text
+        fields = fieldsField.text
+        pageTitle = pageTitleField.text
         val root = moduleRootPath?.let { LocalFileSystem.getInstance().findFileByPath(it) }
         if (root == null || moduleId.isBlank()) {
             Messages.showErrorDialog(project, message("create.admin.module.not.found"), title)

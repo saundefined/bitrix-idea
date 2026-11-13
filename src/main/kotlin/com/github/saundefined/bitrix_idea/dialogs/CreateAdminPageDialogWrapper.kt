@@ -13,6 +13,7 @@ import com.intellij.openapi.vfs.LocalFileSystem
 import com.intellij.openapi.vfs.VfsUtil
 import com.intellij.openapi.vfs.VirtualFile
 import com.intellij.psi.PsiDirectory
+import com.intellij.ui.components.JBTextField
 import com.intellij.ui.dsl.builder.AlignX
 import com.intellij.ui.dsl.builder.RowLayout
 import com.intellij.ui.dsl.builder.bindSelected
@@ -37,29 +38,29 @@ class CreateAdminPageDialogWrapper(
     private var addMenu: Boolean = true
     private var addLang: Boolean = true
 
+    private val pageFileField = JBTextField(pageFile)
+    private val pageTitleField = JBTextField(pageTitle)
+    private val parentMenuField = JBTextField(parentMenu)
+    private val sortField = JBTextField(sort)
     private val contentPanel = panel {
         row(message("create.admin.module")) {
             label(moduleId.ifBlank { "—" })
         }
         row(message("create.admin.page")) {
-            textField()
-                .bindText(::pageFile)
+            cell(pageFileField)
                 .focused()
                 .align(AlignX.FILL)
         }.layout(RowLayout.PARENT_GRID)
         row(message("create.admin.title")) {
-            textField()
-                .bindText(::pageTitle)
+            cell(pageTitleField)
                 .align(AlignX.FILL)
         }.layout(RowLayout.PARENT_GRID)
         row(message("create.admin.parent")) {
-            textField()
-                .bindText(::parentMenu)
+            cell(parentMenuField)
                 .align(AlignX.FILL)
         }.layout(RowLayout.PARENT_GRID)
         row(message("create.admin.sort")) {
-            textField()
-                .bindText(::sort)
+            cell(sortField)
                 .align(AlignX.FILL)
         }.layout(RowLayout.PARENT_GRID)
         row {
@@ -78,6 +79,10 @@ class CreateAdminPageDialogWrapper(
     override fun createCenterPanel(): JComponent = contentPanel
 
     override fun doValidate(): ValidationInfo? {
+        pageFile = pageFileField.text
+        pageTitle = pageTitleField.text
+        parentMenu = parentMenuField.text
+        sort = sortField.text
         contentPanel.apply()
         if (!pageFile.matches(Regex("^[A-Za-z0-9_.-]+\\.php$"))) {
             return ValidationInfo(message("create.admin.page.validation"), null)
@@ -88,6 +93,10 @@ class CreateAdminPageDialogWrapper(
     }
 
     override fun doOKAction() {
+        pageFile = pageFileField.text
+        pageTitle = pageTitleField.text
+        parentMenu = parentMenuField.text
+        sort = sortField.text
         val root = moduleRootPath?.let { LocalFileSystem.getInstance().findFileByPath(it) }
         if (root == null || moduleId.isBlank()) {
             Messages.showErrorDialog(project, message("create.admin.module.not.found"), title)

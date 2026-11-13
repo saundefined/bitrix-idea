@@ -16,6 +16,7 @@ import com.intellij.openapi.vfs.VfsUtil
 import com.intellij.openapi.vfs.VirtualFile
 import com.intellij.psi.PsiDocumentManager
 import com.intellij.psi.PsiFile
+import com.intellij.ui.components.JBTextField
 import com.intellij.ui.dsl.builder.AlignX
 import com.intellij.ui.dsl.builder.RowLayout
 import com.intellij.ui.dsl.builder.bindText
@@ -38,31 +39,31 @@ class ExtractComponentDialogWrapper(
 
     private val selectedText: String = editor.selectionModel.selectedText.orEmpty()
 
+    private val vendorField = JBTextField(vendor)
+    private val codeField = JBTextField(code)
+    private val displayNameField = JBTextField(displayName)
+    private val descriptionField = JBTextField(description)
+    private val templateNameField = JBTextField(templateName)
     private val contentPanel = panel {
         row(message("extract.vendor")) {
-            textField()
-                .bindText(::vendor)
+            cell(vendorField)
                 .focused()
                 .align(AlignX.FILL)
         }.layout(RowLayout.PARENT_GRID)
         row(message("extract.code")) {
-            textField()
-                .bindText(::code)
+            cell(codeField)
                 .align(AlignX.FILL)
         }.layout(RowLayout.PARENT_GRID)
         row(message("extract.name")) {
-            textField()
-                .bindText(::displayName)
+            cell(displayNameField)
                 .align(AlignX.FILL)
         }.layout(RowLayout.PARENT_GRID)
         row(message("extract.description")) {
-            textField()
-                .bindText(::description)
+            cell(descriptionField)
                 .align(AlignX.FILL)
         }.layout(RowLayout.PARENT_GRID)
         row(message("extract.template")) {
-            textField()
-                .bindText(::templateName)
+            cell(templateNameField)
                 .align(AlignX.FILL)
         }.layout(RowLayout.PARENT_GRID)
         row {
@@ -78,6 +79,11 @@ class ExtractComponentDialogWrapper(
     override fun createCenterPanel(): JComponent = contentPanel
 
     override fun doValidate(): ValidationInfo? {
+        vendor = vendorField.text
+        code = codeField.text
+        displayName = displayNameField.text
+        description = descriptionField.text
+        templateName = templateNameField.text
         contentPanel.apply()
         if (!vendor.matches(Regex("^[a-z][a-z0-9_.-]*$"))) return ValidationInfo(message("extract.vendor.validation"), null)
         if (!code.matches(Regex("^[a-z][a-z0-9_.-]*$"))) return ValidationInfo(message("extract.code.validation"), null)
@@ -86,6 +92,11 @@ class ExtractComponentDialogWrapper(
     }
 
     override fun doOKAction() {
+        vendor = vendorField.text
+        code = codeField.text
+        displayName = displayNameField.text
+        description = descriptionField.text
+        templateName = templateNameField.text
         val root = BitrixProjectStructure.bitrixRoot(project)
         if (root == null) {
             Messages.showErrorDialog(project, message("extract.no.root"), title)

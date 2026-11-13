@@ -14,6 +14,7 @@ import com.intellij.openapi.ui.ValidationInfo
 import com.intellij.openapi.vfs.LocalFileSystem
 import com.intellij.openapi.vfs.VfsUtil
 import com.intellij.psi.PsiDirectory
+import com.intellij.ui.components.JBTextField
 import com.intellij.ui.dsl.builder.AlignX
 import com.intellij.ui.dsl.builder.RowLayout
 import com.intellij.ui.dsl.builder.bindSelected
@@ -35,26 +36,26 @@ class CreateConsoleCommandDialogWrapper(
     private var arguments: String = ""
     private var register: Boolean = true
 
+    private val classNameField = JBTextField(className)
+    private val commandNameField = JBTextField(commandName)
+    private val descriptionField = JBTextField(description)
+    private val argumentsField = JBTextField(arguments)
     private val contentPanel = panel {
         row(message("create.console.class")) {
-            textField()
-                .bindText(::className)
+            cell(classNameField)
                 .focused()
                 .align(AlignX.FILL)
         }.layout(RowLayout.PARENT_GRID)
         row(message("create.console.name")) {
-            textField()
-                .bindText(::commandName)
+            cell(commandNameField)
                 .align(AlignX.FILL)
         }.layout(RowLayout.PARENT_GRID)
         row(message("create.console.description")) {
-            textField()
-                .bindText(::description)
+            cell(descriptionField)
                 .align(AlignX.FILL)
         }.layout(RowLayout.PARENT_GRID)
         row(message("create.console.arguments")) {
-            textField()
-                .bindText(::arguments)
+            cell(argumentsField)
                 .align(AlignX.FILL)
         }.layout(RowLayout.PARENT_GRID)
         row {
@@ -71,6 +72,10 @@ class CreateConsoleCommandDialogWrapper(
     override fun createCenterPanel(): JComponent = contentPanel
 
     override fun doValidate(): ValidationInfo? {
+        className = classNameField.text
+        commandName = commandNameField.text
+        description = descriptionField.text
+        arguments = argumentsField.text
         contentPanel.apply()
         if (!className.matches(Regex("^[A-Z][A-Za-z0-9]*$"))) {
             return ValidationInfo(message("create.console.class.validation"), null)
@@ -80,6 +85,10 @@ class CreateConsoleCommandDialogWrapper(
     }
 
     override fun doOKAction() {
+        className = classNameField.text
+        commandName = commandNameField.text
+        description = descriptionField.text
+        arguments = argumentsField.text
         val root = moduleRootPath?.let { LocalFileSystem.getInstance().findFileByPath(it) }
         if (root == null || moduleId.isBlank()) {
             Messages.showErrorDialog(project, message("create.admin.module.not.found"), title)

@@ -29,18 +29,20 @@ class ComponentParameterDialog(
     private var defaultValue: String = initial.defaultValue
     private var parent: String = initial.parent
     private var required: Boolean = initial.required
+    private val keyField = JBTextField(key)
+    private val nameField = JBTextField(name)
+    private val defaultField = JBTextField(defaultValue)
+    private val parentField = JBTextField(parent)
     private val typeCombo = ComboBox(ComponentParameterType.entries.toTypedArray())
 
     private val contentPanel = panel {
         row(message("create.parameters.key")) {
-            textField()
-                .bindText(::key)
+            cell(keyField)
                 .focused()
                 .align(AlignX.FILL)
         }.layout(RowLayout.PARENT_GRID)
         row(message("create.parameters.name")) {
-            textField()
-                .bindText(::name)
+            cell(nameField)
                 .align(AlignX.FILL)
         }.layout(RowLayout.PARENT_GRID)
         row(message("create.parameters.type")) {
@@ -48,13 +50,11 @@ class ComponentParameterDialog(
                 .align(AlignX.FILL)
         }.layout(RowLayout.PARENT_GRID)
         row(message("create.parameters.default")) {
-            textField()
-                .bindText(::defaultValue)
+            cell(defaultField)
                 .align(AlignX.FILL)
         }.layout(RowLayout.PARENT_GRID)
         row(message("create.parameters.parent")) {
-            textField()
-                .bindText(::parent)
+            cell(parentField)
                 .align(AlignX.FILL)
         }.layout(RowLayout.PARENT_GRID)
         row {
@@ -76,7 +76,10 @@ class ComponentParameterDialog(
     override fun createCenterPanel(): JComponent = contentPanel
 
     override fun doValidate(): ValidationInfo? {
-        contentPanel.apply()
+        key = keyField.text
+        name = nameField.text
+        defaultValue = defaultField.text
+        parent = parentField.text
         val normalized = key.trim().uppercase(Locale.ROOT)
         if (!normalized.matches(Regex("^[A-Z][A-Z0-9_]*$"))) {
             return ValidationInfo(message("create.parameters.key.validation"), null)
@@ -91,6 +94,10 @@ class ComponentParameterDialog(
     }
 
     override fun doOKAction() {
+        key = keyField.text
+        name = nameField.text
+        defaultValue = defaultField.text
+        parent = parentField.text
         result = ComponentParameterSpec(
             key = key.trim().uppercase(Locale.ROOT),
             name = name.trim(),

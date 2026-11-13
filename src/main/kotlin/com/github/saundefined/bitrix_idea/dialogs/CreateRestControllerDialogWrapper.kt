@@ -14,6 +14,7 @@ import com.intellij.openapi.ui.ValidationInfo
 import com.intellij.openapi.vfs.LocalFileSystem
 import com.intellij.openapi.vfs.VfsUtil
 import com.intellij.psi.PsiDirectory
+import com.intellij.ui.components.JBTextField
 import com.intellij.ui.dsl.builder.AlignX
 import com.intellij.ui.dsl.builder.RowLayout
 import com.intellij.ui.dsl.builder.bindSelected
@@ -37,19 +38,19 @@ class CreateRestControllerDialogWrapper(
     private var register: Boolean = true
     private var createRoutes: Boolean = true
 
+    private val classNameField = JBTextField(className)
+    private val actionsField = JBTextField(actions)
     private val contentPanel = panel {
         row(message("create.rest.module")) {
             label(moduleId.ifBlank { "—" })
         }
         row(message("create.rest.class")) {
-            textField()
-                .bindText(::className)
+            cell(classNameField)
                 .focused()
                 .align(AlignX.FILL)
         }.layout(RowLayout.PARENT_GRID)
         row(message("create.rest.actions")) {
-            textField()
-                .bindText(::actions)
+            cell(actionsField)
                 .align(AlignX.FILL)
         }.layout(RowLayout.PARENT_GRID)
         row {
@@ -71,6 +72,8 @@ class CreateRestControllerDialogWrapper(
     override fun createCenterPanel(): JComponent = contentPanel
 
     override fun doValidate(): ValidationInfo? {
+        className = classNameField.text
+        actions = actionsField.text
         contentPanel.apply()
         if (!className.matches(Regex("^[A-Z][A-Za-z0-9]*$"))) {
             return ValidationInfo(message("create.rest.class.validation"), null)
@@ -80,6 +83,8 @@ class CreateRestControllerDialogWrapper(
     }
 
     override fun doOKAction() {
+        className = classNameField.text
+        actions = actionsField.text
         val root = moduleRootPath?.let { LocalFileSystem.getInstance().findFileByPath(it) }
         if (root == null || moduleId.isBlank()) {
             Messages.showErrorDialog(project, message("create.admin.module.not.found"), title)

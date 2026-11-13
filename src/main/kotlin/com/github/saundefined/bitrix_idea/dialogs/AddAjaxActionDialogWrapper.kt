@@ -8,6 +8,7 @@ import com.intellij.openapi.ui.DialogWrapper
 import com.intellij.openapi.ui.ValidationInfo
 import com.intellij.psi.PsiDocumentManager
 import com.intellij.psi.PsiFile
+import com.intellij.ui.components.JBTextField
 import com.intellij.ui.dsl.builder.AlignX
 import com.intellij.ui.dsl.builder.RowLayout
 import com.intellij.ui.dsl.builder.bindText
@@ -25,21 +26,21 @@ class AddAjaxActionDialogWrapper(
     private var parameters: String = ""
     private var prefilters: String = ""
 
+    private val actionNameField = JBTextField(actionName)
+    private val parametersField = JBTextField(parameters)
+    private val prefiltersField = JBTextField(prefilters)
     private val contentPanel = panel {
         row(message("add.ajax.action.name")) {
-            textField()
-                .bindText(::actionName)
+            cell(actionNameField)
                 .focused()
                 .align(AlignX.FILL)
         }.layout(RowLayout.PARENT_GRID)
         row(message("add.ajax.action.parameters")) {
-            textField()
-                .bindText(::parameters)
+            cell(parametersField)
                 .align(AlignX.FILL)
         }.layout(RowLayout.PARENT_GRID)
         row(message("add.ajax.action.filters")) {
-            textField()
-                .bindText(::prefilters)
+            cell(prefiltersField)
                 .align(AlignX.FILL)
         }.layout(RowLayout.PARENT_GRID)
         row {
@@ -55,6 +56,9 @@ class AddAjaxActionDialogWrapper(
     override fun createCenterPanel(): JComponent = contentPanel
 
     override fun doValidate(): ValidationInfo? {
+        actionName = actionNameField.text
+        parameters = parametersField.text
+        prefilters = prefiltersField.text
         contentPanel.apply()
         val name = actionName.trim().removeSuffix("Action")
         if (!name.matches(Regex("^[a-zA-Z_][A-Za-z0-9_]*$"))) {
@@ -68,6 +72,9 @@ class AddAjaxActionDialogWrapper(
     }
 
     override fun doOKAction() {
+        actionName = actionNameField.text
+        parameters = parametersField.text
+        prefilters = prefiltersField.text
         val document = PsiDocumentManager.getInstance(project).getDocument(file) ?: return
         val params = parameters.split(',').map { it.trim() }.filter { it.isNotEmpty() }
         val filters = prefilters.split(',').map { it.trim() }.filter { it.isNotEmpty() }

@@ -9,6 +9,7 @@ import com.intellij.openapi.ui.Messages
 import com.intellij.openapi.ui.ValidationInfo
 import com.intellij.openapi.vfs.VfsUtil
 import com.intellij.psi.PsiDirectory
+import com.intellij.ui.components.JBTextField
 import com.intellij.ui.dsl.builder.AlignX
 import com.intellij.ui.dsl.builder.RowLayout
 import com.intellij.ui.dsl.builder.bindSelected
@@ -25,10 +26,10 @@ class CreateComponentClassDialogWrapper(
     private var ajax: Boolean = false
     private var epilog: Boolean = false
 
+    private val classNameField = JBTextField(className)
     private val contentPanel = panel {
         row(message("create.class.name")) {
-            textField()
-                .bindText(::className)
+            cell(classNameField)
                 .focused()
                 .align(AlignX.FILL)
         }.layout(RowLayout.PARENT_GRID)
@@ -53,6 +54,7 @@ class CreateComponentClassDialogWrapper(
     override fun createCenterPanel(): JComponent = contentPanel
 
     override fun doValidate(): ValidationInfo? {
+        className = classNameField.text
         contentPanel.apply()
         if (!className.matches(Regex("^[A-Z][A-Za-z0-9]*$"))) {
             return ValidationInfo(message("create.class.name.validation"), null)
@@ -61,6 +63,7 @@ class CreateComponentClassDialogWrapper(
     }
 
     override fun doOKAction() {
+        className = classNameField.text
         if (directory.virtualFile.findChild("class.php") != null) {
             val result = Messages.showYesNoDialog(
                 project,

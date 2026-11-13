@@ -44,6 +44,7 @@ class CreateEventHandlerDialogWrapper(
     private val moduleId = moduleIdFromPath(directory.virtualFile.path)
     private val namespace = modulePath.namespace
 
+    private val classNameField = JBTextField(className)
     private val contentPanel = panel {
         row(message("create.event.module")) {
             label(moduleId ?: message("create.event.module.not.found"))
@@ -53,8 +54,7 @@ class CreateEventHandlerDialogWrapper(
                 .align(AlignX.FILL)
         }.layout(RowLayout.PARENT_GRID)
         row(message("create.event.class")) {
-            textField()
-                .bindText(::className)
+            cell(classNameField)
                 .align(AlignX.FILL)
         }.layout(RowLayout.PARENT_GRID)
         row(message("create.event.method")) {
@@ -94,6 +94,7 @@ class CreateEventHandlerDialogWrapper(
     override fun createCenterPanel(): JComponent = contentPanel
 
     override fun doValidate(): ValidationInfo? {
+        className = classNameField.text
         contentPanel.apply()
         val selectedEvent = (eventCombo.selectedItem as? String)?.trim().orEmpty()
         if (selectedEvent.isBlank()) return ValidationInfo(message("create.event.validation.event"), eventCombo)
@@ -108,6 +109,7 @@ class CreateEventHandlerDialogWrapper(
     }
 
     override fun doOKAction() {
+        className = classNameField.text
         val selectedEvent = (eventCombo.selectedItem as? String)?.trim().orEmpty()
         methodName = methodField.text.trim()
         val fileName = "$className.php"
