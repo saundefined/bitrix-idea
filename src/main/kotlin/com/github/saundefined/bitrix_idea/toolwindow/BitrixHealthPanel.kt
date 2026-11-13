@@ -11,11 +11,13 @@ import com.intellij.openapi.actionSystem.AnActionEvent
 import com.intellij.openapi.actionSystem.DefaultActionGroup
 import com.intellij.openapi.application.ApplicationManager
 import com.intellij.openapi.application.ReadAction
+import com.intellij.ide.util.PropertiesComponent
 import com.intellij.openapi.fileEditor.OpenFileDescriptor
 import com.intellij.openapi.project.Project
 import com.intellij.ui.ColoredTreeCellRenderer
 import com.intellij.ui.ScrollPaneFactory
 import com.intellij.ui.SimpleTextAttributes
+import com.intellij.ui.components.JBTextField
 import com.intellij.ui.components.JBPanel
 import com.intellij.ui.treeStructure.Tree
 import com.intellij.util.Alarm
@@ -24,6 +26,8 @@ import java.awt.event.MouseAdapter
 import java.awt.event.MouseEvent
 import java.util.concurrent.atomic.AtomicInteger
 import javax.swing.JComponent
+import javax.swing.JMenuItem
+import javax.swing.JPopupMenu
 import javax.swing.JTree
 import javax.swing.tree.DefaultMutableTreeNode
 import javax.swing.tree.DefaultTreeModel
@@ -32,6 +36,10 @@ class BitrixHealthPanel(private val project: Project) : Disposable {
     private val tree = Tree()
     private val alarm = Alarm(Alarm.ThreadToUse.SWING_THREAD, this)
     private val generation = AtomicInteger()
+    private val filterField = JBTextField().apply { emptyText.text = message("health.filter") }
+    private val properties = PropertiesComponent.getInstance(project)
+    private val ignored: MutableSet<String>
+        get() = properties.getValue(IGNORED_KEY, "").split('|').filter { it.isNotBlank() }.toMutableSet()
 
     private val toolbar: ActionToolbar = run {
         val group = DefaultActionGroup().apply {
@@ -51,7 +59,11 @@ class BitrixHealthPanel(private val project: Project) : Disposable {
     }
 
     val component: JComponent = JBPanel<JBPanel<*>>(BorderLayout()).apply {
-        add(toolbar.component, BorderLayout.NORTH)
+        val top = JBPanel<JBPanel<*>>(BorderLayout()).apply {
+            add(toolbar.component, BorderLayout.NORTH)
+            add(filterField, BorderLayout.SOUTH)
+        }
+        add(top, BorderLayout.NORTH)
         add(ScrollPaneFactory.createScrollPane(tree), BorderLayout.CENTER)
     }
 
@@ -81,6 +93,14 @@ class BitrixHealthPanel(private val project: Project) : Disposable {
             override fun mouseClicked(event: MouseEvent) {
                 if (event.clickCount == 2) openSelected()
             }
+
+            override fun mousePressed(event: MouseEvent) = maybeShowPopup(event)
+            override fun mouseReleased(event: MouseEvent) = maybeShowPopup(event)
+        })
+        filterField.document.addDocumentListener(object : javax.swing.event.DocumentListener {
+            override fun insertUpdate(e: javax.swing.event.DocumentEvent) = refresh()
+            override fun removeUpdate(e: javax.swing.event.DocumentEvent) = refresh()
+            override fun changedUpdate(e: javax.swing.event.DocumentEvent) = refresh()
         })
         refresh()
     }
@@ -102,12 +122,20 @@ class BitrixHealthPanel(private val project: Project) : Disposable {
             ApplicationManager.getApplication().invokeLater {
                 if (project.isDisposed || current != generation.get()) return@invokeLater
                 tree.setPaintBusy(false)
-                val root = DefaultMutableTreeNode(message("health.root"))
-                if (issues.isEmpty()) {
+                val ignored = ignored
+                val query = filterField.text.trim()
+                val filtered = issues.mapValues { (_, list) ->
+                    list.filter { issue ->
+                        issue.id !in ignored && (query.isEmpty() || issue.message.contains(query, ignoreCase = true))
+                    }
+                }.filterValues { it.isNotEmpty() }
+                val total = filtered.values.sumOf { it.size }
+                val root = DefaultMutableTreeNode(message("health.root.count", total))
+                if (filtered.isEmpty()) {
                     root.add(DefaultMutableTreeNode(message("health.no.issues")))
                 } else {
-                    issues.forEach { (category, list) ->
-                        val categoryNode = DefaultMutableTreeNode(category)
+                    filtered.forEach { (category, list) ->
+                        val categoryNode = DefaultMutableTreeNode("$category (${list.size})")
                         list.forEach { categoryNode.add(DefaultMutableTreeNode(it)) }
                         root.add(categoryNode)
                     }
@@ -116,6 +144,30 @@ class BitrixHealthPanel(private val project: Project) : Disposable {
                 for (row in 0 until tree.rowCount) tree.expandRow(row)
             }
         }
+    }
+
+    private fun maybeShowPopup(event: MouseEvent) {
+        if (!event.isPopupTrigger) return
+        val path = tree.getPathForLocation(event.x, event.y) ?: return
+        tree.selectionPath = path
+        val node = tree.lastSelectedPathComponent as? DefaultMutableTreeNode ?: return
+        val issue = node.userObject as? BitrixHealthIssue ?: return
+        val menu = JPopupMenu()
+        menu.add(JMenuItem(message("health.ignore")).apply {
+            addActionListener {
+                val current = ignored
+                current += issue.id
+                properties.setValue(IGNORED_KEY, current.joinToString("|"))
+                refresh()
+            }
+        })
+        menu.add(JMenuItem(message("health.clear.ignored")).apply {
+            addActionListener {
+                properties.unsetValue(IGNORED_KEY)
+                refresh()
+            }
+        })
+        menu.show(tree, event.x, event.y)
     }
 
     private fun openSelected() {
@@ -127,5 +179,9 @@ class BitrixHealthPanel(private val project: Project) : Disposable {
 
     override fun dispose() {
         alarm.cancelAllRequests()
+    }
+
+    private companion object {
+        const val IGNORED_KEY = "bitrix.health.ignored"
     }
 }

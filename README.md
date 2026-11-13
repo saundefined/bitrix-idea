@@ -49,8 +49,8 @@ The plugin can be installed on following IntelliJ-based:
 ### Generators and refactoring
 
 - Module, simple and complex component, component template, site template, D7 class, ORM entity, service/interface, event handler, agent, options page, admin page/menu, REST controller, console command, Bitrix UI grid/filter/form pages, and component `class.php` generators
-- Structured `.settings.php` editor with preview and registration quick fixes
-- Component refactoring actions: move to `local`, convert to complex component, copy template to a local site template
+- Structured `.settings.php` editor with preview, section-preserving updates, and registration quick fixes
+- Component refactoring actions: extract from selection, move to `local`, convert to complex component, copy template to a local site template
 - Component template chain dialog with the effective template and parent navigation
 - Core component template override into `local/templates/<site>/components/...`
 - Component parameter generator (`.parameters.php` and lang files)
@@ -64,8 +64,8 @@ The plugin can be installed on following IntelliJ-based:
 - “Переиндексировать Bitrix” button and tool window action
 - Bitrix tool window with modules (disabled modules are grayed out), components grouped by vendor, site templates, and lang files
 - Tool window filter, loading indicator, persisted expansion state, “only enabled modules” and “group by module” toggles, context menu actions (copy path/name, compare with core `.default`, template chain, Find Usages, Rename, create component template, open settings)
-- Separate Bitrix Health tool window with component/template/lang/version diagnostics and its own setting
-- Inlay hints with the effective component template and Search Everywhere entries for lang messages
+- Separate Bitrix Health tool window with component/template/lang/version diagnostics, filtering, ignore list, and its own setting
+- Inlay hints with the effective component template, Search Everywhere entries for lang messages and `.settings.php` entries, and a translation table with CSV export
 - Generator preview dialog and undoable file writes
 
 ## Development

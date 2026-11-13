@@ -24,15 +24,16 @@
 - Component/template Find Usages scoped to the owning component
 - Duplicate lang keys across files inspection
 - Tool window expansion state, “only enabled modules” toggle, diagnostics copy and core path opening
-- Structured `.settings.php` editor with preview
+- Structured `.settings.php` editor with preview and section-preserving updates (comments outside sections are kept)
 - Component parameter generator now preserves existing lang translations
 - Quick fix creating an event handler class from `.settings.php`
-- Bitrix UI generators: grid/filter/form configs and admin list/edit pages
-- Component refactoring: move to `local`, convert to complex component, copy template to local site template
+- Bitrix UI generators: modern grid page, grid/filter/form configs, and admin list/edit pages
+- Component refactoring: extract from selection, move to `local`, convert to complex component, copy template to local site template
 - Component template chain dialog with effective template and parent navigation
-- Bitrix Health tool window with structural/lang/version diagnostics and its own setting
+- Bitrix Health tool window with structural/lang/version diagnostics, filtering, ignore list, and its own setting
 - Inlay hints with the effective `IncludeComponent` template
-- Search Everywhere for lang messages
+- Search Everywhere for lang messages and `.settings.php` classes/events
+- Translation table with CSV export for lang files
 - Faster lang/component scans with text prefilters
 - Core component template override generator (`local/templates/<site>/components/...`)
 - Component parameter generator with `.parameters.php` and lang files

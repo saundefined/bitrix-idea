@@ -385,6 +385,31 @@ class BitrixTreePanel(private val project: Project) : Disposable {
                     },
                 )
             }
+        val componentTemplateNodes = model.components.take(300).mapNotNull { component ->
+            val templateDirs = component.templateDirs()
+            if (templateDirs.isEmpty()) return@mapNotNull null
+            TreeNodeData(
+                label = component.id,
+                file = component.entryFiles().firstOrNull(),
+                copyName = component.id,
+                componentId = component.id,
+                children = templateDirs.map { templateDir ->
+                    val chain = com.github.saundefined.bitrix_idea.templates.component.TemplateChainResolver
+                        .resolve(project, component.id, templateDir.name)
+                    TreeNodeData(
+                        label = "${templateDir.name}${if (chain.firstOrNull()?.effective == true) " →" else ""}",
+                        file = templateDir.findChild("template.php") ?: templateDir,
+                        children = chain.map { entry ->
+                            TreeNodeData(
+                                label = "${if (entry.effective) "→ " else ""}${entry.kind}: ${entry.directory.name}",
+                                file = entry.directory.findChild("template.php") ?: entry.directory,
+                            )
+                        },
+                    )
+                },
+            )
+        }
+
         val templates = model.siteTemplates.map { name ->
             val root = BitrixProjectStructure.bitrixRoot(project)
             val file = root?.findChild("local")?.findChild("templates")?.findChild(name)?.findChild("header.php")
@@ -411,6 +436,7 @@ class BitrixTreePanel(private val project: Project) : Disposable {
                 TreeNodeData(message("toolwindow.modules"), null, modules),
                 TreeNodeData(message("toolwindow.components"), null, components),
                 TreeNodeData(message("toolwindow.templates"), null, templates),
+                TreeNodeData(message("toolwindow.template.tree"), null, componentTemplateNodes),
                 TreeNodeData(message("toolwindow.lang"), null, langFiles),
             ) + codeNodes,
         )

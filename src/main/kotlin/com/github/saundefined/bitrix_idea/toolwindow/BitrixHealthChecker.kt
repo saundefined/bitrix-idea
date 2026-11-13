@@ -9,7 +9,10 @@ import com.intellij.openapi.vfs.VirtualFile
 data class BitrixHealthIssue(
     val message: String,
     val file: VirtualFile?,
-)
+) {
+    val id: String
+        get() = message + "|" + (file?.path ?: "")
+}
 
 /**
  * Быстрые проверки проекта для окна диагностики.
