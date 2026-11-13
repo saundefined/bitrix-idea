@@ -208,6 +208,22 @@
                 <add-to-group group-id="EditorPopupMenu" anchor="last"/>
             </action>
             <action
+                    class="com.github.saundefined.bitrix_idea.actions.ExtractComponentAction"
+                    id="com.github.saundefined.bitrix_idea.actions.ExtractComponentAction"
+                    text="Извлечь компонент"
+                    icon="icons.BitrixIdeaIcons.Bitrix"
+            >
+                <add-to-group group-id="EditorPopupMenu" anchor="last"/>
+            </action>
+            <action
+                    class="com.github.saundefined.bitrix_idea.actions.ShowLangTranslationsAction"
+                    id="com.github.saundefined.bitrix_idea.actions.ShowLangTranslationsAction"
+                    text="Таблица переводов"
+                    icon="icons.BitrixIdeaIcons.Bitrix"
+            >
+                <add-to-group group-id="EditorPopupMenu" anchor="last"/>
+            </action>
+            <action
                     class="com.github.saundefined.bitrix_idea.actions.CreateSimpleComponentAction"
                     id="com.github.saundefined.bitrix_idea.actions.CreateSimpleComponentAction"
                     text="Простой компонент"

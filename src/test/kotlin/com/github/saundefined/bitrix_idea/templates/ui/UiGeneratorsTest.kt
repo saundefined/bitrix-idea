@@ -28,5 +28,9 @@ class UiGeneratorsTest {
         assertTrue(list.contains("ItemsGrid::getRows"))
         assertTrue(edit.contains("CAdminForm"))
         assertTrue(edit.contains("ItemsForm::getFields"))
+
+        val modern = UiGenerators.generateModernGridPage("vendor.module", "Vendor\\Module", "Items", "Элементы")
+        assertTrue(modern.contains("Bitrix\\Main\\Grid\\Grid"))
+        assertTrue(modern.contains("ItemsGrid::getColumns()"))
     }
 }

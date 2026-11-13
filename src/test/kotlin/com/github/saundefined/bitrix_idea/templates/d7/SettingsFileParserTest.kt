@@ -31,4 +31,27 @@ class SettingsFileParserTest {
         assertTrue(rendered.contains("'events'"))
         assertTrue(rendered.contains("Vendor\\\\Module\\\\Agent::run"))
     }
+
+    @Test
+    fun updatePreservesCommentsOutsideSections() {
+        val original = """
+            <?php
+            // important comment
+            return [
+                'controllers' => ['value' => ['namespaces' => ['Old\\Controller' => 'api']]],
+            ];
+        """.trimIndent()
+        val updated = SettingsFileParser.update(
+            original,
+            SettingsFileModel(
+                controllers = listOf("Vendor\\Module\\Controller"),
+                services = listOf(SettingsServiceEntry("vendor.service", "Vendor\\Module\\Service")),
+            ),
+        )
+
+        assertTrue(updated.contains("// important comment"))
+        assertTrue(updated.contains("Vendor\\\\Module\\\\Controller"))
+        assertTrue(updated.contains("'services'"))
+        assertTrue(!updated.contains("Old\\Controller"))
+    }
 }

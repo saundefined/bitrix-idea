@@ -68,11 +68,39 @@ object SettingsFileParser {
     }
 
     fun render(model: SettingsFileModel): String {
+        val sections = sectionNames().mapNotNull { name -> renderSection(name, model) }
         return buildString {
             appendLine("<?php")
             appendLine()
             appendLine("return [")
-            if (model.controllers.isNotEmpty()) {
+            sections.forEach { append(it) }
+            appendLine("];")
+        }
+    }
+
+    /**
+     * Обновляет только изменённые секции, сохраняя комментарии и код вне секций.
+     */
+    fun update(original: String, model: SettingsFileModel): String {
+        if (original.isBlank() || !original.contains("return")) return render(model)
+        var result = original
+        sectionNames().forEach { name ->
+            val rendered = renderSection(name, model)
+            val range = sectionRange(result, name)
+            if (range != null) {
+                result = result.substring(0, range.first) + (rendered ?: "") + result.substring(range.last + 1)
+            } else if (rendered != null) {
+                result = insertSection(result, rendered)
+            }
+        }
+        return result
+    }
+
+    private fun sectionNames() = listOf("controllers", "services", "events", "agents", "console")
+
+    private fun renderSection(name: String, model: SettingsFileModel): String? {
+        return when (name) {
+            "controllers" -> if (model.controllers.isEmpty()) null else buildString {
                 appendLine("    'controllers' => [")
                 appendLine("        'value' => [")
                 appendLine("            'namespaces' => [")
@@ -83,7 +111,7 @@ object SettingsFileParser {
                 appendLine("        ],")
                 appendLine("    ],")
             }
-            if (model.services.isNotEmpty()) {
+            "services" -> if (model.services.isEmpty()) null else buildString {
                 appendLine("    'services' => [")
                 appendLine("        'value' => [")
                 model.services.forEach { service ->
@@ -94,7 +122,7 @@ object SettingsFileParser {
                 appendLine("        ],")
                 appendLine("    ],")
             }
-            if (model.events.isNotEmpty()) {
+            "events" -> if (model.events.isEmpty()) null else buildString {
                 appendLine("    'events' => [")
                 appendLine("        'value' => [")
                 model.events.groupBy { it.module.ifBlank { "main" } }.forEach { (module, entries) ->
@@ -109,7 +137,7 @@ object SettingsFileParser {
                 appendLine("        ],")
                 appendLine("    ],")
             }
-            if (model.agents.isNotEmpty()) {
+            "agents" -> if (model.agents.isEmpty()) null else buildString {
                 appendLine("    'agents' => [")
                 appendLine("        'value' => [")
                 model.agents.forEach { agent ->
@@ -118,7 +146,7 @@ object SettingsFileParser {
                 appendLine("        ],")
                 appendLine("    ],")
             }
-            if (model.console.isNotEmpty()) {
+            "console" -> if (model.console.isEmpty()) null else buildString {
                 appendLine("    'console' => [")
                 appendLine("        'value' => [")
                 appendLine("            'commands' => [")
@@ -129,7 +157,25 @@ object SettingsFileParser {
                 appendLine("        ],")
                 appendLine("    ],")
             }
-            appendLine("];")
+            else -> null
+        }
+    }
+
+    private fun sectionRange(text: String, key: String): IntRange? {
+        val match = Regex("""['"]$key['"]\s*=>\s*\[""").find(text) ?: return null
+        val open = match.range.last
+        val close = matchingBracket(text, open) ?: return null
+        var end = close
+        if (end + 1 < text.length && text[end + 1] == ',') end++
+        return match.range.first..end
+    }
+
+    private fun insertSection(text: String, section: String): String {
+        val index = text.lastIndexOf("];")
+        return if (index < 0) {
+            text.trimEnd() + "\n" + section
+        } else {
+            text.substring(0, index) + section + text.substring(index)
         }
     }
 

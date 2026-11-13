@@ -82,7 +82,7 @@ class EditSettingsFileDialogWrapper(
             },
             console = lines(consoleArea),
         )
-        val rendered = SettingsFileParser.render(updated)
+        val rendered = SettingsFileParser.update(file.text, updated)
         if (!GeneratorPreviewDialogWrapper(project, listOf(GeneratorPreviewFile(file.name, rendered))).showAndGet()) return
 
         WriteCommandAction.runWriteCommandAction(project) {

@@ -14,6 +14,7 @@ import com.intellij.openapi.vfs.VfsUtil
 import com.intellij.psi.PsiDirectory
 import com.intellij.ui.dsl.builder.AlignX
 import com.intellij.ui.dsl.builder.RowLayout
+import com.intellij.ui.dsl.builder.bindSelected
 import com.intellij.ui.dsl.builder.bindText
 import com.intellij.ui.dsl.builder.panel
 import java.util.Locale
@@ -34,6 +35,7 @@ class CreateUiPagesDialogWrapper(
     private var tableClass: String = "ItemsTable"
     private var fields: String = "ID,NAME,ACTIVE"
     private var pageTitle: String = "Список элементов"
+    private var modernGrid: Boolean = true
 
     private val contentPanel = panel {
         row(message("create.ui.module")) {
@@ -60,6 +62,10 @@ class CreateUiPagesDialogWrapper(
                 .bindText(::pageTitle)
                 .align(AlignX.FILL)
         }.layout(RowLayout.PARENT_GRID)
+        row {
+            checkBox(message("create.ui.modern.grid"))
+                .bindSelected(::modernGrid)
+        }
         row {
             comment(message("create.ui.description"))
         }
@@ -94,7 +100,14 @@ class CreateUiPagesDialogWrapper(
             GeneratorPreviewFile("lib/Ui/${entity}Grid.php", UiGenerators.generateGridConfig(namespace, entity, tableClass, fieldList)),
             GeneratorPreviewFile("lib/Ui/${entity}Filter.php", UiGenerators.generateFilterConfig(namespace, entity, fieldList)),
             GeneratorPreviewFile("lib/Ui/${entity}Form.php", UiGenerators.generateFormConfig(namespace, entity, fieldList)),
-            GeneratorPreviewFile("admin/${entity.lowercase(Locale.ROOT)}_list.php", UiGenerators.generateListPage(moduleId, namespace, entity, pageTitle)),
+            GeneratorPreviewFile(
+                "admin/${entity.lowercase(Locale.ROOT)}_list.php",
+                if (modernGrid) {
+                    UiGenerators.generateModernGridPage(moduleId, namespace, entity, pageTitle)
+                } else {
+                    UiGenerators.generateListPage(moduleId, namespace, entity, pageTitle)
+                },
+            ),
             GeneratorPreviewFile("admin/${entity.lowercase(Locale.ROOT)}_edit.php", UiGenerators.generateEditPage(moduleId, namespace, entity, pageTitle)),
         )
         if (!GeneratorPreviewDialogWrapper(project, files).showAndGet()) return

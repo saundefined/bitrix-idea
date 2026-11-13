@@ -127,6 +127,36 @@ object UiGenerators {
         }
     }
 
+    fun generateModernGridPage(moduleId: String, namespace: String, entity: String, title: String): String {
+        val listId = "${moduleId.replace(Regex("[^a-z0-9]+"), "_")}_${entity.lowercase(Locale.ROOT)}"
+        return buildString {
+            appendLine("<?php")
+            appendLine()
+            appendLine("use Bitrix\\Main\\Grid\\Grid;")
+            appendLine("use Bitrix\\Main\\Loader;")
+            appendLine("use Bitrix\\Main\\Localization\\Loc;")
+            appendLine("use $namespace\\Ui\\${entity}Grid;")
+            appendLine()
+            appendLine("define('ADMIN_MODULE_NAME', '$moduleId');")
+            appendLine("require_once \$_SERVER['DOCUMENT_ROOT'].'/bitrix/modules/main/include/prolog_admin_before.php';")
+            appendLine("Loc::loadMessages(__FILE__);")
+            appendLine("if (!Loader::includeModule(ADMIN_MODULE_NAME)) {")
+            appendLine("    \$APPLICATION->AuthForm(Loc::getMessage('ACCESS_DENIED'));")
+            appendLine("}")
+            appendLine("\$APPLICATION->SetTitle('${escape(title)}');")
+            appendLine("require_once \$_SERVER['DOCUMENT_ROOT'].'/bitrix/modules/main/include/prolog_admin_after.php';")
+            appendLine()
+            appendLine("\$grid = new Grid([")
+            appendLine("    'ID' => '$listId',")
+            appendLine("    'COLUMNS' => ${entity}Grid::getColumns(),")
+            appendLine("    'SHOW_ROW_ACTIONS_MENU' => true,")
+            appendLine("]);")
+            appendLine("\$grid->processRequest();")
+            appendLine("\$grid->display();")
+            appendLine("require_once \$_SERVER['DOCUMENT_ROOT'].'/bitrix/modules/main/include/epilog_admin.php';")
+        }
+    }
+
     fun generateEditPage(moduleId: String, namespace: String, entity: String, title: String): String {
         return buildString {
             appendLine("<?php")
