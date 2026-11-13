@@ -19,6 +19,8 @@
         <findUsagesHandlerFactory
                 order="first"
                 implementation="com.github.saundefined.bitrix_idea.php.BitrixLangFindUsagesHandlerFactory"/>
+        <gotoRelatedProvider
+                implementation="com.github.saundefined.bitrix_idea.php.BitrixGotoRelatedProvider"/>
         <renamePsiElementProcessor
                 order="first"
                 implementation="com.github.saundefined.bitrix_idea.php.BitrixLangKeyRenameProcessor"/>
@@ -137,6 +139,14 @@
                 enabledByDefault="false"
                 level="WEAK_WARNING"
                 implementationClass="com.github.saundefined.bitrix_idea.php.inspections.UnusedComponentParameterInspection"/>
+        <localInspection
+                language="PHP"
+                shortName="BitrixDuplicateLangAcrossFiles"
+                displayName="Bitrix: duplicate language message across files"
+                groupName="Bitrix"
+                enabledByDefault="false"
+                level="WEAK_WARNING"
+                implementationClass="com.github.saundefined.bitrix_idea.php.inspections.DuplicateLangAcrossFilesInspection"/>
         <localInspection
                 language="PHP"
                 shortName="BitrixMissingEventHandler"

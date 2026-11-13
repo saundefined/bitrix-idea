@@ -136,6 +136,28 @@ class UnusedComponentParameterInspection : LocalInspectionTool() {
 }
 
 /**
+ * Один и тот же lang-ключ объявлен в разных файлах проекта.
+ */
+class DuplicateLangAcrossFilesInspection : LocalInspectionTool() {
+    override fun buildVisitor(holder: ProblemsHolder, isOnTheFly: Boolean): PsiElementVisitor {
+        return object : PhpElementVisitor() {
+            override fun visitPhpStringLiteralExpression(element: StringLiteralExpression) {
+                if (!com.github.saundefined.bitrix_idea.php.BitrixLangSearch.isLangDefinition(element)) return
+                val entries = com.github.saundefined.bitrix_idea.structure.BitrixProjectStructure
+                    .findLangEntries(element.project, element.contents)
+                val files = entries.map { it.file.path }.distinct()
+                if (files.size <= 1) return
+                holder.registerProblem(
+                    element,
+                    message("inspection.lang.duplicate.files.message", element.contents, files.size),
+                    ProblemHighlightType.WEAK_WARNING,
+                )
+            }
+        }
+    }
+}
+
+/**
  * Обработчик события из `.settings.php` не найден в индексе PHP.
  */
 class MissingEventHandlerInspection : LocalInspectionTool() {

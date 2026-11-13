@@ -125,6 +125,41 @@
             >
             </action>
             <action
+                    class="com.github.saundefined.bitrix_idea.actions.CreateComponentClassAction"
+                    id="com.github.saundefined.bitrix_idea.actions.CreateComponentClassAction"
+                    text="Класс компонента"
+                    icon="icons.BitrixIdeaIcons.Bitrix"
+            >
+            </action>
+            <action
+                    class="com.github.saundefined.bitrix_idea.actions.CreateOptionsPageAction"
+                    id="com.github.saundefined.bitrix_idea.actions.CreateOptionsPageAction"
+                    text="Страница настроек модуля"
+                    icon="icons.BitrixIdeaIcons.Bitrix"
+            >
+            </action>
+            <action
+                    class="com.github.saundefined.bitrix_idea.actions.CreateAdminPageAction"
+                    id="com.github.saundefined.bitrix_idea.actions.CreateAdminPageAction"
+                    text="Admin-страница"
+                    icon="icons.BitrixIdeaIcons.Bitrix"
+            >
+            </action>
+            <action
+                    class="com.github.saundefined.bitrix_idea.actions.CreateRestControllerAction"
+                    id="com.github.saundefined.bitrix_idea.actions.CreateRestControllerAction"
+                    text="REST-контроллер"
+                    icon="icons.BitrixIdeaIcons.Bitrix"
+            >
+            </action>
+            <action
+                    class="com.github.saundefined.bitrix_idea.actions.CreateConsoleCommandAction"
+                    id="com.github.saundefined.bitrix_idea.actions.CreateConsoleCommandAction"
+                    text="Консольная команда"
+                    icon="icons.BitrixIdeaIcons.Bitrix"
+            >
+            </action>
+            <action
                     class="com.github.saundefined.bitrix_idea.actions.CreateSimpleComponentAction"
                     id="com.github.saundefined.bitrix_idea.actions.CreateSimpleComponentAction"
                     text="Простой компонент"
@@ -166,7 +201,13 @@
             <reference ref="com.github.saundefined.bitrix_idea.actions.CreateSimpleComponentAction"/>
             <reference ref="com.github.saundefined.bitrix_idea.actions.CreateTemplateAction"/>
             <reference ref="com.github.saundefined.bitrix_idea.actions.CreateComponentParametersAction"/>
+            <reference ref="com.github.saundefined.bitrix_idea.actions.CreateComponentClassAction"/>
             <reference ref="com.github.saundefined.bitrix_idea.actions.CreateComponentOverrideAction"/>
+            <separator/>
+            <reference ref="com.github.saundefined.bitrix_idea.actions.CreateOptionsPageAction"/>
+            <reference ref="com.github.saundefined.bitrix_idea.actions.CreateAdminPageAction"/>
+            <reference ref="com.github.saundefined.bitrix_idea.actions.CreateRestControllerAction"/>
+            <reference ref="com.github.saundefined.bitrix_idea.actions.CreateConsoleCommandAction"/>
         </group>
     </actions>
 

@@ -60,6 +60,15 @@ private class BitrixCompletionProvider : CompletionProvider<CompletionParameters
             return
         }
 
+        if (literal.containingFile.virtualFile?.name == ".settings.php") {
+            val modelNamespaces = model.modules.map { "\\${it.namespace}\\Controller" }
+            modelNamespaces.forEach { add(result, it, "controller") }
+            if (isInsideEvents(literal) || literal.contents.startsWith("On")) {
+                (BitrixEventNames.forModule(null) + BitrixProjectEvents.names(project)).sorted()
+                    .forEach { add(result, it, "event") }
+            }
+        }
+
         val call = BitrixPhp.directCall(literal) ?: return
         val index = BitrixPhp.argumentIndex(literal) ?: return
 
@@ -110,6 +119,18 @@ private class BitrixCompletionProvider : CompletionProvider<CompletionParameters
                     .forEach { add(result, "\\$it::run();", "agent") }
             }
         }
+    }
+
+    private fun isInsideEvents(element: com.intellij.psi.PsiElement): Boolean {
+        var current: com.intellij.psi.PsiElement? = element
+        while (current != null) {
+            if (current is ArrayHashElement) {
+                val key = (current.key as? StringLiteralExpression)?.contents
+                if (key == "events" || key == "agents") return true
+            }
+            current = current.parent
+        }
+        return false
     }
 
     private fun componentIdForArrayKey(literal: StringLiteralExpression): String? {

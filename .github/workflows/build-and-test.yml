@@ -11,6 +11,10 @@ on:
         required: false
         type: string
         default: 252.28539.149
+      psiTests:
+        required: false
+        type: boolean
+        default: false
     secrets:
       FETCH_SUBMODULES_PAT:
         required: false
@@ -53,6 +57,13 @@ jobs:
       - name: Build and test
         run: |
           ./gradlew buildPlugin check --stacktrace --console=plain \
+            -PplatformVersion="${{ inputs.platformVersion }}" \
+            -PphpPluginVersion="${{ inputs.phpPluginVersion }}"
+
+      - name: PSI tests
+        if: ${{ inputs.psiTests }}
+        run: |
+          ./gradlew test -PpsiTests=true --stacktrace --console=plain \
             -PplatformVersion="${{ inputs.platformVersion }}" \
             -PphpPluginVersion="${{ inputs.phpPluginVersion }}"
 

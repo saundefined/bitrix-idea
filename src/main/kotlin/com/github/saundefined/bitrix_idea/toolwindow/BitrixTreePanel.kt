@@ -6,6 +6,7 @@ import com.github.saundefined.bitrix_idea.settings.BitrixProjectConfigurable
 import com.github.saundefined.bitrix_idea.settings.BitrixProjectSettings
 import com.github.saundefined.bitrix_idea.structure.BitrixProjectStructure
 import com.intellij.diff.DiffContentFactory
+import com.intellij.openapi.actionSystem.ToggleAction
 import com.intellij.diff.DiffManager
 import com.intellij.diff.requests.SimpleDiffRequest
 import com.intellij.icons.AllIcons
@@ -51,6 +52,7 @@ import javax.swing.event.DocumentEvent
 import javax.swing.event.DocumentListener
 import javax.swing.tree.DefaultMutableTreeNode
 import javax.swing.tree.DefaultTreeModel
+import javax.swing.tree.TreePath
 import java.awt.datatransfer.StringSelection
 import java.util.concurrent.atomic.AtomicInteger
 
@@ -62,6 +64,7 @@ class BitrixTreePanel(private val project: Project) : Disposable {
         emptyText.text = message("toolwindow.filter")
     }
     private val generation = AtomicInteger()
+    private val properties = PropertiesComponent.getInstance(project)
 
     private val toolbar: ActionToolbar = run {
         val group = DefaultActionGroup().apply {
@@ -71,6 +74,19 @@ class BitrixTreePanel(private val project: Project) : Disposable {
             add(object : AnAction(message("toolwindow.reindex"), message("toolwindow.reindex"), AllIcons.Actions.Restart) {
                 override fun actionPerformed(e: AnActionEvent) {
                     BitrixToolWindowManager.reindex(project)
+                }
+            })
+            add(object : ToggleAction(
+                message("toolwindow.only.enabled"),
+                message("toolwindow.only.enabled.description"),
+                AllIcons.Actions.Show,
+            ) {
+                override fun isSelected(e: AnActionEvent): Boolean =
+                    properties.getBoolean(ONLY_ENABLED_KEY, false)
+
+                override fun setSelected(e: AnActionEvent, state: Boolean) {
+                    properties.setValue(ONLY_ENABLED_KEY, state, false)
+                    refresh()
                 }
             })
         }
@@ -159,8 +175,9 @@ class BitrixTreePanel(private val project: Project) : Disposable {
                 tree.setPaintBusy(false)
                 val visible = if (query.isEmpty()) model else filterNode(model, query) ?: TreeNodeData("Bitrix", null)
                 val root = toSwingNode(visible)
+                val expanded = collectExpandedKeys()
                 tree.model = DefaultTreeModel(root)
-                TreeUtil.expandAll(tree)
+                restoreExpanded(root, TreePath(root), expanded, 0)
             }
         }
     }
@@ -289,9 +306,11 @@ class BitrixTreePanel(private val project: Project) : Disposable {
         val model = BitrixProjectStructure.getModel(project)
         val settings = BitrixProjectSettings.getInstance(project)
         val disabled = settings.disabledModules.toSet()
+        val onlyEnabled = properties.getBoolean(ONLY_ENABLED_KEY, false)
         val modules = (BitrixProjectStructure.allModules(project) +
             com.github.saundefined.bitrix_idea.library.BitrixLibraryRootsProvider.bundledModules())
             .distinctBy { it.id }
+            .filter { !onlyEnabled || it.id !in disabled }
             .sortedBy { it.id }
             .map { module ->
                 TreeNodeData(
@@ -361,6 +380,39 @@ class BitrixTreePanel(private val project: Project) : Disposable {
         val result = DefaultMutableTreeNode(node)
         node.children.forEach { result.add(toSwingNode(it)) }
         return result
+    }
+
+    private fun collectExpandedKeys(): Set<String> {
+        val root = tree.model?.root as? DefaultMutableTreeNode ?: return emptySet()
+        val paths = tree.getExpandedDescendants(TreePath(root)) ?: return emptySet()
+        val result = mutableSetOf<String>()
+        while (paths.hasMoreElements()) {
+            val node = paths.nextElement().lastPathComponent as? DefaultMutableTreeNode ?: continue
+            val data = node.userObject as? TreeNodeData ?: continue
+            result += nodeKey(data)
+        }
+        return result
+    }
+
+    private fun restoreExpanded(
+        node: DefaultMutableTreeNode,
+        path: TreePath,
+        expanded: Set<String>,
+        depth: Int,
+    ) {
+        val data = node.userObject as? TreeNodeData ?: return
+        val shouldExpand = nodeKey(data) in expanded || (expanded.isEmpty() && depth <= 1)
+        if (shouldExpand && node.childCount > 0) tree.expandPath(path)
+        for (index in 0 until node.childCount) {
+            val child = node.getChildAt(index) as? DefaultMutableTreeNode ?: continue
+            restoreExpanded(child, path.pathByAddingChild(child), expanded, depth + 1)
+        }
+    }
+
+    private fun nodeKey(node: TreeNodeData): String = node.label + "|" + (node.file?.path ?: "")
+
+    private companion object {
+        const val ONLY_ENABLED_KEY = "bitrix.toolwindow.onlyEnabled"
     }
 
     override fun dispose() {

@@ -14,6 +14,11 @@ on:
         description: PHP plugin build matching the platform
         required: false
         default: 252.28539.149
+      psiTests:
+        description: Run PSI tests (downloads tests-bootstrap)
+        required: false
+        type: boolean
+        default: false
 
 concurrency:
   group: ${{ github.workflow }}-${{ github.event.pull_request.number || github.ref }}
@@ -28,5 +33,6 @@ jobs:
     with:
       platformVersion: ${{ inputs.platformVersion || '2025.2.6.2' }}
       phpPluginVersion: ${{ inputs.phpPluginVersion || '252.28539.149' }}
+      psiTests: ${{ inputs.psiTests || false }}
     secrets:
       FETCH_SUBMODULES_PAT: ${{ secrets.FETCH_SUBMODULES_PAT }}

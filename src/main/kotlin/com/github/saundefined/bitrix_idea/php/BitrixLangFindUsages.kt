@@ -47,7 +47,8 @@ private class BitrixLangFindUsagesHandler(
 
         val kind = bitrixStringKind(literal) ?: return true
         val key = literal.contents
-        val result = BitrixStringUsages.find(element.project, key, kind)
+        val componentId = if (kind == "template") componentIdOf(literal) else null
+        val result = BitrixStringUsages.find(element.project, key, kind, componentId)
         return result.all { processor.process(UsageInfo(it)) }
     }
 }
@@ -65,11 +66,17 @@ private fun bitrixStringKind(literal: StringLiteralExpression): String? {
     }
 }
 
+private fun componentIdOf(literal: StringLiteralExpression): String? {
+    val call = BitrixPhp.directCall(literal) ?: return null
+    return (call.parameterList?.getParameter(0) as? StringLiteralExpression)?.contents
+}
+
 private object BitrixStringUsages {
     fun find(
         project: com.intellij.openapi.project.Project,
         value: String,
         kind: String,
+        componentId: String? = null,
     ): List<StringLiteralExpression> {
         val result = mutableListOf<StringLiteralExpression>()
         val scope = com.intellij.psi.search.GlobalSearchScope.projectScope(project)
@@ -82,6 +89,7 @@ private object BitrixStringUsages {
                 .forEach { literal ->
                     if (literal.contents != value) return@forEach
                     if (bitrixStringKind(literal) != kind) return@forEach
+                    if (kind == "template" && componentId != null && componentIdOf(literal) != componentId) return@forEach
                     result += literal
                 }
         }

@@ -7,8 +7,12 @@ import com.github.saundefined.bitrix_idea.structure.BitrixProjectStructure
 import com.github.saundefined.bitrix_idea.toolwindow.BitrixToolWindowManager
 import com.github.saundefined.bitrix_idea.ui.LocalizationTable
 import com.github.saundefined.bitrix_idea.ui.ModulesTable
+import com.intellij.ide.actions.RevealFileAction
+import com.intellij.notification.NotificationType
+import com.intellij.notification.Notifications
 import com.intellij.openapi.application.ApplicationManager
 import com.intellij.openapi.fileChooser.FileChooserDescriptorFactory
+import com.intellij.openapi.ide.CopyPasteManager
 import com.intellij.openapi.options.Configurable
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.ui.DialogPanel
@@ -18,6 +22,9 @@ import com.intellij.ui.SimpleListCellRenderer
 import com.intellij.ui.components.JBTextArea
 import com.intellij.ui.components.JBTextField
 import com.intellij.ui.dsl.builder.*
+import com.intellij.notification.NotificationGroupManager
+import java.awt.datatransfer.StringSelection
+import java.io.File
 import javax.swing.JComponent
 
 /**
@@ -152,6 +159,17 @@ class BitrixProjectConfigurable(private val project: Project) : Configurable {
                     button(message("settings.bitrix.reindex")) {
                         reindex()
                     }
+                    button(message("settings.bitrix.diagnostics.copy")) {
+                        CopyPasteManager.getInstance().setContents(StringSelection(diagnosticsArea.text))
+                    }
+                }
+                row {
+                    button(message("settings.bitrix.diagnostics.open")) {
+                        val path = BitrixDiagnostics.collect(project).corePath
+                        if (path.isNotBlank() && path != "—") {
+                            RevealFileAction.openDirectory(File(path))
+                        }
+                    }
                 }
             }
 
@@ -279,6 +297,10 @@ class BitrixProjectConfigurable(private val project: Project) : Configurable {
         BitrixSourceRootsManager.configure(project, force = true)
         BitrixToolWindowManager.refresh(project)
         diagnosticsArea.text = diagnosticsText()
+        NotificationGroupManager.getInstance()
+            .getNotificationGroup("Bitrix Idea Plugin")
+            .createNotification(message("settings.bitrix.reindex.done"), NotificationType.INFORMATION)
+            .notify(project)
     }
 
     private fun parseList(value: String): List<String> =
