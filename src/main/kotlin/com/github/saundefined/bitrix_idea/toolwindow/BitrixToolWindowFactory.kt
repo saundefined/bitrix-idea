@@ -8,6 +8,7 @@ import com.intellij.ui.content.ContentFactory
 class BitrixToolWindowFactory : ToolWindowFactory {
     override fun createToolWindowContent(project: Project, toolWindow: ToolWindow) {
         val panel = BitrixTreePanel(project)
+        BitrixToolWindowManager.register(project, panel)
         val content = ContentFactory.getInstance().createContent(panel.component, "", false)
         content.setDisposer(panel)
         toolWindow.contentManager.addContent(content)

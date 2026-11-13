@@ -1,6 +1,7 @@
 package com.github.saundefined.bitrix_idea.toolwindow
 
 import com.github.saundefined.bitrix_idea.BitrixIdeaBundle.message
+import com.github.saundefined.bitrix_idea.settings.BitrixProjectSettings
 import com.github.saundefined.bitrix_idea.structure.BitrixProjectStructure
 import com.intellij.icons.AllIcons
 import com.intellij.openapi.Disposable
@@ -117,6 +118,12 @@ class BitrixTreePanel(private val project: Project) : Disposable {
 
     fun refresh() {
         if (project.isDisposed) return
+        val settings = BitrixProjectSettings.getInstance(project)
+        if (!settings.bitrixFrameworkEnabled || !settings.bitrixToolWindowEnabled) {
+            generation.incrementAndGet()
+            tree.model = DefaultTreeModel(DefaultMutableTreeNode(message("toolwindow.disabled")))
+            return
+        }
         val current = generation.incrementAndGet()
         val query = filterField.text.trim()
         ApplicationManager.getApplication().executeOnPooledThread {

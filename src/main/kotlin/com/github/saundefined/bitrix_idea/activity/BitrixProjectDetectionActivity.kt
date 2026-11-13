@@ -4,6 +4,7 @@ import com.github.saundefined.bitrix_idea.BitrixIdeaBundle.message
 import com.github.saundefined.bitrix_idea.library.BitrixLibraryRootsProvider
 import com.github.saundefined.bitrix_idea.roots.BitrixSourceRootsManager
 import com.github.saundefined.bitrix_idea.settings.BitrixProjectSettings
+import com.github.saundefined.bitrix_idea.toolwindow.BitrixToolWindowManager
 import com.intellij.notification.Notification
 import com.intellij.notification.NotificationAction
 import com.intellij.notification.NotificationType
@@ -54,6 +55,7 @@ class BitrixProjectDetectionActivity : StartupActivity {
                 settings.bitrixFrameworkEnabled = true
                 BitrixLibraryRootsProvider.refresh(project)
                 BitrixSourceRootsManager.configure(project, force = true)
+                BitrixToolWindowManager.updateAvailability(project)
                 notification.expire()
             }
         })

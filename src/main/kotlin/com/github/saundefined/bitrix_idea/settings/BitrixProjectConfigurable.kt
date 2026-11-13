@@ -4,6 +4,7 @@ import com.github.saundefined.bitrix_idea.BitrixIdeaBundle.message
 import com.github.saundefined.bitrix_idea.library.BitrixLibraryRootsProvider
 import com.github.saundefined.bitrix_idea.roots.BitrixSourceRootsManager
 import com.github.saundefined.bitrix_idea.structure.BitrixProjectStructure
+import com.github.saundefined.bitrix_idea.toolwindow.BitrixToolWindowManager
 import com.github.saundefined.bitrix_idea.ui.LocalizationTable
 import com.github.saundefined.bitrix_idea.ui.ModulesTable
 import com.intellij.openapi.fileChooser.FileChooserDescriptorFactory
@@ -48,6 +49,13 @@ class BitrixProjectConfigurable(private val project: Project) : Configurable {
             row {
                 checkBox(message("settings.bitrix.use.bundled.library"))
                     .bindSelected(settings::useBundledLibrary)
+            }
+            row {
+                checkBox(message("settings.bitrix.toolwindow"))
+                    .bindSelected(settings::bitrixToolWindowEnabled)
+            }
+            row {
+                comment(message("settings.bitrix.toolwindow.description"))
             }
             row {
                 comment(
@@ -151,6 +159,8 @@ class BitrixProjectConfigurable(private val project: Project) : Configurable {
         settings.bitrixDetectionNotificationShown = true
         BitrixLibraryRootsProvider.refresh(project)
         BitrixSourceRootsManager.configure(project)
+        BitrixToolWindowManager.refresh(project)
+        BitrixToolWindowManager.updateAvailability(project)
     }
 
     override fun reset() {

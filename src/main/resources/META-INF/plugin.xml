@@ -34,6 +34,7 @@
         <postStartupActivity implementation="com.github.saundefined.bitrix_idea.activity.NotificationStartupActivity"/>
         <postStartupActivity implementation="com.github.saundefined.bitrix_idea.activity.BitrixProjectDetectionActivity"/>
         <postStartupActivity implementation="com.github.saundefined.bitrix_idea.roots.BitrixSourceRootsStartupActivity"/>
+        <postStartupActivity implementation="com.github.saundefined.bitrix_idea.toolwindow.BitrixToolWindowStartupActivity"/>
         <projectConfigurable
                 parentId="settings.php.frameworks"
                 instance="com.github.saundefined.bitrix_idea.settings.BitrixProjectConfigurable"

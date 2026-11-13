@@ -21,6 +21,11 @@ class BitrixProjectSettings : PersistentStateComponent<BitrixProjectSettings> {
     var useBundledLibrary: Boolean = true
 
     /**
+     * Показывать дерево модулей и компонентов в окне Bitrix.
+     */
+    var bitrixToolWindowEnabled: Boolean = true
+
+    /**
      * Каталог, содержащий `bitrix` и `local`, относительно корня проекта.
      * Пустое значение означает корень проекта. Примеры: `www`, `public`, `../site`.
      */
