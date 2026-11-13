@@ -6,5 +6,6 @@ import com.intellij.openapi.startup.StartupActivity
 class BitrixToolWindowStartupActivity : StartupActivity {
     override fun runActivity(project: Project) {
         BitrixToolWindowManager.updateAvailability(project)
+        BitrixHealthToolWindowManager.updateAvailability(project)
     }
 }

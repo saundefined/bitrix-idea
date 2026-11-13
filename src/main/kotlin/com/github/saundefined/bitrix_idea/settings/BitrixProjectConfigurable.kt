@@ -86,6 +86,13 @@ class BitrixProjectConfigurable(private val project: Project) : Configurable {
                 comment(message("settings.bitrix.toolwindow.description"))
             }
             row {
+                checkBox(message("settings.bitrix.health.window"))
+                    .bindSelected(settings::bitrixHealthWindowEnabled)
+            }
+            row {
+                comment(message("settings.bitrix.health.window.description"))
+            }
+            row {
                 checkBox(message("settings.bitrix.lang.folding"))
                     .bindSelected(settings::langFoldingEnabled)
             }
@@ -257,6 +264,8 @@ class BitrixProjectConfigurable(private val project: Project) : Configurable {
         BitrixSourceRootsManager.configure(project)
         BitrixToolWindowManager.refresh(project)
         BitrixToolWindowManager.updateAvailability(project)
+        com.github.saundefined.bitrix_idea.toolwindow.BitrixHealthToolWindowManager.refresh(project)
+        com.github.saundefined.bitrix_idea.toolwindow.BitrixHealthToolWindowManager.updateAvailability(project)
     }
 
     override fun reset() {
@@ -296,6 +305,7 @@ class BitrixProjectConfigurable(private val project: Project) : Configurable {
         BitrixLibraryRootsProvider.refresh(project)
         BitrixSourceRootsManager.configure(project, force = true)
         BitrixToolWindowManager.refresh(project)
+        com.github.saundefined.bitrix_idea.toolwindow.BitrixHealthToolWindowManager.refresh(project)
         diagnosticsArea.text = diagnosticsText()
         NotificationGroupManager.getInstance()
             .getNotificationGroup("Bitrix Idea Plugin")

@@ -32,6 +32,11 @@ class BitrixProjectSettings : PersistentStateComponent<BitrixProjectSettings> {
     var bitrixToolWindowEnabled: Boolean = true
 
     /**
+     * Показывать отдельное окно диагностики Bitrix.
+     */
+    var bitrixHealthWindowEnabled: Boolean = true
+
+    /**
      * Показывать текст lang-фразы вместо Loc::getMessage(...).
      */
     var langFoldingEnabled: Boolean = true

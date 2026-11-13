@@ -31,6 +31,11 @@
                 anchor="right"
                 icon="/icons/bitrix.svg"
                 factoryClass="com.github.saundefined.bitrix_idea.toolwindow.BitrixToolWindowFactory"/>
+        <toolWindow
+                id="BitrixHealth"
+                anchor="right"
+                icon="/icons/bitrix.svg"
+                factoryClass="com.github.saundefined.bitrix_idea.toolwindow.BitrixHealthToolWindowFactory"/>
         <notificationGroup id="Bitrix Idea Plugin" displayType="BALLOON"/>
         <notificationGroup id="Bitrix Idea Framework" displayType="BALLOON"/>
         <postStartupActivity implementation="com.github.saundefined.bitrix_idea.activity.NotificationStartupActivity"/>
@@ -160,6 +165,49 @@
             >
             </action>
             <action
+                    class="com.github.saundefined.bitrix_idea.actions.CreateUiPagesAction"
+                    id="com.github.saundefined.bitrix_idea.actions.CreateUiPagesAction"
+                    text="Bitrix UI-страницы"
+                    icon="icons.BitrixIdeaIcons.Bitrix"
+            >
+            </action>
+            <action
+                    class="com.github.saundefined.bitrix_idea.actions.MoveComponentToLocalAction"
+                    id="com.github.saundefined.bitrix_idea.actions.MoveComponentToLocalAction"
+                    text="Переместить компонент в local"
+                    icon="icons.BitrixIdeaIcons.Bitrix"
+            >
+            </action>
+            <action
+                    class="com.github.saundefined.bitrix_idea.actions.ConvertSimpleComponentToComplexAction"
+                    id="com.github.saundefined.bitrix_idea.actions.ConvertSimpleComponentToComplexAction"
+                    text="Сделать компонент комплексным"
+                    icon="icons.BitrixIdeaIcons.Bitrix"
+            >
+            </action>
+            <action
+                    class="com.github.saundefined.bitrix_idea.actions.CopyTemplateToLocalAction"
+                    id="com.github.saundefined.bitrix_idea.actions.CopyTemplateToLocalAction"
+                    text="Копировать шаблон в local"
+                    icon="icons.BitrixIdeaIcons.Bitrix"
+            >
+            </action>
+            <action
+                    class="com.github.saundefined.bitrix_idea.actions.ShowTemplateChainAction"
+                    id="com.github.saundefined.bitrix_idea.actions.ShowTemplateChainAction"
+                    text="Цепочка шаблонов"
+                    icon="icons.BitrixIdeaIcons.Bitrix"
+            >
+            </action>
+            <action
+                    class="com.github.saundefined.bitrix_idea.actions.EditSettingsFileAction"
+                    id="com.github.saundefined.bitrix_idea.actions.EditSettingsFileAction"
+                    text="Редактор .settings.php"
+                    icon="icons.BitrixIdeaIcons.Bitrix"
+            >
+                <add-to-group group-id="EditorPopupMenu" anchor="last"/>
+            </action>
+            <action
                     class="com.github.saundefined.bitrix_idea.actions.CreateSimpleComponentAction"
                     id="com.github.saundefined.bitrix_idea.actions.CreateSimpleComponentAction"
                     text="Простой компонент"
@@ -208,6 +256,12 @@
             <reference ref="com.github.saundefined.bitrix_idea.actions.CreateAdminPageAction"/>
             <reference ref="com.github.saundefined.bitrix_idea.actions.CreateRestControllerAction"/>
             <reference ref="com.github.saundefined.bitrix_idea.actions.CreateConsoleCommandAction"/>
+            <reference ref="com.github.saundefined.bitrix_idea.actions.CreateUiPagesAction"/>
+            <separator/>
+            <reference ref="com.github.saundefined.bitrix_idea.actions.MoveComponentToLocalAction"/>
+            <reference ref="com.github.saundefined.bitrix_idea.actions.ConvertSimpleComponentToComplexAction"/>
+            <reference ref="com.github.saundefined.bitrix_idea.actions.CopyTemplateToLocalAction"/>
+            <reference ref="com.github.saundefined.bitrix_idea.actions.ShowTemplateChainAction"/>
         </group>
     </actions>
 

@@ -32,6 +32,7 @@ object BitrixToolWindowManager {
         com.github.saundefined.bitrix_idea.library.BitrixLibraryRootsProvider.refresh(project)
         com.github.saundefined.bitrix_idea.roots.BitrixSourceRootsManager.configure(project, force = true)
         panels[project]?.refresh()
+        BitrixHealthToolWindowManager.refresh(project)
     }
 
     /**
