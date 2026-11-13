@@ -63,6 +63,11 @@ class BitrixTreePanel(private val project: Project) : Disposable {
             add(object : AnAction(message("toolwindow.refresh"), message("toolwindow.refresh"), AllIcons.Actions.Refresh) {
                 override fun actionPerformed(e: AnActionEvent) = refresh()
             })
+            add(object : AnAction(message("toolwindow.reindex"), message("toolwindow.reindex"), AllIcons.Actions.Restart) {
+                override fun actionPerformed(e: AnActionEvent) {
+                    BitrixToolWindowManager.reindex(project)
+                }
+            })
         }
         ActionManager.getInstance().createActionToolbar("BitrixToolWindow", group, true).apply {
             targetComponent = tree
@@ -92,8 +97,13 @@ class BitrixTreePanel(private val project: Project) : Disposable {
             ) {
                 val node = (value as? DefaultMutableTreeNode)?.userObject as? TreeNodeData ?: return
                 icon = BitrixIdeaIcons.Bitrix
-                append(node.label, SimpleTextAttributes.REGULAR_ATTRIBUTES, true)
-                toolTipText = node.label
+                val attributes = if (node.enabled) {
+                    SimpleTextAttributes.REGULAR_ATTRIBUTES
+                } else {
+                    SimpleTextAttributes.GRAYED_ATTRIBUTES
+                }
+                append(node.label, attributes, true)
+                toolTipText = if (node.enabled) node.label else message("toolwindow.disabled.module", node.label)
             }
         }
         tree.addMouseListener(object : MouseAdapter() {
@@ -212,9 +222,19 @@ class BitrixTreePanel(private val project: Project) : Disposable {
 
     private fun buildTree(): TreeNodeData {
         val model = BitrixProjectStructure.getModel(project)
-        val modules = model.modules.map { module ->
-            TreeNodeData(module.id, firstFile(module.directory, "include.php", ".settings.php", "install/version.php"))
-        }
+        val settings = BitrixProjectSettings.getInstance(project)
+        val disabled = settings.disabledModules.toSet()
+        val modules = (BitrixProjectStructure.allModules(project) +
+            com.github.saundefined.bitrix_idea.library.BitrixLibraryRootsProvider.bundledModules())
+            .distinctBy { it.id }
+            .sortedBy { it.id }
+            .map { module ->
+                TreeNodeData(
+                    label = module.id,
+                    file = firstFile(module.directory, "include.php", ".settings.php", "install/version.php"),
+                    enabled = module.id !in disabled,
+                )
+            }
         val components = model.components
             .groupBy { it.vendor }
             .toSortedMap()
@@ -280,6 +300,7 @@ private data class TreeNodeData(
     val label: String,
     val file: VirtualFile?,
     val children: List<TreeNodeData> = emptyList(),
+    val enabled: Boolean = true,
 ) {
     override fun toString(): String = label
 }

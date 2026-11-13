@@ -4,6 +4,7 @@ import com.github.saundefined.bitrix_idea.settings.BitrixProjectSettings
 import com.intellij.openapi.application.ApplicationManager
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.wm.ToolWindowManager
+import com.intellij.psi.PsiManager
 import java.util.WeakHashMap
 
 /**
@@ -17,6 +18,19 @@ object BitrixToolWindowManager {
     }
 
     fun refresh(project: Project) {
+        panels[project]?.refresh()
+    }
+
+    /**
+     * Сбрасывает кеши моделей и перестраивает дерево.
+     */
+    fun reindex(project: Project) {
+        BitrixProjectSettings.getInstance(project).settingsRevision++
+        ApplicationManager.getApplication().runWriteAction {
+            PsiManager.getInstance(project).dropPsiCaches()
+        }
+        com.github.saundefined.bitrix_idea.library.BitrixLibraryRootsProvider.refresh(project)
+        com.github.saundefined.bitrix_idea.roots.BitrixSourceRootsManager.configure(project, force = true)
         panels[project]?.refresh()
     }
 

@@ -63,7 +63,9 @@ class BitrixLibraryRootsProvider : AdditionalLibraryRootsProvider() {
          */
         fun currentSourceRoots(project: Project): List<VirtualFile> {
             val settings = BitrixProjectSettings.getInstance(project)
-            if (!settings.bitrixFrameworkEnabled || !settings.useBundledLibrary) return emptyList()
+            if (!settings.bitrixFrameworkEnabled || settings.coreSource != com.github.saundefined.bitrix_idea.settings.BitrixCoreSource.BUNDLED) {
+                return emptyList()
+            }
             val disabled = settings.disabledModules.toSet()
             return bundledModules()
                 .filter { it.id !in disabled }

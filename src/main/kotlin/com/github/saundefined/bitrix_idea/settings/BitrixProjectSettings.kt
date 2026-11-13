@@ -17,8 +17,14 @@ class BitrixProjectSettings : PersistentStateComponent<BitrixProjectSettings> {
 
     /**
      * Подключать встроенную библиотеку `bitrix-idea-library`.
+     * Оставлено для совместимости со старыми настройками.
      */
     var useBundledLibrary: Boolean = true
+
+    /**
+     * Источник ядра: встроенная библиотека или `bitrix` из проекта.
+     */
+    var coreSource: BitrixCoreSource = BitrixCoreSource.BUNDLED
 
     /**
      * Показывать дерево модулей и компонентов в окне Bitrix.
@@ -52,6 +58,16 @@ class BitrixProjectSettings : PersistentStateComponent<BitrixProjectSettings> {
     var disabledModules: List<String> = emptyList()
 
     /**
+     * ID компонентов, которые не нужно индексировать (`vendor:name`).
+     */
+    var excludedComponentIds: List<String> = emptyList()
+
+    /**
+     * Шаблоны сайтов, которые не нужно индексировать.
+     */
+    var excludedSiteTemplates: List<String> = emptyList()
+
+    /**
      * Увеличивается при смене корневого каталога, чтобы сбросить кеш индексов проекта.
      */
     var settingsRevision: Long = 0
@@ -65,4 +81,9 @@ class BitrixProjectSettings : PersistentStateComponent<BitrixProjectSettings> {
     companion object {
         fun getInstance(project: Project): BitrixProjectSettings = project.service()
     }
+}
+
+enum class BitrixCoreSource(val displayName: String) {
+    BUNDLED("Встроенная библиотека"),
+    PROJECT("bitrix из проекта"),
 }

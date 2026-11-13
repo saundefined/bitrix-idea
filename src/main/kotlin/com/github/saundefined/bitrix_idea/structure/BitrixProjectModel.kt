@@ -334,7 +334,10 @@ object BitrixProjectStructure {
 
     private fun scan(project: Project): BitrixProjectModel {
         val scope = GlobalSearchScope.projectScope(project)
-        val disabledModules = BitrixProjectSettings.getInstance(project).disabledModules.toSet()
+        val settings = BitrixProjectSettings.getInstance(project)
+        val disabledModules = settings.disabledModules.toSet()
+        val excludedComponents = settings.excludedComponentIds.toSet()
+        val excludedTemplates = settings.excludedSiteTemplates.toSet()
         val modules = mutableListOf<BitrixModuleInfo>()
         val components = linkedMapOf<String, BitrixComponentInfo>()
         val siteTemplates = linkedSetOf<String>()
@@ -364,6 +367,7 @@ object BitrixProjectStructure {
             componentsDir.children.filter { it.isDirectory }.forEach { vendor ->
                 vendor.children.filter { it.isDirectory }.forEach { component ->
                     val id = "${vendor.name}:${component.name}"
+                    if (id in excludedComponents) return@forEach
                     val local = path.contains("/local/")
                     val existing = components[id]
                     if (existing == null || (!existing.local && local)) {
@@ -377,7 +381,9 @@ object BitrixProjectStructure {
             if (!isUnderRoot(project, templatesDir)) return@forEach
             val parent = templatesDir.parent ?: return@forEach
             if (parent.name == "local" || parent.name == "bitrix") {
-                templatesDir.children.filter { it.isDirectory }.mapTo(siteTemplates) { it.name }
+                templatesDir.children
+                    .filter { it.isDirectory && it.name !in excludedTemplates }
+                    .mapTo(siteTemplates) { it.name }
             }
         }
 
