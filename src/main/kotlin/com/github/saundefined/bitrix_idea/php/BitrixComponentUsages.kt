@@ -33,6 +33,9 @@ object BitrixComponentUsages {
     private fun find(project: Project, predicate: (StringLiteralExpression) -> Boolean): StringLiteralExpression? {
         val scope = GlobalSearchScope.projectScope(project)
         FileTypeIndex.getFiles(PhpFileType.INSTANCE, scope).forEach { virtualFile ->
+            val text = runCatching { com.intellij.openapi.vfs.VfsUtilCore.loadText(virtualFile) }.getOrNull()
+                ?: return@forEach
+            if (!text.contains("IncludeComponent")) return@forEach
             val file = PsiManager.getInstance(project).findFile(virtualFile) ?: return@forEach
             PsiTreeUtil.findChildrenOfType(file, StringLiteralExpression::class.java)
                 .firstOrNull(predicate)

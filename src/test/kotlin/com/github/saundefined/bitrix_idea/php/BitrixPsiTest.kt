@@ -3,6 +3,7 @@ package com.github.saundefined.bitrix_idea.php
 import com.github.saundefined.bitrix_idea.php.inspections.MissingLangMessageInspection
 import com.github.saundefined.bitrix_idea.structure.BitrixProjectStructure
 import com.github.saundefined.bitrix_idea.templates.d7.D7SettingsRegistrar
+import com.github.saundefined.bitrix_idea.toolwindow.BitrixHealthChecker
 import com.intellij.openapi.application.ApplicationManager
 import com.intellij.openapi.vfs.VfsUtilCore
 import com.intellij.psi.PsiDocumentManager
@@ -24,6 +25,7 @@ class BitrixPsiTest : BasePlatformTestCase() {
         assertNotNull(model.findModule("vendor.module"))
         assertEquals("Новости", BitrixComponentMeta.description(project, "vendor:news")?.first)
         assertEquals(true, BitrixComponentMeta.parameter(project, "vendor:news", "IBLOCK_ID")?.required)
+        assertTrue(BitrixHealthChecker.collect(project).isNotEmpty())
     }
 
     fun testFindsLanguageDefinitions() {

@@ -84,6 +84,9 @@ private object BitrixStringUsages {
             com.jetbrains.php.lang.PhpFileType.INSTANCE,
             scope,
         ).forEach { virtualFile ->
+            val text = runCatching { com.intellij.openapi.vfs.VfsUtilCore.loadText(virtualFile) }.getOrNull()
+                ?: return@forEach
+            if (!text.contains(value)) return@forEach
             val file = com.intellij.psi.PsiManager.getInstance(project).findFile(virtualFile) ?: return@forEach
             com.intellij.psi.util.PsiTreeUtil.findChildrenOfType(file, StringLiteralExpression::class.java)
                 .forEach { literal ->

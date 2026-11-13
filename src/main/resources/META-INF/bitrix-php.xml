@@ -10,6 +10,9 @@
         <codeInsight.lineMarkerProvider
                 language="PHP"
                 implementationClass="com.github.saundefined.bitrix_idea.php.BitrixLineMarkerProvider"/>
+        <codeInsight.inlayProvider
+                language="PHP"
+                implementationClass="com.github.saundefined.bitrix_idea.php.BitrixTemplateInlayHintsProvider"/>
         <lang.foldingBuilder
                 language="PHP"
                 implementationClass="com.github.saundefined.bitrix_idea.php.BitrixLangFoldingBuilder"/>

@@ -20,6 +20,7 @@ class BitrixChooseByNameContributor : ChooseByNameContributor {
         model.modules.mapTo(names) { it.id }
         model.components.mapTo(names) { it.id }
         model.siteTemplates.mapTo(names) { it }
+        model.langKeys().take(5000).mapTo(names) { it }
         model.components.forEach { component ->
             BitrixProjectStructure.availableTemplateNames(project, component.id).forEach { template ->
                 names += "${component.id}:$template"
@@ -70,6 +71,16 @@ class BitrixChooseByNameContributor : ChooseByNameContributor {
                 name = template,
                 location = file?.path ?: template,
                 description = "Bitrix site template",
+                file = file,
+            )
+        }
+
+        model.langEntries[name]?.firstOrNull()?.file?.let { file ->
+            result += BitrixNavigationItem(
+                project = project,
+                name = name,
+                location = file.path,
+                description = "Bitrix lang message",
                 file = file,
             )
         }
