@@ -19,6 +19,10 @@ on:
         required: false
         type: boolean
         default: false
+      verifyPlatforms:
+        description: Comma-separated PhpStorm versions for the plugin verifier
+        required: false
+        default: ""
 
 concurrency:
   group: ${{ github.workflow }}-${{ github.event.pull_request.number || github.ref }}
@@ -34,5 +38,6 @@ jobs:
       platformVersion: ${{ inputs.platformVersion || '2025.2.6.2' }}
       phpPluginVersion: ${{ inputs.phpPluginVersion || '252.28539.149' }}
       psiTests: ${{ inputs.psiTests || false }}
+      verifyPlatforms: ${{ inputs.verifyPlatforms || '' }}
     secrets:
       FETCH_SUBMODULES_PAT: ${{ secrets.FETCH_SUBMODULES_PAT }}

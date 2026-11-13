@@ -68,6 +68,7 @@ The plugin can be installed on following IntelliJ-based:
 ```sh
 ./gradlew buildPlugin check
 ./gradlew verifyPlugin
+./gradlew verifyPlugin -PverifyPlatforms=2025.2.6.2,2025.2.5
 ./gradlew test -PpsiTests=true
 ./gradlew buildPlugin -PplatformVersion=2025.1.5 -PphpPluginVersion=<php-plugin-build>
 ```

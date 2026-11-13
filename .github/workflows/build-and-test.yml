@@ -15,6 +15,10 @@ on:
         required: false
         type: boolean
         default: false
+      verifyPlatforms:
+        required: false
+        type: string
+        default: ""
     secrets:
       FETCH_SUBMODULES_PAT:
         required: false
@@ -80,7 +84,8 @@ jobs:
         run: |
           ./gradlew verifyPlugin --stacktrace --console=plain \
             -PplatformVersion="${{ inputs.platformVersion }}" \
-            -PphpPluginVersion="${{ inputs.phpPluginVersion }}"
+            -PphpPluginVersion="${{ inputs.phpPluginVersion }}" \
+            -PverifyPlatforms="${{ inputs.verifyPlatforms }}"
 
       - name: Collect plugin verifier result
         if: always()

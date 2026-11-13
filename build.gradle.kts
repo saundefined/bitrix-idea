@@ -14,6 +14,12 @@ val platformVersion = providers.gradleProperty("platformVersion").orNull
     ?.takeIf { it.isNotBlank() } ?: "2025.2.6.2"
 val phpPluginVersion = providers.gradleProperty("phpPluginVersion").orNull
     ?.takeIf { it.isNotBlank() } ?: "252.28539.149"
+val verifyPlatformVersions = providers.gradleProperty("verifyPlatforms").orNull
+    ?.split(',')
+    ?.map { it.trim() }
+    ?.filter { it.isNotEmpty() }
+    ?.ifEmpty { null }
+    ?: listOf(platformVersion)
 
 dependencies {
     testImplementation("junit:junit:4.13.2")
@@ -49,7 +55,9 @@ intellijPlatform {
     instrumentCode.set(false)
     pluginVerification {
         ides {
-            create(IntelliJPlatformType.PhpStorm, platformVersion)
+            verifyPlatformVersions.forEach { version ->
+                create(IntelliJPlatformType.PhpStorm, version)
+            }
         }
         freeArgs = listOf("-mute", "TemplateWordInPluginName")
     }
