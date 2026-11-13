@@ -99,15 +99,17 @@ class CreateComponentOverrideDialogWrapper(
             Messages.showErrorDialog(project, message("create.override.site.validation"), title)
             return
         }
-        val result = ApplicationManager.getApplication().runWriteAction<Result<com.intellij.openapi.vfs.VirtualFile>> {
-            ComponentTemplateOverrideWriter.override(
-                project = project,
-                componentId = componentId.trim(),
-                sourceTemplate = sourceTemplate.trim(),
-                siteTemplate = selectedSite,
-                targetTemplate = targetTemplate.trim(),
-            )
-        }
+        val result = runCatching {
+            ApplicationManager.getApplication().runWriteAction<Result<com.intellij.openapi.vfs.VirtualFile>> {
+                ComponentTemplateOverrideWriter.override(
+                    project = project,
+                    componentId = componentId.trim(),
+                    sourceTemplate = sourceTemplate.trim(),
+                    siteTemplate = selectedSite,
+                    targetTemplate = targetTemplate.trim(),
+                )
+            }
+        }.getOrElse { Result.failure(it) }
         if (result.isFailure) {
             Messages.showErrorDialog(
                 project,
