@@ -266,6 +266,11 @@ class BitrixTreePanel(private val project: Project) : Disposable {
             })
         }
         if (componentId != null) {
+            menu.add(JMenuItem(message("toolwindow.template.chain")).apply {
+                addActionListener {
+                    com.github.saundefined.bitrix_idea.dialogs.TemplateChainDialogWrapper(project, componentId).showAndGet()
+                }
+            })
             menu.add(JMenuItem(message("toolwindow.compare.default")).apply {
                 addActionListener { compareWithDefault(componentId) }
             })

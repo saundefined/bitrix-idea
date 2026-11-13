@@ -37,8 +37,28 @@ object ComponentParametersWriter {
         languages.ifEmpty { listOf("ru") }.forEach { language ->
             val langDir = langRoot.findChild(language) ?: langRoot.createChildDirectory(this, language)
             val langFile = langDir.findChild(".parameters.php")
-                ?: langDir.createChildData(this, ".parameters.php")
-            VfsUtil.saveText(langFile, generateLang(parameters))
+            val existing = langFile?.let { runCatching { com.intellij.openapi.vfs.VfsUtilCore.loadText(it) }.getOrNull() }
+            if (existing == null) {
+                val created = langFile ?: langDir.createChildData(this, ".parameters.php")
+                VfsUtil.saveText(created, generateLang(parameters))
+                return@forEach
+            }
+
+            val missing = parameters.filter { parameter ->
+                val key = langKey(parameter.key)
+                !existing.contains("\$MESS['$key']") && !existing.contains("\$MESS[\"$key\"]")
+            }
+            if (missing.isEmpty()) return@forEach
+
+            val lines = missing.joinToString("") {
+                "\$MESS['${langKey(it.key)}'] = '${escape(it.name)}';\n"
+            }
+            val updated = if (existing.contains("?>")) {
+                existing.substringBeforeLast("?>").trimEnd() + "\n" + lines
+            } else {
+                existing.trimEnd() + "\n" + lines
+            }
+            VfsUtil.saveText(langFile, updated)
         }
     }
 

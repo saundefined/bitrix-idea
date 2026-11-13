@@ -200,6 +200,40 @@ class CreateComponentTemplateDirectoryFix(
     }
 }
 
+/**
+ * Создаёт класс обработчика события по строке из `.settings.php`.
+ */
+class CreateEventHandlerClassFix(
+    private val moduleRoot: VirtualFile,
+    private val className: String,
+    private val methodName: String,
+) : LocalQuickFix {
+    override fun getFamilyName(): String = message("inspection.fix.create.handler.family")
+
+    override fun getName(): String = message("inspection.fix.create.handler.name", className)
+
+    override fun applyFix(project: Project, descriptor: ProblemDescriptor) {
+        WriteCommandAction.runWriteCommandAction(project) {
+            val normalized = className.trim().removePrefix("\\")
+            val namespace = normalized.substringBeforeLast('\\', "")
+                .ifBlank { com.github.saundefined.bitrix_idea.structure.BitrixModuleNames.namespaceFor(moduleRoot.name) }
+            val simpleName = normalized.substringAfterLast('\\')
+            if (simpleName.isBlank()) return@runWriteCommandAction
+            val lib = moduleRoot.findChild("lib") ?: moduleRoot.createChildDirectory(this, "lib")
+            val target = lib.findChild("$simpleName.php") ?: lib.createChildData(this, "$simpleName.php")
+            VfsUtil.saveText(
+                target,
+                com.github.saundefined.bitrix_idea.templates.events.HandlerGenerator.eventHandler(
+                    namespace,
+                    simpleName,
+                    methodName,
+                    "",
+                ),
+            )
+        }
+    }
+}
+
 class AddIncludeGuardFix : LocalQuickFix {
     override fun getFamilyName(): String = message("inspection.fix.guard.family")
 

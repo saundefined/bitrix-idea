@@ -309,10 +309,14 @@ class MissingEventHandlerInspection : LocalInspectionTool() {
                     if (index.getClassesByFQN("\\$className").isNotEmpty()) return@forEach
                     if (BitrixClassResolver.resolveClass(file.project, className) != null) return@forEach
                     val target = file.findElementAt(match.groups[1]?.range?.first ?: 0) ?: file
+                    val moduleRoot = virtualFile.parent
                     holder.registerProblem(
                         target,
                         message("inspection.event.handler.missing.message", className),
                         ProblemHighlightType.WEAK_WARNING,
+                        *listOfNotNull(
+                            moduleRoot?.let { CreateEventHandlerClassFix(it, className, match.groupValues[2]) },
+                        ).toTypedArray(),
                     )
                 }
             }
@@ -320,6 +324,6 @@ class MissingEventHandlerInspection : LocalInspectionTool() {
     }
 
     private companion object {
-        val CALLABLE = Regex("""['"]\\?([A-Za-z_][A-Za-z0-9_\\]*)['"]\s*,\s*['"][A-Za-z_][A-Za-z0-9_]*['"]""")
+        val CALLABLE = Regex("""['"]\\?([A-Za-z_][A-Za-z0-9_\\]*)['"]\s*,\s*['"]([A-Za-z_][A-Za-z0-9_]*)['"]""")
     }
 }
