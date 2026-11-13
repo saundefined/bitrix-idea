@@ -76,6 +76,10 @@ class BitrixProjectSettings : PersistentStateComponent<BitrixProjectSettings> {
 
     override fun loadState(state: BitrixProjectSettings) {
         XmlSerializerUtil.copyBean(state, this)
+        // Совместимость со старой настройкой useBundledLibrary.
+        if (!useBundledLibrary && coreSource == BitrixCoreSource.BUNDLED) {
+            coreSource = BitrixCoreSource.PROJECT
+        }
     }
 
     companion object {

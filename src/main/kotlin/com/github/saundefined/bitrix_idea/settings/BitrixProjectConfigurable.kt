@@ -215,6 +215,7 @@ class BitrixProjectConfigurable(private val project: Project) : Configurable {
         val previousCoreSource = settings.coreSource
         panel.apply()
         settings.coreSource = coreSourceCombo.selectedItem as? BitrixCoreSource ?: BitrixCoreSource.BUNDLED
+        settings.useBundledLibrary = settings.coreSource == BitrixCoreSource.BUNDLED
         if (previousCoreSource != settings.coreSource) {
             settings.settingsRevision++
         }
