@@ -52,6 +52,9 @@ object ComponentParametersWriter {
                 if (parameter.defaultValue.isNotBlank()) {
                     append("            'DEFAULT' => '").append(escape(parameter.defaultValue)).append("',\n")
                 }
+                if (parameter.required) {
+                    append("            'REQUIRED' => 'Y',\n")
+                }
                 append("        ]")
             }
         }

@@ -136,6 +136,136 @@ class UnusedComponentParameterInspection : LocalInspectionTool() {
 }
 
 /**
+ * Проверяет соответствие параметров `Loc::getMessage()` плейсхолдерам `#NAME#` во фразе.
+ */
+class LangPlaceholderInspection : LocalInspectionTool() {
+    override fun buildVisitor(holder: ProblemsHolder, isOnTheFly: Boolean): PsiElementVisitor {
+        return object : PhpElementVisitor() {
+            override fun visitPhpStringLiteralExpression(element: StringLiteralExpression) {
+                val call = com.github.saundefined.bitrix_idea.php.BitrixPhp.directCall(element) ?: return
+                if (!com.github.saundefined.bitrix_idea.php.BitrixPhp.isGetMessage(call)) return
+                if (com.github.saundefined.bitrix_idea.php.BitrixPhp.argumentIndex(element) != 0) return
+                val phrase = com.github.saundefined.bitrix_idea.php.BitrixLangMessages
+                    .value(element.project, element.contents) ?: return
+                val placeholders = PLACEHOLDER.findAll(phrase).mapTo(linkedSetOf()) { it.groupValues[1] }
+                if (placeholders.isEmpty()) return
+
+                val params = call.parameterList?.getParameter(1) as? com.jetbrains.php.lang.psi.elements.ArrayCreationExpression
+                if (params == null) {
+                    holder.registerProblem(
+                        element,
+                        message("inspection.lang.placeholder.missing.params", element.contents, placeholders.joinToString(", ") { "#$it#" }),
+                        ProblemHighlightType.WEAK_WARNING,
+                    )
+                    return
+                }
+
+                val provided = params.hashElements.mapNotNull {
+                    (it.key as? StringLiteralExpression)?.contents?.removeSurrounding("#")
+                }.toSet()
+                val missing = placeholders - provided
+                val extra = provided - placeholders
+                if (missing.isNotEmpty() || extra.isNotEmpty()) {
+                    val parts = buildList {
+                        if (missing.isNotEmpty()) add(message("inspection.lang.placeholder.missing", missing.joinToString(", ")))
+                        if (extra.isNotEmpty()) add(message("inspection.lang.placeholder.extra", extra.joinToString(", ")))
+                    }.joinToString("; ")
+                    holder.registerProblem(
+                        element,
+                        message("inspection.lang.placeholder.message", element.contents, parts),
+                        ProblemHighlightType.WEAK_WARNING,
+                    )
+                }
+            }
+        }
+    }
+
+    private companion object {
+        val PLACEHOLDER = Regex("""#([A-Za-z0-9_]+)#""")
+    }
+}
+
+/**
+ * В `IncludeComponent` не передан обязательный параметр компонента.
+ */
+class MissingRequiredComponentParameterInspection : LocalInspectionTool() {
+    override fun buildVisitor(holder: ProblemsHolder, isOnTheFly: Boolean): PsiElementVisitor {
+        return object : PhpElementVisitor() {
+            override fun visitPhpStringLiteralExpression(element: StringLiteralExpression) {
+                val call = com.github.saundefined.bitrix_idea.php.BitrixPhp.directCall(element) ?: return
+                if (!com.github.saundefined.bitrix_idea.php.BitrixPhp.isIncludeComponent(call)) return
+                if (com.github.saundefined.bitrix_idea.php.BitrixPhp.argumentIndex(element) != 0) return
+                val componentId = element.contents
+                if (componentId.isBlank()) return
+
+                val required = com.github.saundefined.bitrix_idea.php.BitrixComponentMeta
+                    .parameters(element.project, componentId)
+                    .values
+                    .filter { it.required }
+                    .map { it.key }
+                if (required.isEmpty()) return
+
+                val params = call.parameterList?.getParameter(2) as? com.jetbrains.php.lang.psi.elements.ArrayCreationExpression
+                val provided = params?.hashElements
+                    ?.mapNotNull { (it.key as? StringLiteralExpression)?.contents }
+                    ?.toSet()
+                    .orEmpty()
+                val missing = required.filter { it !in provided }
+                if (missing.isEmpty()) return
+
+                holder.registerProblem(
+                    element,
+                    message("inspection.required.parameter.message", componentId, missing.joinToString(", ")),
+                    ProblemHighlightType.WEAK_WARNING,
+                )
+            }
+        }
+    }
+}
+
+/**
+ * Версия модуля в `install/version.php` не совпадает с `module.php` или `install/index.php`.
+ */
+class ModuleVersionMismatchInspection : LocalInspectionTool() {
+    override fun buildVisitor(holder: ProblemsHolder, isOnTheFly: Boolean): PsiElementVisitor {
+        return object : PhpElementVisitor() {
+            override fun visitPhpFile(file: PhpFile) {
+                val virtualFile = file.virtualFile ?: return
+                if (virtualFile.name != "version.php" || !virtualFile.path.contains("/install/")) return
+                val moduleRoot = virtualFile.parent?.parent ?: return
+                val ownText = runCatching { VfsUtilCore.loadText(virtualFile) }.getOrNull() ?: return
+                val ownVersion = VERSION.find(ownText)?.groupValues?.getOrNull(1) ?: return
+
+                val mismatches = listOfNotNull(
+                    compare(moduleRoot.findChild("module.php"), ownVersion, MODULE_VERSION),
+                    compare(moduleRoot.findChild("install/index.php"), ownVersion, MODULE_VERSION),
+                )
+                if (mismatches.isNotEmpty()) {
+                    holder.registerProblem(
+                        file,
+                        message("inspection.module.version.message", ownVersion, mismatches.joinToString(", ")),
+                        ProblemHighlightType.WEAK_WARNING,
+                    )
+                }
+            }
+
+            private fun compare(file: VirtualFile?, ownVersion: String, pattern: Regex): String? {
+                if (file == null) return null
+                val text = runCatching { VfsUtilCore.loadText(file) }.getOrNull() ?: return null
+                val other = pattern.find(text)?.groupValues?.getOrNull(1) ?: return null
+                if (other == ownVersion) return null
+                return "${file.name}: $other"
+            }
+        }
+    }
+
+    private companion object {
+        val VERSION = Regex("""['"]VERSION['"]\s*=>\s*['"]([^'"]+)['"]""")
+        val MODULE_VERSION = Regex("""MODULE_VERSION\s*=\s*['"]([^'"]+)['"]""")
+    }
+}
+
+/**
  * Один и тот же lang-ключ объявлен в разных файлах проекта.
  */
 class DuplicateLangAcrossFilesInspection : LocalInspectionTool() {

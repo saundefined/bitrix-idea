@@ -1,6 +1,7 @@
 package com.github.saundefined.bitrix_idea.php
 
 import com.github.saundefined.bitrix_idea.php.inspections.MissingLangMessageInspection
+import com.github.saundefined.bitrix_idea.structure.BitrixProjectStructure
 import com.github.saundefined.bitrix_idea.templates.d7.D7SettingsRegistrar
 import com.intellij.openapi.application.ApplicationManager
 import com.intellij.openapi.vfs.VfsUtilCore
@@ -11,6 +12,20 @@ import com.jetbrains.php.lang.PhpFileType
 import com.jetbrains.php.lang.psi.elements.StringLiteralExpression
 
 class BitrixPsiTest : BasePlatformTestCase() {
+    override fun getTestDataPath(): String = "src/test/testData"
+
+    fun testExampleProjectFixture() {
+        myFixture.copyDirectoryToProject("bitrixProject", "")
+
+        val model = BitrixProjectStructure.getModel(project)
+        val component = model.findComponent("vendor:news")
+
+        assertNotNull(component)
+        assertNotNull(model.findModule("vendor.module"))
+        assertEquals("Новости", BitrixComponentMeta.description(project, "vendor:news")?.first)
+        assertEquals(true, BitrixComponentMeta.parameter(project, "vendor:news", "IBLOCK_ID")?.required)
+    }
+
     fun testFindsLanguageDefinitions() {
         myFixture.addFileToProject(
             "local/components/vendor/test/lang/ru/test.php",

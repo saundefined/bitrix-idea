@@ -141,6 +141,30 @@
                 implementationClass="com.github.saundefined.bitrix_idea.php.inspections.UnusedComponentParameterInspection"/>
         <localInspection
                 language="PHP"
+                shortName="BitrixLangPlaceholder"
+                displayName="Bitrix: language placeholders"
+                groupName="Bitrix"
+                enabledByDefault="true"
+                level="WEAK_WARNING"
+                implementationClass="com.github.saundefined.bitrix_idea.php.inspections.LangPlaceholderInspection"/>
+        <localInspection
+                language="PHP"
+                shortName="BitrixMissingRequiredParameter"
+                displayName="Bitrix: missing required component parameter"
+                groupName="Bitrix"
+                enabledByDefault="true"
+                level="WEAK_WARNING"
+                implementationClass="com.github.saundefined.bitrix_idea.php.inspections.MissingRequiredComponentParameterInspection"/>
+        <localInspection
+                language="PHP"
+                shortName="BitrixModuleVersionMismatch"
+                displayName="Bitrix: module version mismatch"
+                groupName="Bitrix"
+                enabledByDefault="true"
+                level="WEAK_WARNING"
+                implementationClass="com.github.saundefined.bitrix_idea.php.inspections.ModuleVersionMismatchInspection"/>
+        <localInspection
+                language="PHP"
                 shortName="BitrixDuplicateLangAcrossFiles"
                 displayName="Bitrix: duplicate language message across files"
                 groupName="Bitrix"

@@ -288,18 +288,31 @@ class DeprecatedApiInspection : LocalInspectionTool() {
     override fun buildVisitor(holder: ProblemsHolder, isOnTheFly: Boolean): PsiElementVisitor {
         return object : PhpElementVisitor() {
             override fun visitPhpMethodReference(element: MethodReference) {
-                if (BitrixPhp.isCModuleInclude(element)) {
+                val version = BitrixProjectStructure.bitrixVersion(element.project)
+                if (versionAtLeast(version, "14.0.0") && BitrixPhp.isCModuleInclude(element)) {
                     holder.registerProblem(
                         element,
                         message("inspection.deprecated.cmodule.message"),
                         ProblemHighlightType.WEAK_WARNING,
                         ReplaceWithLoaderFix(),
                     )
+                    return
                 }
+                val owner = BitrixPhp.className(element).substringAfterLast('\\')
+                val method: String = element.name ?: return
+                val rule: LegacyRule = LEGACY_RULES.firstOrNull { it.owner == owner && it.method == method } ?: return
+                if (!versionAtLeast(version, rule.since)) return
+                holder.registerProblem(
+                    element as com.intellij.psi.PsiElement,
+                    message("inspection.deprecated.api.message", "$owner::$method", rule.replacement),
+                    ProblemHighlightType.WEAK_WARNING,
+                )
             }
 
             override fun visitPhpFunctionCall(element: FunctionReference) {
-                if (BitrixPhp.isLegacyGetMessage(element)) {
+                if (BitrixPhp.isLegacyGetMessage(element) &&
+                    versionAtLeast(BitrixProjectStructure.bitrixVersion(element.project), "18.0.0")
+                ) {
                     holder.registerProblem(
                         element,
                         message("inspection.deprecated.getmessage.message"),
@@ -309,6 +322,34 @@ class DeprecatedApiInspection : LocalInspectionTool() {
                 }
             }
         }
+    }
+
+    private fun versionAtLeast(current: String?, required: String): Boolean {
+        if (current == null) return true
+        val currentParts = current.split('.').mapNotNull { it.toIntOrNull() }
+        val requiredParts = required.split('.').mapNotNull { it.toIntOrNull() }
+        for (index in 0 until maxOf(currentParts.size, requiredParts.size)) {
+            val left = currentParts.getOrElse(index) { 0 }
+            val right = requiredParts.getOrElse(index) { 0 }
+            if (left != right) return left > right
+        }
+        return true
+    }
+
+    private data class LegacyRule(
+        val owner: String,
+        val method: String,
+        val since: String,
+        val replacement: String,
+    )
+
+    private companion object {
+        val LEGACY_RULES = listOf(
+            LegacyRule("CSite", "GetList", "20.0.0", "\\Bitrix\\Main\\SiteTable::getList()"),
+            LegacyRule("CUser", "GetList", "20.0.0", "\\Bitrix\\Main\\UserTable::getList()"),
+            LegacyRule("CIBlock", "GetList", "20.0.0", "\\Bitrix\\Iblock\\IblockTable::getList()"),
+            LegacyRule("CIBlockElement", "GetList", "20.0.0", "\\Bitrix\\Iblock\\ElementTable::getList()"),
+        )
     }
 }
 

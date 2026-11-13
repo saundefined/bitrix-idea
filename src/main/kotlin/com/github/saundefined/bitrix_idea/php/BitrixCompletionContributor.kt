@@ -65,7 +65,7 @@ private class BitrixCompletionProvider : CompletionProvider<CompletionParameters
             modelNamespaces.forEach { add(result, it, "controller") }
             if (isInsideEvents(literal) || literal.contents.startsWith("On")) {
                 (BitrixEventNames.forModule(null) + BitrixProjectEvents.names(project)).sorted()
-                    .forEach { add(result, it, "event") }
+                    .forEach { add(result, it, "event", BitrixEventSignatures.forEvent(it)) }
             }
         }
 
@@ -105,7 +105,7 @@ private class BitrixCompletionProvider : CompletionProvider<CompletionParameters
                 val module = call.parameterList?.getParameter(0) as? StringLiteralExpression
                 (BitrixEventNames.forModule(module?.contents) + BitrixProjectEvents.names(project))
                     .sorted()
-                    .forEach { add(result, it, "event") }
+                    .forEach { add(result, it, "event", BitrixEventSignatures.forEvent(it)) }
             }
 
             BitrixPhp.isAgentCall(call) && index == 0 -> {

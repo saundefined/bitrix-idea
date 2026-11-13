@@ -29,6 +29,7 @@ data class BitrixComponentParameter(
     val type: String? = null,
     val defaultValue: String? = null,
     val parent: String? = null,
+    val required: Boolean = false,
 )
 
 /**
@@ -147,6 +148,7 @@ object BitrixComponentMeta {
             var type: String? = null
             var defaultValue: String? = null
             var parent: String? = null
+            var required = false
             value.hashElements.forEach { field ->
                 when ((field.key as? StringLiteralExpression)?.contents) {
                     "NAME" -> name = resolveElement(project, field)
@@ -154,6 +156,7 @@ object BitrixComponentMeta {
                     "TYPE" -> type = resolveElement(project, field)
                     "DEFAULT" -> defaultValue = resolveElement(project, field)
                     "PARENT" -> parent = resolveElement(project, field)
+                    "REQUIRED" -> required = resolveElement(project, field)?.uppercase() == "Y"
                 }
             }
             result[key] = BitrixComponentParameter(
@@ -164,6 +167,7 @@ object BitrixComponentMeta {
                 type = type,
                 defaultValue = defaultValue,
                 parent = parent,
+                required = required,
             )
         }
         return result

@@ -78,6 +78,7 @@ class CreateComponentParametersDialogWrapper(
                     ?: ComponentParameterType.STRING,
                 defaultValue = parameter.defaultValue.orEmpty(),
                 parent = parameter.parent?.ifBlank { "BASE" } ?: "BASE",
+                required = parameter.required,
             )
         }
     }

@@ -32,6 +32,7 @@ class BitrixDocumentationProvider : AbstractDocumentationProvider() {
             BitrixPhp.isIncludeComponent(call) && index == 0 -> componentDoc(literal.project, literal.contents)
             BitrixPhp.isIncludeComponent(call) && index == 1 -> templateDoc(literal.project, call, literal.contents)
             BitrixPhp.isIncludeModule(call) && index == 0 -> moduleDoc(literal.project, literal.contents)
+            BitrixPhp.isEventRegistration(call) && index == 1 -> eventDoc(literal.contents)
             else -> null
         }
     }
@@ -107,12 +108,18 @@ class BitrixDocumentationProvider : AbstractDocumentationProvider() {
             return callableDoc(literal.project, value)
         }
         if (value.matches(Regex("^On[A-Za-z0-9_]+"))) {
-            return buildString {
-                append("<b>${message("documentation.event")}:</b> ${escape(value)}")
-                append("<br>${message("documentation.event.registered")}")
-            }
+            return eventDoc(value)
         }
         return null
+    }
+
+    private fun eventDoc(eventName: String): String {
+        return buildString {
+            append("<b>${message("documentation.event")}:</b> ${escape(eventName)}")
+            append("<br>${message("documentation.event.registered")}")
+            val signature = BitrixEventSignatures.forEvent(eventName) ?: BitrixEventSignatures.generic(eventName)
+            append("<br><br><code>${escape(signature)}</code>")
+        }
     }
 
     private fun callableDoc(project: Project, value: String): String {
