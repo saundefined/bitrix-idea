@@ -4,6 +4,20 @@
 
 ### Added
 
+- Core component template override generator (`local/templates/<site>/components/...`)
+- Component parameter generator with `.parameters.php` and lang files
+- Event handler and agent generators with `.settings.php` registration
+- Service/interface and AJAX action generators
+- Component/template rename with updates to all `IncludeComponent` calls
+- Navigation from `.settings.php` events, `IncludeComponent` metadata, and `$arParams['KEY']` to declarations
+- Ctrl+Q documentation for `.settings.php`, components, templates, modules, lang messages, and parameters
+- Search Everywhere support for Bitrix components, templates, and modules
+- Gutter icon opening the effective template of `IncludeComponent`
+- Language message settings: preferred language, folding switch, multiple translations in Ctrl+Q
+- Unused/duplicate lang message and unknown/unused component parameter inspections
+- Project diagnostics, core source selection, component/template indexing filters, and “Переиндексировать Bitrix”
+- Tool window lang branch, disabled module styling, copy/compare/create-template context actions
+- PSI tests for lang navigation, folding, `.settings.php` registration, and component parameters (`-PpsiTests=true`)
 - Bitrix ORM entity generator reworked to modern `configure*()` syntax with validators, column mapping, default values, expressions, Crypto/Secret/Array fields, and Reference/OneToMany/ManyToMany relations
 - ORM full stack generation: `Table`, `Collection`, and `Object` classes; custom classes extend `EO_*`; optional `meta/orm.php` annotations
 - ORM installer generation via `install/orm.php` and `createDbTable()` / mediator entities; raw `install.sql` remains optional

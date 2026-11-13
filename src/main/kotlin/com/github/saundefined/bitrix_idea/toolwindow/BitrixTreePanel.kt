@@ -5,6 +5,9 @@ import com.github.saundefined.bitrix_idea.dialogs.CreateComponentTemplateDialogW
 import com.github.saundefined.bitrix_idea.settings.BitrixProjectConfigurable
 import com.github.saundefined.bitrix_idea.settings.BitrixProjectSettings
 import com.github.saundefined.bitrix_idea.structure.BitrixProjectStructure
+import com.intellij.diff.DiffContentFactory
+import com.intellij.diff.DiffManager
+import com.intellij.diff.requests.SimpleDiffRequest
 import com.intellij.icons.AllIcons
 import com.intellij.openapi.Disposable
 import com.intellij.openapi.actionSystem.ActionManager
@@ -17,6 +20,7 @@ import com.intellij.ide.util.PropertiesComponent
 import com.intellij.openapi.options.ShowSettingsUtil
 import com.intellij.openapi.application.ApplicationManager
 import com.intellij.openapi.application.ReadAction
+import com.intellij.openapi.diagnostic.Logger
 import com.intellij.openapi.fileEditor.OpenFileDescriptor
 import com.intellij.openapi.ide.CopyPasteManager
 import com.intellij.openapi.project.Project
@@ -51,6 +55,7 @@ import java.awt.datatransfer.StringSelection
 import java.util.concurrent.atomic.AtomicInteger
 
 class BitrixTreePanel(private val project: Project) : Disposable {
+    private val log = Logger.getInstance(BitrixTreePanel::class.java)
     private val tree = Tree()
     private val alarm = Alarm(Alarm.ThreadToUse.SWING_THREAD, this)
     private val filterField = JBTextField().apply {
@@ -143,7 +148,12 @@ class BitrixTreePanel(private val project: Project) : Disposable {
         val query = filterField.text.trim()
         tree.setPaintBusy(true)
         ApplicationManager.getApplication().executeOnPooledThread {
-            val model = ReadAction.compute<TreeNodeData, RuntimeException> { buildTree() }
+            val model = try {
+                ReadAction.compute<TreeNodeData, RuntimeException> { buildTree() }
+            } catch (e: Exception) {
+                log.warn("Failed to build Bitrix tree", e)
+                TreeNodeData(message("toolwindow.load.error"), null)
+            }
             ApplicationManager.getApplication().invokeLater {
                 if (project.isDisposed || current != generation.get()) return@invokeLater
                 tree.setPaintBusy(false)
@@ -183,6 +193,13 @@ class BitrixTreePanel(private val project: Project) : Disposable {
                 CopyPasteManager.getInstance().setContents(StringSelection(file.path))
             }
         })
+        data.copyName?.let { copyName ->
+            menu.add(JMenuItem(message("toolwindow.copy.name")).apply {
+                addActionListener {
+                    CopyPasteManager.getInstance().setContents(StringSelection(copyName))
+                }
+            })
+        }
         menu.add(JMenuItem(message("toolwindow.show.project.view")).apply {
             addActionListener {
                 ApplicationManager.getApplication().invokeLater {
@@ -198,7 +215,14 @@ class BitrixTreePanel(private val project: Project) : Disposable {
                 ShowSettingsUtil.getInstance().showSettingsDialog(project, BitrixProjectConfigurable::class.java)
             }
         })
-        val componentDir = file.parent
+        val componentId = data.componentId
+        val componentDir = if (componentId != null) {
+            com.github.saundefined.bitrix_idea.structure.BitrixProjectStructure.getModel(project)
+                .findComponent(componentId)
+                ?.directory
+        } else {
+            file.parent
+        }
         if (componentDir != null && (componentDir.findChild("class.php") != null || componentDir.findChild(".description.php") != null)) {
             menu.add(JMenuItem(message("toolwindow.create.template")).apply {
                 addActionListener {
@@ -208,7 +232,48 @@ class BitrixTreePanel(private val project: Project) : Disposable {
                 }
             })
         }
+        if (componentId != null) {
+            menu.add(JMenuItem(message("toolwindow.compare.default")).apply {
+                addActionListener { compareWithDefault(componentId) }
+            })
+        }
         menu.show(tree, event.x, event.y)
+    }
+
+    /**
+     * Сравнивает локальный шаблон `.default` с шаблоном из ядра.
+     */
+    private fun compareWithDefault(componentId: String) {
+        val dirs = BitrixProjectStructure.findComponentTemplateDirs(project, componentId, ".default")
+        val core = dirs.firstOrNull { it.path.contains("/bitrix/") || it.path.contains("/install/") }
+        val local = dirs.firstOrNull { it.path.contains("/local/") }
+        if (core == null || local == null) {
+            com.intellij.openapi.ui.Messages.showInfoMessage(
+                project,
+                message("toolwindow.compare.default.not.found"),
+                message("toolwindow.compare.default"),
+            )
+            return
+        }
+        val coreFile = core.findChild("template.php") ?: core.findChild("style.css")
+        val localFile = local.findChild("template.php") ?: local.findChild("style.css")
+        if (coreFile == null || localFile == null) {
+            com.intellij.openapi.ui.Messages.showInfoMessage(
+                project,
+                message("toolwindow.compare.default.not.found"),
+                message("toolwindow.compare.default"),
+            )
+            return
+        }
+        val factory = DiffContentFactory.getInstance()
+        val request = SimpleDiffRequest(
+            message("toolwindow.compare.default.title", componentId),
+            factory.create(project, coreFile),
+            factory.create(project, localFile),
+            core.path,
+            local.path,
+        )
+        DiffManager.getInstance().showDiff(project, request)
     }
 
     private fun navigateToSelection() {
@@ -233,6 +298,7 @@ class BitrixTreePanel(private val project: Project) : Disposable {
                     label = module.id,
                     file = firstFile(module.directory, "include.php", ".settings.php", "install/version.php"),
                     enabled = module.id !in disabled,
+                    copyName = module.id,
                 )
             }
         val components = model.components
@@ -243,7 +309,13 @@ class BitrixTreePanel(private val project: Project) : Disposable {
                     vendor,
                     null,
                     items.map { component ->
-                        TreeNodeData(component.id, component.entryFiles().firstOrNull())
+                        TreeNodeData(
+                            label = component.id,
+                            file = component.entryFiles().firstOrNull()
+                                ?: component.directory.findChild(".description.php"),
+                            copyName = component.id,
+                            componentId = component.id,
+                        )
                     },
                 )
             }
@@ -251,7 +323,7 @@ class BitrixTreePanel(private val project: Project) : Disposable {
             val root = BitrixProjectStructure.bitrixRoot(project)
             val file = root?.findChild("local")?.findChild("templates")?.findChild(name)?.findChild("header.php")
                 ?: root?.findChild("bitrix")?.findChild("templates")?.findChild(name)?.findChild("header.php")
-            TreeNodeData(name, file)
+            TreeNodeData(name, file, copyName = name)
         }
 
         val codeNodes = BitrixCodeScanner.scan(project)
@@ -301,6 +373,8 @@ private data class TreeNodeData(
     val file: VirtualFile?,
     val children: List<TreeNodeData> = emptyList(),
     val enabled: Boolean = true,
+    val copyName: String? = null,
+    val componentId: String? = null,
 ) {
     override fun toString(): String = label
 }

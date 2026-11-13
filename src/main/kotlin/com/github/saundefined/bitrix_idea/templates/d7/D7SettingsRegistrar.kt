@@ -1,10 +1,12 @@
 package com.github.saundefined.bitrix_idea.templates.d7
 
+import com.intellij.openapi.diagnostic.Logger
 import com.intellij.openapi.vfs.VfsUtil
 import com.intellij.openapi.vfs.VfsUtilCore
 import com.intellij.openapi.vfs.VirtualFile
 
 object D7SettingsRegistrar {
+    private val LOG = Logger.getInstance(D7SettingsRegistrar::class.java)
     fun register(
         moduleRoot: VirtualFile,
         type: D7ClassType,
@@ -20,7 +22,7 @@ object D7SettingsRegistrar {
             D7ClassType.CONSOLE -> registerConsole(existing, namespace, className)
             else -> existing
         }
-        VfsUtil.saveText(file, updated)
+        save(file, updated)
     }
 
     /**
@@ -38,7 +40,7 @@ object D7SettingsRegistrar {
         val existing = runCatching { VfsUtilCore.loadText(file) }.getOrDefault("")
         val eventEntry = "['${escape(handlerFqn)}', '${escape(methodName)}'],"
         val updated = registerEventEntry(existing, moduleId, eventName, eventEntry)
-        VfsUtil.saveText(file, updated)
+        save(file, updated)
     }
 
     /**
@@ -63,12 +65,12 @@ object D7SettingsRegistrar {
                 |    ],
                 |""".trimMargin(),
             )
-            VfsUtil.saveText(file, updated)
+            save(file, updated)
             return
         }
         val value = findKeyArray(existing, "value", section.first, section.last) ?: return
         val updated = insertBefore(existing, value.second, "            '$key' => $intervalSeconds,\n")
-        VfsUtil.saveText(file, updated)
+        save(file, updated)
     }
 
     private fun registerEventEntry(
@@ -117,6 +119,11 @@ object D7SettingsRegistrar {
     }
 
     private fun escape(value: String): String = value.replace("\\", "\\\\").replace("'", "\\'")
+
+    private fun save(file: com.intellij.openapi.vfs.VirtualFile, text: String) {
+        runCatching { VfsUtil.saveText(file, text) }
+            .onFailure { LOG.warn("Failed to update .settings.php: ${file.path}", it) }
+    }
 
     private fun registerController(text: String, namespace: String): String {
         val phpNamespace = "\\\\" + namespace.replace("\\", "\\\\") + "\\\\Controller"

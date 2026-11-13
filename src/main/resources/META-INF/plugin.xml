@@ -155,6 +155,19 @@
                 <add-to-group group-id="EditorPopupMenu" anchor="last"/>
             </action>
         </group>
+
+        <group
+                id="com.github.saundefined.bitrix_idea.actions.BitrixIdeaProjectViewGroup"
+                text="Bitrix Idea"
+                popup="true"
+                icon="icons.BitrixIdeaIcons.Bitrix"
+        >
+            <add-to-group group-id="ProjectViewPopupMenu" anchor="last"/>
+            <reference ref="com.github.saundefined.bitrix_idea.actions.CreateSimpleComponentAction"/>
+            <reference ref="com.github.saundefined.bitrix_idea.actions.CreateTemplateAction"/>
+            <reference ref="com.github.saundefined.bitrix_idea.actions.CreateComponentParametersAction"/>
+            <reference ref="com.github.saundefined.bitrix_idea.actions.CreateComponentOverrideAction"/>
+        </group>
     </actions>
 
     <resource-bundle>messages.BitrixIdeaBundle</resource-bundle>

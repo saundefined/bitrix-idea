@@ -73,6 +73,9 @@ class BitrixDocumentationProvider : AbstractDocumentationProvider() {
             if (templates.isNotEmpty()) {
                 append("<br><b>${message("documentation.templates")}:</b> ${escape(templates)}")
             }
+            if (component != null && !component.local) {
+                append("<br><i>${message("documentation.component.override.hint")}</i>")
+            }
         }
     }
 
@@ -80,10 +83,14 @@ class BitrixDocumentationProvider : AbstractDocumentationProvider() {
         val componentLiteral = call.parameterList?.getParameter(0) as? StringLiteralExpression ?: return ""
         val template = templateName.ifBlank { ".default" }
         val dirs = BitrixProjectStructure.findComponentTemplateDirs(project, componentLiteral.contents, template)
+        val active = dirs.firstOrNull()
         val paths = if (dirs.isEmpty()) {
             message("documentation.not.found")
         } else {
-            dirs.joinToString("<br>") { escape(it.path) }
+            dirs.joinToString("<br>") { dir ->
+                val prefix = if (dir == active) "→ " else ""
+                "$prefix${escape(dir.path)}"
+            }
         }
         return "<b>${message("documentation.template")}:</b> ${escape(componentLiteral.contents)}:${escape(template)}<br>$paths"
     }

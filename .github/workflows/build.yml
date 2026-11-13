@@ -5,6 +5,15 @@ on:
     branches: [main]
   pull_request:
   workflow_dispatch:
+    inputs:
+      platformVersion:
+        description: IntelliJ Platform version (for example 2025.1.5)
+        required: false
+        default: 2025.2.6.2
+      phpPluginVersion:
+        description: PHP plugin build matching the platform
+        required: false
+        default: 252.28539.149
 
 concurrency:
   group: ${{ github.workflow }}-${{ github.event.pull_request.number || github.ref }}
@@ -16,5 +25,8 @@ permissions:
 jobs:
   build-and-test:
     uses: ./.github/workflows/build-and-test.yml
+    with:
+      platformVersion: ${{ inputs.platformVersion || '2025.2.6.2' }}
+      phpPluginVersion: ${{ inputs.phpPluginVersion || '252.28539.149' }}
     secrets:
       FETCH_SUBMODULES_PAT: ${{ secrets.FETCH_SUBMODULES_PAT }}

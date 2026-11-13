@@ -32,6 +32,7 @@ Do not edit or commit files inside it; update it by bumping the submodule pointe
 ./gradlew buildPlugin   # build installable ZIP in build/distributions/
 ./gradlew check         # compile and run unit tests
 ./gradlew test          # run unit tests only
+./gradlew test -PpsiTests=true  # also run PSI tests (downloads tests-bootstrap)
 ./gradlew test --tests 'com.github.saundefined.bitrix_idea.validation.ValidationTest'
 ./gradlew verifyPlugin  # JetBrains plugin verifier (slow, downloads IDE builds)
 ```

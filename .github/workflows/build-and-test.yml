@@ -2,6 +2,15 @@ name: Build & Test
 
 on:
   workflow_call:
+    inputs:
+      platformVersion:
+        required: false
+        type: string
+        default: 2025.2.6.2
+      phpPluginVersion:
+        required: false
+        type: string
+        default: 252.28539.149
     secrets:
       FETCH_SUBMODULES_PAT:
         required: false
@@ -42,7 +51,10 @@ jobs:
         uses: gradle/actions/setup-gradle@v6
 
       - name: Build and test
-        run: ./gradlew buildPlugin check --stacktrace --console=plain
+        run: |
+          ./gradlew buildPlugin check --stacktrace --console=plain \
+            -PplatformVersion="${{ inputs.platformVersion }}" \
+            -PphpPluginVersion="${{ inputs.phpPluginVersion }}"
 
       - name: Collect test results
         if: failure()
@@ -54,7 +66,10 @@ jobs:
           if-no-files-found: ignore
 
       - name: Verify plugin
-        run: ./gradlew verifyPlugin --stacktrace --console=plain
+        run: |
+          ./gradlew verifyPlugin --stacktrace --console=plain \
+            -PplatformVersion="${{ inputs.platformVersion }}" \
+            -PphpPluginVersion="${{ inputs.phpPluginVersion }}"
 
       - name: Collect plugin verifier result
         if: always()
