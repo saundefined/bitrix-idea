@@ -40,13 +40,15 @@ The plugin can be installed on following IntelliJ-based:
 - Ctrl+Q for components, templates, modules, lang messages, `.settings.php`, and component parameters
 - Gutter icons for component files, templates, modules, lang messages, and the effective `IncludeComponent` template
 - Search Everywhere (Go to Symbol) for Bitrix components, templates, and modules
-- Completion for component IDs, module IDs, template names, lang keys, events, and agent classes
+- Completion for component IDs, module IDs, template names, lang keys, events, agent classes, `$arParams` keys, and `.settings.php` controller namespaces
+- Goto Related for component files and lang translations
+- Quick fixes for missing component parameters, templates, and lang keys
 - Folding of `Loc::getMessage('KEY')` to the selected language phrase
 - Inspections for missing/duplicate/unused lang messages, unknown modules/components/parameters, missing templates/lang files, unregistered settings classes, and event handlers
 
 ### Generators and refactoring
 
-- Module, simple and complex component, component template, site template, D7 class, ORM entity, service/interface, event handler, and agent generators
+- Module, simple and complex component, component template, site template, D7 class, ORM entity, service/interface, event handler, agent, options page, admin page/menu, REST controller, console command, and component `class.php` generators
 - Core component template override into `local/templates/<site>/components/...`
 - Component parameter generator (`.parameters.php` and lang files)
 - AJAX action generator for D7 controllers
@@ -58,7 +60,8 @@ The plugin can be installed on following IntelliJ-based:
 - `PHP > Frameworks > Bitrix` settings page: framework switch, core source (bundled library or project `bitrix`), Bitrix root, source roots, module/component/template indexing filters, default lang language, folding switch, and project diagnostics
 - “Переиндексировать Bitrix” button and tool window action
 - Bitrix tool window with modules (disabled modules are grayed out), components grouped by vendor, site templates, and lang files
-- Tool window filter, loading indicator, context menu actions (copy path/name, compare with core `.default`, create component template, open settings)
+- Tool window filter, loading indicator, persisted expansion state, “only enabled modules” toggle, context menu actions (copy path/name, compare with core `.default`, create component template, open settings)
+- Generator preview dialog and undoable file writes
 
 ## Development
 

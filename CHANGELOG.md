@@ -4,6 +4,21 @@
 
 ### Added
 
+- Autocompletion for `$arParams['…']` with parameter type, default value and standard keys
+- Quick fixes: create missing component parameter, template, template directory, and lang key
+- Component parameter editor with type, default value and PARENT group
+- Preview before applying generators and undoable generator writes (`WriteCommandAction`)
+- Template rename also updates `COMPONENT_TEMPLATE` in `IncludeComponent` parameters
+- Module options page generator (`options.php` + lang)
+- Admin page and `admin/menu.php` generator
+- REST controller and `install/routes.php` generator
+- Console command generator
+- Component `class.php` skeleton generator
+- Completion of event names and controller namespaces in `.settings.php`
+- Goto Related for components and lang translations
+- Component/template Find Usages scoped to the owning component
+- Duplicate lang keys across files inspection
+- Tool window expansion state, “only enabled modules” toggle, diagnostics copy and core path opening
 - Core component template override generator (`local/templates/<site>/components/...`)
 - Component parameter generator with `.parameters.php` and lang files
 - Event handler and agent generators with `.settings.php` registration
