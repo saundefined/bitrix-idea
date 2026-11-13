@@ -1,12 +1,14 @@
 package com.github.saundefined.bitrix_idea.dialogs
 
+import com.intellij.openapi.command.WriteCommandAction
+
 import com.github.saundefined.bitrix_idea.BitrixIdeaBundle.message
 import com.github.saundefined.bitrix_idea.php.BitrixComponentMeta
 import com.github.saundefined.bitrix_idea.settings.AppSettingsState
 import com.github.saundefined.bitrix_idea.templates.component.ComponentParameterSpec
+import com.github.saundefined.bitrix_idea.templates.component.ComponentParameterType
 import com.github.saundefined.bitrix_idea.templates.component.ComponentParametersWriter
 import com.github.saundefined.bitrix_idea.ui.ComponentParametersTable
-import com.intellij.openapi.application.ApplicationManager
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.ui.DialogWrapper
 import com.intellij.openapi.ui.Messages
@@ -48,11 +50,19 @@ class CreateComponentParametersDialogWrapper(
             Messages.showErrorDialog(project, message("create.parameters.empty"), title)
             return
         }
-        ApplicationManager.getApplication().runWriteAction {
+        val languages = AppSettingsState.getInstance().languages.ifEmpty { listOf("ru") }
+        val preview = listOf(
+            GeneratorPreviewFile(".parameters.php", ComponentParametersWriter.generate(items)),
+        ) + languages.map { language ->
+            GeneratorPreviewFile("lang/$language/.parameters.php", ComponentParametersWriter.generateLang(items))
+        }
+        if (!GeneratorPreviewDialogWrapper(project, preview).showAndGet()) return
+
+        WriteCommandAction.runWriteCommandAction(project) {
             ComponentParametersWriter.write(
                 componentDirectory = directory.virtualFile,
                 parameters = items,
-                languages = AppSettingsState.getInstance().languages,
+                languages = languages,
             )
         }
         super.doOKAction()
@@ -64,6 +74,10 @@ class CreateComponentParametersDialogWrapper(
             ComponentParameterSpec(
                 key = parameter.key,
                 name = parameter.name ?: parameter.key,
+                type = ComponentParameterType.entries.firstOrNull { it.displayName == parameter.type }
+                    ?: ComponentParameterType.STRING,
+                defaultValue = parameter.defaultValue.orEmpty(),
+                parent = parameter.parent?.ifBlank { "BASE" } ?: "BASE",
             )
         }
     }

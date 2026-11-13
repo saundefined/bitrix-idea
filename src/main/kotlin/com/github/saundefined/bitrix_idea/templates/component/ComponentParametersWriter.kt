@@ -18,6 +18,7 @@ data class ComponentParameterSpec(
     val name: String,
     val type: ComponentParameterType = ComponentParameterType.STRING,
     val defaultValue: String = "",
+    val parent: String = "BASE",
     val required: Boolean = false,
 )
 
@@ -45,7 +46,7 @@ object ComponentParametersWriter {
         val body = parameters.joinToString(",\n") { parameter ->
             buildString {
                 append("        '").append(escape(parameter.key)).append("' => [\n")
-                append("            'PARENT' => 'BASE',\n")
+                append("            'PARENT' => '").append(escape(parameter.parent.ifBlank { "BASE" })).append("',\n")
                 append("            'NAME' => Loc::getMessage('").append(langKey(parameter.key)).append("'),\n")
                 append("            'TYPE' => '").append(parameter.type.displayName).append("',\n")
                 if (parameter.defaultValue.isNotBlank()) {

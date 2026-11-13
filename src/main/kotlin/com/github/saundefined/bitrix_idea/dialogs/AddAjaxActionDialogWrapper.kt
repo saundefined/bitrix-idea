@@ -71,6 +71,13 @@ class AddAjaxActionDialogWrapper(
         val params = parameters.split(',').map { it.trim() }.filter { it.isNotEmpty() }
         val filters = prefilters.split(',').map { it.trim() }.filter { it.isNotEmpty() }
         val updated = AjaxActionGenerator.addAction(document.text, actionName, params, filters)
+        if (!GeneratorPreviewDialogWrapper(
+                project,
+                listOf(GeneratorPreviewFile(file.name, updated)),
+            ).showAndGet()
+        ) {
+            return
+        }
 
         WriteCommandAction.runWriteCommandAction(project) {
             document.setText(updated)

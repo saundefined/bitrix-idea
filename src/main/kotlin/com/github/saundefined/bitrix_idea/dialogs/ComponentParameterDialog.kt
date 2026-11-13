@@ -27,6 +27,7 @@ class ComponentParameterDialog(
     private var key: String = initial.key
     private var name: String = initial.name
     private var defaultValue: String = initial.defaultValue
+    private var parent: String = initial.parent
     private var required: Boolean = initial.required
     private val typeCombo = ComboBox(ComponentParameterType.entries.toTypedArray())
 
@@ -49,6 +50,11 @@ class ComponentParameterDialog(
         row(message("create.parameters.default")) {
             textField()
                 .bindText(::defaultValue)
+                .align(AlignX.FILL)
+        }.layout(RowLayout.PARENT_GRID)
+        row(message("create.parameters.parent")) {
+            textField()
+                .bindText(::parent)
                 .align(AlignX.FILL)
         }.layout(RowLayout.PARENT_GRID)
         row {
@@ -89,6 +95,7 @@ class ComponentParameterDialog(
             name = name.trim(),
             type = typeCombo.selectedItem as? ComponentParameterType ?: ComponentParameterType.STRING,
             defaultValue = defaultValue.trim(),
+            parent = parent.trim().ifBlank { "BASE" },
             required = required,
         )
         super.doOKAction()

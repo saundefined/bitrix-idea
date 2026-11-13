@@ -1,5 +1,7 @@
 package com.github.saundefined.bitrix_idea.dialogs
 
+import com.intellij.openapi.command.WriteCommandAction
+
 import com.github.saundefined.bitrix_idea.BitrixIdeaBundle.message
 import com.github.saundefined.bitrix_idea.settings.AppSettingsState
 import com.github.saundefined.bitrix_idea.templates.complex.ComplexComponentPage
@@ -145,7 +147,7 @@ class CreateComplexComponentDialogWrapper(
             ajax = ajaxCheck.isSelected,
         )
 
-        ApplicationManager.getApplication().runWriteAction {
+        WriteCommandAction.runWriteCommandAction(project) {
             ComplexComponentWriter.write(directory.virtualFile, spec)
         }
         super.doOKAction()

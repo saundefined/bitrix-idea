@@ -28,6 +28,7 @@ class ComponentParametersTable(initial: List<ComponentParameterSpec> = emptyList
             message("create.parameters.column.name"),
             message("create.parameters.column.type"),
             message("create.parameters.column.default"),
+            message("create.parameters.column.parent"),
         ),
         0,
     ) {
@@ -99,7 +100,7 @@ class ComponentParametersTable(initial: List<ComponentParameterSpec> = emptyList
     private fun refresh() {
         tableModel.rowCount = 0
         parameters.forEach {
-            tableModel.addRow(arrayOf(it.key, it.name, it.type.displayName, it.defaultValue))
+            tableModel.addRow(arrayOf(it.key, it.name, it.type.displayName, it.defaultValue, it.parent))
         }
     }
 }

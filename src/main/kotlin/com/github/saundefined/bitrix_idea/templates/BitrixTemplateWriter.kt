@@ -1,5 +1,7 @@
 package com.github.saundefined.bitrix_idea.templates
 
+import com.intellij.openapi.command.WriteCommandAction
+
 import com.intellij.ide.fileTemplates.FileTemplateManager
 import com.intellij.ide.fileTemplates.FileTemplateUtil
 import com.intellij.openapi.application.ApplicationManager
@@ -19,7 +21,7 @@ object BitrixTemplateWriter {
         val templateManager = FileTemplateManager.getInstance(project)
         val properties = Properties().apply { putAll(templateManager.defaultProperties) }
 
-        ApplicationManager.getApplication().runWriteAction {
+        WriteCommandAction.runWriteCommandAction(project) {
             try {
                 action(templateManager, properties)
             } catch (e: Exception) {

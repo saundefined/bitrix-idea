@@ -1,5 +1,7 @@
 package com.github.saundefined.bitrix_idea.dialogs
 
+import com.intellij.openapi.command.WriteCommandAction
+
 import com.github.saundefined.bitrix_idea.BitrixIdeaBundle.message
 import com.github.saundefined.bitrix_idea.orm.OrmEntityContextResolver
 import com.github.saundefined.bitrix_idea.templates.d7.BitrixD7ClassGenerator
@@ -80,7 +82,8 @@ class CreateD7ClassDialogWrapper(
             namespace = namespaceField.text.trim(),
             className = className,
         )
-        ApplicationManager.getApplication().runWriteAction {
+        if (!GeneratorPreviewDialogWrapper(project, listOf(GeneratorPreviewFile(fileName, text))).showAndGet()) return
+        WriteCommandAction.runWriteCommandAction(project) {
             val file = directory.virtualFile.createChildData(this, fileName)
             VfsUtil.saveText(file, text)
 

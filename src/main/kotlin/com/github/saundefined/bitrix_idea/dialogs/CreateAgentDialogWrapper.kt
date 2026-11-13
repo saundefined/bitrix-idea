@@ -1,5 +1,7 @@
 package com.github.saundefined.bitrix_idea.dialogs
 
+import com.intellij.openapi.command.WriteCommandAction
+
 import com.github.saundefined.bitrix_idea.BitrixIdeaBundle.message
 import com.github.saundefined.bitrix_idea.orm.OrmEntityContextResolver
 import com.github.saundefined.bitrix_idea.templates.d7.D7SettingsRegistrar
@@ -90,7 +92,8 @@ class CreateAgentDialogWrapper(
             return
         }
         val text = HandlerGenerator.agent(namespace, className, methodName)
-        ApplicationManager.getApplication().runWriteAction {
+        if (!GeneratorPreviewDialogWrapper(project, listOf(GeneratorPreviewFile(fileName, text))).showAndGet()) return
+        WriteCommandAction.runWriteCommandAction(project) {
             VfsUtil.saveText(directory.virtualFile.createChildData(this, fileName), text)
             if (register && modulePath.moduleRoot != null) {
                 val moduleRoot = LocalFileSystem.getInstance().findFileByPath(modulePath.moduleRoot)

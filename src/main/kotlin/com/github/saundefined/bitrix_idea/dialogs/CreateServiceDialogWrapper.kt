@@ -1,5 +1,7 @@
 package com.github.saundefined.bitrix_idea.dialogs
 
+import com.intellij.openapi.command.WriteCommandAction
+
 import com.github.saundefined.bitrix_idea.BitrixIdeaBundle.message
 import com.github.saundefined.bitrix_idea.orm.OrmEntityContextResolver
 import com.github.saundefined.bitrix_idea.templates.d7.D7ClassType
@@ -82,14 +84,22 @@ class CreateServiceDialogWrapper(
             return
         }
 
-        ApplicationManager.getApplication().runWriteAction {
+        val interfaceText = ServiceGenerator.generateInterface(namespace, interfaceName)
+        val classText = ServiceGenerator.generateImplementation(namespace, interfaceName, className)
+        val preview = listOf(
+            GeneratorPreviewFile(interfaceFile, interfaceText),
+            GeneratorPreviewFile(classFile, classText),
+        )
+        if (!GeneratorPreviewDialogWrapper(project, preview).showAndGet()) return
+
+        WriteCommandAction.runWriteCommandAction(project) {
             VfsUtil.saveText(
                 directory.virtualFile.createChildData(this, interfaceFile),
-                ServiceGenerator.generateInterface(namespace, interfaceName),
+                interfaceText,
             )
             VfsUtil.saveText(
                 directory.virtualFile.createChildData(this, classFile),
-                ServiceGenerator.generateImplementation(namespace, interfaceName, className),
+                classText,
             )
 
             if (register && modulePath.moduleRoot != null) {

@@ -1,5 +1,7 @@
 package com.github.saundefined.bitrix_idea.dialogs
 
+import com.intellij.openapi.command.WriteCommandAction
+
 import com.github.saundefined.bitrix_idea.BitrixIdeaBundle.message
 import com.github.saundefined.bitrix_idea.settings.AppSettingsState
 import com.intellij.openapi.application.ApplicationManager
@@ -61,7 +63,7 @@ class CreateComponentTemplateDialogWrapper(
             return
         }
 
-        ApplicationManager.getApplication().runWriteAction {
+        WriteCommandAction.runWriteCommandAction(project) {
             val templatesDir = templates ?: directory.virtualFile.createChildDirectory(this, "templates")
             val target = templatesDir.createChildDirectory(this, name)
             val defaultDir = templatesDir.findChild(".default")
