@@ -1,6 +1,8 @@
 package com.github.saundefined.bitrix_idea.toolwindow
 
 import com.github.saundefined.bitrix_idea.BitrixIdeaBundle.message
+import com.github.saundefined.bitrix_idea.dialogs.CreateComponentTemplateDialogWrapper
+import com.github.saundefined.bitrix_idea.settings.BitrixProjectConfigurable
 import com.github.saundefined.bitrix_idea.settings.BitrixProjectSettings
 import com.github.saundefined.bitrix_idea.structure.BitrixProjectStructure
 import com.intellij.icons.AllIcons
@@ -11,6 +13,8 @@ import com.intellij.openapi.actionSystem.AnAction
 import com.intellij.openapi.actionSystem.AnActionEvent
 import com.intellij.openapi.actionSystem.DefaultActionGroup
 import com.intellij.ide.projectView.ProjectView
+import com.intellij.ide.util.PropertiesComponent
+import com.intellij.openapi.options.ShowSettingsUtil
 import com.intellij.openapi.application.ApplicationManager
 import com.intellij.openapi.application.ReadAction
 import com.intellij.openapi.fileEditor.OpenFileDescriptor
@@ -21,6 +25,7 @@ import com.intellij.openapi.vfs.VirtualFileManager
 import com.intellij.openapi.vfs.newvfs.BulkFileListener
 import com.intellij.openapi.vfs.newvfs.events.VFileEvent
 import com.intellij.psi.PsiManager
+import com.intellij.psi.PsiDirectory
 import com.intellij.ui.ColoredTreeCellRenderer
 import com.intellij.ui.ScrollPaneFactory
 import com.intellij.ui.SimpleTextAttributes
@@ -126,10 +131,12 @@ class BitrixTreePanel(private val project: Project) : Disposable {
         }
         val current = generation.incrementAndGet()
         val query = filterField.text.trim()
+        tree.setPaintBusy(true)
         ApplicationManager.getApplication().executeOnPooledThread {
             val model = ReadAction.compute<TreeNodeData, RuntimeException> { buildTree() }
             ApplicationManager.getApplication().invokeLater {
                 if (project.isDisposed || current != generation.get()) return@invokeLater
+                tree.setPaintBusy(false)
                 val visible = if (query.isEmpty()) model else filterNode(model, query) ?: TreeNodeData("Bitrix", null)
                 val root = toSwingNode(visible)
                 tree.model = DefaultTreeModel(root)
@@ -175,6 +182,22 @@ class BitrixTreePanel(private val project: Project) : Disposable {
                 }
             }
         })
+        menu.addSeparator()
+        menu.add(JMenuItem(message("toolwindow.settings")).apply {
+            addActionListener {
+                ShowSettingsUtil.getInstance().showSettingsDialog(project, BitrixProjectConfigurable::class.java)
+            }
+        })
+        val componentDir = file.parent
+        if (componentDir != null && (componentDir.findChild("class.php") != null || componentDir.findChild(".description.php") != null)) {
+            menu.add(JMenuItem(message("toolwindow.create.template")).apply {
+                addActionListener {
+                    PsiManager.getInstance(project).findDirectory(componentDir)?.let {
+                        CreateComponentTemplateDialogWrapper(project, it).showAndGet()
+                    }
+                }
+            })
+        }
         menu.show(tree, event.x, event.y)
     }
 
@@ -221,6 +244,8 @@ class BitrixTreePanel(private val project: Project) : Disposable {
                 )
             }
 
+        val langFiles = model.langFiles.take(500).map { TreeNodeData(it.path, it) }
+
         return TreeNodeData(
             "Bitrix",
             null,
@@ -228,6 +253,7 @@ class BitrixTreePanel(private val project: Project) : Disposable {
                 TreeNodeData(message("toolwindow.modules"), null, modules),
                 TreeNodeData(message("toolwindow.components"), null, components),
                 TreeNodeData(message("toolwindow.templates"), null, templates),
+                TreeNodeData(message("toolwindow.lang"), null, langFiles),
             ) + codeNodes,
         )
     }
