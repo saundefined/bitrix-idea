@@ -7,6 +7,7 @@ import com.intellij.lang.folding.FoldingDescriptor
 import com.intellij.openapi.editor.Document
 import com.intellij.psi.PsiElement
 import com.intellij.psi.util.PsiTreeUtil
+import com.jetbrains.php.lang.psi.elements.ArrayCreationExpression
 import com.jetbrains.php.lang.psi.elements.FunctionReference
 import com.jetbrains.php.lang.psi.elements.StringLiteralExpression
 
@@ -37,11 +38,32 @@ class BitrixLangFoldingBuilder : FoldingBuilderEx() {
                 call.node,
                 call.textRange,
                 null,
-                "\"$phrase\"",
+                "\"${applyParameters(phrase, call)}\"",
             )
         }
 
         return result.toTypedArray()
+    }
+
+    /**
+     * Подставляет значения из второго аргумента `Loc::getMessage('KEY', [...])`.
+     * Если передан не литеральный массив, фраза показывается без изменений.
+     */
+    private fun applyParameters(phrase: String, call: FunctionReference): String {
+        val values = call.parameterList?.getParameter(1) as? ArrayCreationExpression ?: return phrase
+        var result = phrase
+        values.hashElements.forEach { element ->
+            val placeholder = (element.key as? StringLiteralExpression)?.contents ?: return@forEach
+            if (placeholder.isBlank()) return@forEach
+            val value = element.value
+            val replacement = when (value) {
+                is StringLiteralExpression -> value.contents
+                null -> return@forEach
+                else -> value.text
+            }
+            result = result.replace(placeholder, replacement)
+        }
+        return result
     }
 
     override fun getPlaceholderText(node: ASTNode): String? = null

@@ -27,6 +27,23 @@ class BitrixPsiTest : BasePlatformTestCase() {
         assertEquals(file.virtualFile, usages.first().containingFile.virtualFile)
     }
 
+    fun testFoldingSubstitutesMessageParameters() {
+        myFixture.addFileToProject(
+            "local/components/vendor/test/lang/ru/test.php",
+            "<?php\n\$MESS['GREETING'] = 'Привет, #NAME#!';\n",
+        )
+        val file = myFixture.configureByText(
+            PhpFileType.INSTANCE,
+            "<?php Loc::getMessage('GREETING', ['#NAME#' => 'Иван']);",
+        )
+        val document = PsiDocumentManager.getInstance(project).getDocument(file) ?: error("No document")
+
+        val regions = BitrixLangFoldingBuilder().buildFoldRegions(file, document, false)
+
+        assertTrue(regions.isNotEmpty())
+        assertEquals("\"Привет, Иван!\"", regions.first().placeholderText)
+    }
+
     fun testFoldingShowsLanguageText() {
         myFixture.addFileToProject(
             "local/components/vendor/test/lang/ru/test.php",
