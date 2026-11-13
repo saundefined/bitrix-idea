@@ -12,6 +12,8 @@ import com.intellij.openapi.actionSystem.DefaultActionGroup
 import com.intellij.openapi.application.ApplicationManager
 import com.intellij.openapi.application.ReadAction
 import com.intellij.ide.util.PropertiesComponent
+import com.intellij.ide.plugins.PluginManagerCore
+import com.intellij.openapi.extensions.PluginId
 import com.intellij.openapi.fileEditor.OpenFileDescriptor
 import com.intellij.openapi.project.Project
 import com.intellij.ui.ColoredTreeCellRenderer
@@ -117,7 +119,9 @@ class BitrixHealthPanel(private val project: Project) : Disposable {
         tree.setPaintBusy(true)
         ApplicationManager.getApplication().executeOnPooledThread {
             val issues = ReadAction.compute<Map<String, List<BitrixHealthIssue>>, RuntimeException> {
-                BitrixHealthChecker.collect(project)
+                val result = BitrixHealthChecker.collect(project).toMutableMap()
+                addPhpInspectionIssues(project, result)
+                result
             }
             ApplicationManager.getApplication().invokeLater {
                 if (project.isDisposed || current != generation.get()) return@invokeLater
@@ -142,6 +146,19 @@ class BitrixHealthPanel(private val project: Project) : Disposable {
                 }
                 tree.model = DefaultTreeModel(root)
                 for (row in 0 until tree.rowCount) tree.expandRow(row)
+            }
+        }
+    }
+
+    private fun addPhpInspectionIssues(project: Project, issues: MutableMap<String, List<BitrixHealthIssue>>) {
+        if (!PluginManagerCore.isPluginInstalled(PluginId.getId("com.jetbrains.php"))) return
+        runCatching {
+            val clazz = Class.forName("com.github.saundefined.bitrix_idea.php.BitrixPhpHealth")
+            val method = clazz.getMethod("collect", Project::class.java)
+            @Suppress("UNCHECKED_CAST")
+            val list = method.invoke(null, project) as? List<BitrixHealthIssue> ?: return@runCatching
+            if (list.isNotEmpty()) {
+                issues[message("health.category.inspections")] = list
             }
         }
     }

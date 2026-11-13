@@ -200,6 +200,14 @@
             >
             </action>
             <action
+                    class="com.github.saundefined.bitrix_idea.actions.SettingsStructureAction"
+                    id="com.github.saundefined.bitrix_idea.actions.SettingsStructureAction"
+                    text="Структура .settings.php"
+                    icon="icons.BitrixIdeaIcons.Bitrix"
+            >
+                <add-to-group group-id="EditorPopupMenu" anchor="last"/>
+            </action>
+            <action
                     class="com.github.saundefined.bitrix_idea.actions.EditSettingsFileAction"
                     id="com.github.saundefined.bitrix_idea.actions.EditSettingsFileAction"
                     text="Редактор .settings.php"

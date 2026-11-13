@@ -24,6 +24,14 @@ object BitrixLangSearch {
     }
 
     fun findDefinitions(project: Project, key: String): List<StringLiteralExpression> {
+        val indexed = BitrixLangDefinitionIndex.findFiles(project, key)
+        if (indexed.isNotEmpty()) {
+            return indexed.mapNotNull { virtualFile ->
+                val file = PsiManager.getInstance(project).findFile(virtualFile) ?: return@mapNotNull null
+                PsiTreeUtil.findChildrenOfType(file, StringLiteralExpression::class.java)
+                    .firstOrNull { it.contents == key && isLangDefinition(it) }
+            }
+        }
         return BitrixProjectStructure.findLangEntries(project, key)
             .mapNotNull { entry ->
                 BitrixProjectStructure.psiElementAt(project, entry)

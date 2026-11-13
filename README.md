@@ -64,8 +64,9 @@ The plugin can be installed on following IntelliJ-based:
 - “Переиндексировать Bitrix” button and tool window action
 - Bitrix tool window with modules (disabled modules are grayed out), components grouped by vendor, site templates, and lang files
 - Tool window filter, loading indicator, persisted expansion state, “only enabled modules” and “group by module” toggles, context menu actions (copy path/name, compare with core `.default`, template chain, Find Usages, Rename, create component template, open settings)
-- Separate Bitrix Health tool window with component/template/lang/version diagnostics, filtering, ignore list, and its own setting
-- Inlay hints with the effective component template, Search Everywhere entries for lang messages and `.settings.php` entries, and a translation table with CSV export
+- Separate Bitrix Health tool window with component/template/lang/version diagnostics, plugin inspections, filtering, ignore list, and its own setting
+- Inlay hints with the effective component template, Search Everywhere entries for lang messages and `.settings.php` entries, and a translation table with inline editing and CSV export
+- `.settings.php` structure dialog and a custom lang definition index
 - Generator preview dialog and undoable file writes
 
 ## Development

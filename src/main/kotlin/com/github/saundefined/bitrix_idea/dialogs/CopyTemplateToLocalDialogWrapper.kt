@@ -13,6 +13,7 @@ import com.intellij.openapi.vfs.VirtualFile
 import com.intellij.psi.PsiDirectory
 import com.intellij.ui.dsl.builder.AlignX
 import com.intellij.ui.dsl.builder.RowLayout
+import com.intellij.ui.dsl.builder.bindSelected
 import com.intellij.ui.dsl.builder.panel
 import javax.swing.JComponent
 
@@ -27,6 +28,7 @@ class CopyTemplateToLocalDialogWrapper(
     private val componentId = componentDirectory?.let { BitrixComponentMeta.componentIdForFile(it) }
     private val templateName = templateDirectory.name
     private val siteCombo = ComboBox<String>()
+    private var deleteSource: Boolean = false
 
     private val contentPanel = panel {
         row(message("refactor.template.component")) {
@@ -39,6 +41,10 @@ class CopyTemplateToLocalDialogWrapper(
             cell(siteCombo)
                 .align(AlignX.FILL)
         }.layout(RowLayout.PARENT_GRID)
+        row {
+            checkBox(message("refactor.template.delete.source"))
+                .bindSelected(::deleteSource)
+        }
         row {
             comment(message("refactor.template.hint"))
         }
@@ -79,6 +85,9 @@ class CopyTemplateToLocalDialogWrapper(
                 }
                 val target = parent.createChildDirectory(this, templateName)
                 VfsUtil.copyDirectory(this, templateDirectory.virtualFile, target, null)
+                if (deleteSource) {
+                    templateDirectory.virtualFile.delete(this)
+                }
             }
         }
         if (result.isFailure) {

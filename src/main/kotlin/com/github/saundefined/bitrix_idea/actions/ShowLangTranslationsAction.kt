@@ -10,8 +10,8 @@ class ShowLangTranslationsAction : AnAction() {
     override fun actionPerformed(event: AnActionEvent) {
         val project = event.project ?: return
         val file = event.getData(CommonDataKeys.PSI_FILE) ?: return
-        val path = file.virtualFile?.path ?: return
-        LangTranslationsDialogWrapper(project, path).showAndGet()
+        val virtualFile = file.virtualFile ?: return
+        LangTranslationsDialogWrapper(project, virtualFile).showAndGet()
     }
 
     override fun update(event: AnActionEvent) {

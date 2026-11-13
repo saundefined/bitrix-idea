@@ -33,7 +33,12 @@
 - Bitrix Health tool window with structural/lang/version diagnostics, filtering, ignore list, and its own setting
 - Inlay hints with the effective `IncludeComponent` template
 - Search Everywhere for lang messages and `.settings.php` classes/events
-- Translation table with CSV export for lang files
+- Translation table with inline editing and CSV export for lang files
+- `.settings.php` structure dialog and section-preserving edits
+- Custom lang definition index for faster navigation and Find Usages
+- Project Health now also runs the plugin PHP inspections
+- Moving a template to a local site template can delete the source template
+- Plugin verifier runs in CI for the configured PhpStorm versions
 - Faster lang/component scans with text prefilters
 - Core component template override generator (`local/templates/<site>/components/...`)
 - Component parameter generator with `.parameters.php` and lang files

@@ -1,6 +1,8 @@
 <idea-plugin>
     <!-- Подключается только при наличии PHP-плагина (PhpStorm, PhpStorm Lite, IDEA Ultimate с PHP). -->
     <extensions defaultExtensionNs="com.intellij">
+        <fileBasedIndex
+                implementation="com.github.saundefined.bitrix_idea.php.BitrixLangDefinitionIndex"/>
         <psi.referenceContributor
                 language="PHP"
                 implementation="com.github.saundefined.bitrix_idea.php.BitrixReferenceContributor"/>
