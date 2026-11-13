@@ -150,8 +150,8 @@ class LangPlaceholderInspection : LocalInspectionTool() {
                 val placeholders = PLACEHOLDER.findAll(phrase).mapTo(linkedSetOf()) { it.groupValues[1] }
                 if (placeholders.isEmpty()) return
 
-                val params = call.parameterList?.getParameter(1) as? com.jetbrains.php.lang.psi.elements.ArrayCreationExpression
-                if (params == null) {
+                val secondArgument = call.parameterList?.getParameter(1)
+                if (secondArgument == null) {
                     holder.registerProblem(
                         element,
                         message("inspection.lang.placeholder.missing.params", element.contents, placeholders.joinToString(", ") { "#$it#" }),
@@ -159,6 +159,7 @@ class LangPlaceholderInspection : LocalInspectionTool() {
                     )
                     return
                 }
+                val params = secondArgument as? com.jetbrains.php.lang.psi.elements.ArrayCreationExpression ?: return
 
                 val provided = params.hashElements.mapNotNull {
                     (it.key as? StringLiteralExpression)?.contents?.removeSurrounding("#")
@@ -205,7 +206,11 @@ class MissingRequiredComponentParameterInspection : LocalInspectionTool() {
                     .map { it.key }
                 if (required.isEmpty()) return
 
-                val params = call.parameterList?.getParameter(2) as? com.jetbrains.php.lang.psi.elements.ArrayCreationExpression
+                val paramsArgument = call.parameterList?.getParameter(2)
+                if (paramsArgument != null) {
+                    if (paramsArgument !is com.jetbrains.php.lang.psi.elements.ArrayCreationExpression) return
+                }
+                val params = paramsArgument as? com.jetbrains.php.lang.psi.elements.ArrayCreationExpression
                 val provided = params?.hashElements
                     ?.mapNotNull { (it.key as? StringLiteralExpression)?.contents }
                     ?.toSet()
