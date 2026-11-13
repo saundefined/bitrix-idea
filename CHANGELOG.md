@@ -15,7 +15,12 @@
 - Console command generator
 - Component `class.php` skeleton generator
 - Completion of event names and controller namespaces in `.settings.php`
+- Event handler signature hints in documentation and completion
+- Version-aware legacy API inspection and module version mismatch inspection
+- Lang placeholder validation and required component parameter inspection
 - Goto Related for components and lang translations
+- Find Usages/Rename for components in the Bitrix tool window
+- Tool window grouping by module or vendor
 - Component/template Find Usages scoped to the owning component
 - Duplicate lang keys across files inspection
 - Tool window expansion state, “only enabled modules” toggle, diagnostics copy and core path opening

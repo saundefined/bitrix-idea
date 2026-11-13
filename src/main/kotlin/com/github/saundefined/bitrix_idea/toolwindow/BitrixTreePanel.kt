@@ -2,6 +2,7 @@ package com.github.saundefined.bitrix_idea.toolwindow
 
 import com.github.saundefined.bitrix_idea.BitrixIdeaBundle.message
 import com.github.saundefined.bitrix_idea.dialogs.CreateComponentTemplateDialogWrapper
+import com.github.saundefined.bitrix_idea.php.BitrixComponentUsages
 import com.github.saundefined.bitrix_idea.settings.BitrixProjectConfigurable
 import com.github.saundefined.bitrix_idea.settings.BitrixProjectSettings
 import com.github.saundefined.bitrix_idea.structure.BitrixProjectStructure
@@ -9,7 +10,9 @@ import com.intellij.diff.DiffContentFactory
 import com.intellij.openapi.actionSystem.ToggleAction
 import com.intellij.diff.DiffManager
 import com.intellij.diff.requests.SimpleDiffRequest
+import com.intellij.find.findUsages.FindUsagesManager
 import com.intellij.icons.AllIcons
+import com.intellij.refactoring.rename.RenamePsiElementProcessor
 import com.intellij.openapi.Disposable
 import com.intellij.openapi.actionSystem.ActionManager
 import com.intellij.openapi.actionSystem.ActionToolbar
@@ -86,6 +89,19 @@ class BitrixTreePanel(private val project: Project) : Disposable {
 
                 override fun setSelected(e: AnActionEvent, state: Boolean) {
                     properties.setValue(ONLY_ENABLED_KEY, state, false)
+                    refresh()
+                }
+            })
+            add(object : ToggleAction(
+                message("toolwindow.group.by.module"),
+                message("toolwindow.group.by.module.description"),
+                AllIcons.Actions.GroupByModule,
+            ) {
+                override fun isSelected(e: AnActionEvent): Boolean =
+                    properties.getBoolean(GROUP_BY_MODULE_KEY, false)
+
+                override fun setSelected(e: AnActionEvent, state: Boolean) {
+                    properties.setValue(GROUP_BY_MODULE_KEY, state, false)
                     refresh()
                 }
             })
@@ -253,8 +269,33 @@ class BitrixTreePanel(private val project: Project) : Disposable {
             menu.add(JMenuItem(message("toolwindow.compare.default")).apply {
                 addActionListener { compareWithDefault(componentId) }
             })
+            menu.addSeparator()
+            menu.add(JMenuItem(message("toolwindow.find.usages")).apply {
+                addActionListener { findComponentUsages(componentId) }
+            })
+            menu.add(JMenuItem(message("toolwindow.rename.component")).apply {
+                addActionListener { renameComponent(componentId) }
+            })
         }
         menu.show(tree, event.x, event.y)
+    }
+
+    private fun findComponentUsages(componentId: String) {
+        val literal = BitrixComponentUsages.findFirstComponent(project, componentId) ?: return
+        FindUsagesManager(project).findUsages(
+            literal,
+            literal.containingFile,
+            null,
+            false,
+            null,
+        )
+    }
+
+    private fun renameComponent(componentId: String) {
+        val literal = BitrixComponentUsages.findFirstComponent(project, componentId) ?: return
+        RenamePsiElementProcessor.forElement(literal)
+            .createRenameDialog(project, literal, literal, null)
+            ?.show()
     }
 
     /**
@@ -320,8 +361,9 @@ class BitrixTreePanel(private val project: Project) : Disposable {
                     copyName = module.id,
                 )
             }
+        val groupByModule = properties.getBoolean(GROUP_BY_MODULE_KEY, false)
         val components = model.components
-            .groupBy { it.vendor }
+            .groupBy { if (groupByModule) it.moduleGroup() else it.vendor }
             .toSortedMap()
             .map { (vendor, items) ->
                 TreeNodeData(
@@ -413,6 +455,7 @@ class BitrixTreePanel(private val project: Project) : Disposable {
 
     private companion object {
         const val ONLY_ENABLED_KEY = "bitrix.toolwindow.onlyEnabled"
+        const val GROUP_BY_MODULE_KEY = "bitrix.toolwindow.groupByModule"
     }
 
     override fun dispose() {

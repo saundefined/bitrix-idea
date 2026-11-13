@@ -48,6 +48,19 @@ data class BitrixComponentInfo(
     fun templateDirs(): List<VirtualFile> = directory.findChild("templates")?.children
         ?.filter { it.isDirectory }
         .orEmpty()
+
+    /**
+     * Модуль, из `install/components` которого взят компонент, либо `local`/`bitrix`.
+     */
+    fun moduleGroup(): String {
+        val path = directory.path
+        val marker = "/modules/"
+        val start = path.indexOf(marker)
+        if (start >= 0) {
+            return path.substring(start + marker.length).substringBefore('/')
+        }
+        return if (local) "local" else "bitrix"
+    }
 }
 
 data class BitrixLangEntry(
