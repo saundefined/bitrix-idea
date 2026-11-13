@@ -14,7 +14,7 @@ import com.jetbrains.php.lang.psi.elements.AssignmentExpression
 import com.jetbrains.php.lang.psi.elements.StringLiteralExpression
 
 object BitrixComponentParameters {
-    private val STANDARD = setOf(
+    val standardKeys: Set<String> = setOf(
         "CACHE_TYPE", "CACHE_TIME", "CACHE_GROUPS",
         "SET_TITLE", "SET_STATUS_404", "SHOW_404", "MESSAGE_404",
         "SEF_MODE", "SEF_FOLDER", "SEF_URL_TEMPLATES",
@@ -51,7 +51,7 @@ object BitrixComponentParameters {
         parametersArray.hashElements.mapNotNullTo(result) {
             (it.key as? StringLiteralExpression)?.contents
         }
-        result += STANDARD
+        result += standardKeys
         return result
     }
 

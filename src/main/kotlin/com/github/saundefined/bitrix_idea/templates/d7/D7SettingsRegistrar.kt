@@ -23,6 +23,101 @@ object D7SettingsRegistrar {
         VfsUtil.saveText(file, updated)
     }
 
+    /**
+     * Регистрирует обработчик события в секции `events` файла `.settings.php`.
+     */
+    fun registerEvent(
+        moduleRoot: VirtualFile,
+        moduleId: String,
+        eventName: String,
+        handlerFqn: String,
+        methodName: String,
+    ) {
+        val file = moduleRoot.findChild(".settings.php")
+            ?: moduleRoot.createChildData(this, ".settings.php")
+        val existing = runCatching { VfsUtilCore.loadText(file) }.getOrDefault("")
+        val eventEntry = "['${escape(handlerFqn)}', '${escape(methodName)}'],"
+        val updated = registerEventEntry(existing, moduleId, eventName, eventEntry)
+        VfsUtil.saveText(file, updated)
+    }
+
+    /**
+     * Регистрирует агент в секции `agents`.
+     */
+    fun registerAgent(moduleRoot: VirtualFile, callable: String, intervalSeconds: Int = 86400) {
+        val file = moduleRoot.findChild(".settings.php")
+            ?: moduleRoot.createChildData(this, ".settings.php")
+        val existing = runCatching { VfsUtilCore.loadText(file) }.getOrDefault("")
+        val key = escape(callable)
+        if (existing.contains(key)) return
+
+        val section = findSection(existing, "agents")
+        if (section == null) {
+            val updated = appendSection(
+                existing,
+                """
+                |    'agents' => [
+                |        'value' => [
+                |            '$key' => $intervalSeconds,
+                |        ],
+                |    ],
+                |""".trimMargin(),
+            )
+            VfsUtil.saveText(file, updated)
+            return
+        }
+        val value = findKeyArray(existing, "value", section.first, section.last) ?: return
+        val updated = insertBefore(existing, value.second, "            '$key' => $intervalSeconds,\n")
+        VfsUtil.saveText(file, updated)
+    }
+
+    private fun registerEventEntry(
+        text: String,
+        moduleId: String,
+        eventName: String,
+        eventEntry: String,
+    ): String {
+        val events = findSection(text, "events")
+        if (events == null) {
+            return appendSection(
+                text,
+                """
+                |    'events' => [
+                |        'value' => [
+                |            '$moduleId' => [
+                |                '$eventName' => [
+                |                    $eventEntry
+                |                ],
+                |            ],
+                |        ],
+                |    ],
+                |""".trimMargin(),
+            )
+        }
+
+        val value = findKeyArray(text, "value", events.first, events.last) ?: return text
+        val module = findKeyArray(text, moduleId, value.first, value.second)
+        if (module == null) {
+            return insertBefore(
+                text,
+                value.second,
+                "            '$moduleId' => [\n                '$eventName' => [\n                    $eventEntry\n                ],\n            ],\n",
+            )
+        }
+
+        val event = findKeyArray(text, eventName, module.first, module.second)
+        if (event == null) {
+            return insertBefore(
+                text,
+                module.second,
+                "                '$eventName' => [\n                    $eventEntry\n                ],\n",
+            )
+        }
+        return insertBefore(text, event.second, "                    $eventEntry\n")
+    }
+
+    private fun escape(value: String): String = value.replace("\\", "\\\\").replace("'", "\\'")
+
     private fun registerController(text: String, namespace: String): String {
         val phpNamespace = "\\\\" + namespace.replace("\\", "\\\\") + "\\\\Controller"
         if (text.contains(phpNamespace)) return text

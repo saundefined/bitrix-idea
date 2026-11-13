@@ -22,6 +22,9 @@
         <renamePsiElementProcessor
                 order="first"
                 implementation="com.github.saundefined.bitrix_idea.php.BitrixLangKeyRenameProcessor"/>
+        <renamePsiElementProcessor
+                order="first"
+                implementation="com.github.saundefined.bitrix_idea.php.BitrixComponentRenameProcessor"/>
         <localInspection
                 language="PHP"
                 shortName="BitrixMissingLangMessage"
@@ -110,6 +113,30 @@
                 enabledByDefault="true"
                 level="WEAK_WARNING"
                 implementationClass="com.github.saundefined.bitrix_idea.php.inspections.DeprecatedApiInspection"/>
+        <localInspection
+                language="PHP"
+                shortName="BitrixUnknownTemplateParameter"
+                displayName="Bitrix: unknown template parameter"
+                groupName="Bitrix"
+                enabledByDefault="true"
+                level="WEAK_WARNING"
+                implementationClass="com.github.saundefined.bitrix_idea.php.inspections.UnknownTemplateParameterInspection"/>
+        <localInspection
+                language="PHP"
+                shortName="BitrixUnusedComponentParameter"
+                displayName="Bitrix: unused component parameter"
+                groupName="Bitrix"
+                enabledByDefault="false"
+                level="WEAK_WARNING"
+                implementationClass="com.github.saundefined.bitrix_idea.php.inspections.UnusedComponentParameterInspection"/>
+        <localInspection
+                language="PHP"
+                shortName="BitrixMissingEventHandler"
+                displayName="Bitrix: missing event handler"
+                groupName="Bitrix"
+                enabledByDefault="false"
+                level="WEAK_WARNING"
+                implementationClass="com.github.saundefined.bitrix_idea.php.inspections.MissingEventHandlerInspection"/>
         <localInspection
                 language="PHP"
                 shortName="BitrixLangSync"
