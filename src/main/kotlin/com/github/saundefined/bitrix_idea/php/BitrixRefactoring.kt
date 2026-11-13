@@ -43,7 +43,10 @@ class BitrixComponentRenameProcessor : RenamePsiElementProcessorBase() {
             }
             when (kind) {
                 "component" -> renameComponentDirectory(project, oldName, newName)
-                "template" -> renameTemplateDirectories(project, componentId, oldName, newName)
+                "template" -> {
+                    renameTemplateDirectories(project, componentId, oldName, newName)
+                    renameComponentTemplateParameter(project, componentId, oldName, newName)
+                }
             }
         }
         listener?.elementRenamed(element)
@@ -106,6 +109,39 @@ class BitrixComponentRenameProcessor : RenamePsiElementProcessorBase() {
         runCatching {
             directory.move(this, vendorDirectory)
             directory.rename(this, newCode)
+        }
+    }
+
+    /**
+     * Обновляет `'COMPONENT_TEMPLATE' => 'old'` в параметрах того же `IncludeComponent`.
+     */
+    private fun renameComponentTemplateParameter(
+        project: Project,
+        componentId: String?,
+        oldName: String,
+        newName: String,
+    ) {
+        if (componentId.isNullOrBlank()) return
+        val scope = GlobalSearchScope.projectScope(project)
+        FileTypeIndex.getFiles(PhpFileType.INSTANCE, scope).forEach { virtualFile ->
+            val file = PsiManager.getInstance(project).findFile(virtualFile) ?: return@forEach
+            PsiTreeUtil.findChildrenOfType(file, com.jetbrains.php.lang.psi.elements.ArrayHashElement::class.java)
+                .forEach { element ->
+                    val key = (element.key as? StringLiteralExpression)?.contents ?: return@forEach
+                    if (key != "COMPONENT_TEMPLATE") return@forEach
+                    val value = element.value as? StringLiteralExpression ?: return@forEach
+                    if (value.contents != oldName) return@forEach
+
+                    val parameterList = PsiTreeUtil.getParentOfType(element, com.jetbrains.php.lang.psi.elements.ParameterList::class.java, false)
+                        ?: return@forEach
+                    val call = PsiTreeUtil.getParentOfType(parameterList, com.jetbrains.php.lang.psi.elements.FunctionReference::class.java, true)
+                        ?: return@forEach
+                    if (call.parameterList !== parameterList || !BitrixPhp.isIncludeComponent(call)) return@forEach
+                    val owner = (parameterList.parameters.getOrNull(0) as? StringLiteralExpression)?.contents
+                    if (owner != componentId) return@forEach
+
+                    ElementManipulators.handleContentChange(value, value.valueRange, newName)
+                }
         }
     }
 

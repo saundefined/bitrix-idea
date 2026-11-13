@@ -26,6 +26,9 @@ data class BitrixComponentParameter(
     val name: String?,
     val description: String?,
     val target: PsiElement,
+    val type: String? = null,
+    val defaultValue: String? = null,
+    val parent: String? = null,
 )
 
 /**
@@ -65,14 +68,22 @@ object BitrixComponentMeta {
      * Если литерал используется как `$arParams['KEY']`, возвращает ID компонента и описание параметра.
      */
     fun parameterForLiteral(literal: StringLiteralExpression): Pair<String, BitrixComponentParameter>? {
+        val componentId = componentIdForArrayAccess(literal) ?: return null
+        val parameter = parameter(literal.project, componentId, literal.contents) ?: return null
+        return componentId to parameter
+    }
+
+    /**
+     * ID компонента для литерала в `$arParams['KEY']`, даже если ключа ещё нет.
+     * Нужен автодополнению, где текущий ключ может быть неполным.
+     */
+    fun componentIdForArrayAccess(literal: StringLiteralExpression): String? {
         val arrayAccess = PsiTreeUtil.getParentOfType(literal, ArrayAccessExpression::class.java, false) ?: return null
         if (arrayAccess.index?.value !== literal) return null
         val variable = arrayAccess.value as? Variable ?: return null
         if (variable.name !in setOf("arParams", "arCurrentValues", "arValues")) return null
         val file = literal.containingFile.virtualFile ?: return null
-        val componentId = componentIdForFile(file) ?: return null
-        val parameter = parameter(literal.project, componentId, literal.contents) ?: return null
-        return componentId to parameter
+        return componentIdForFile(file)
     }
 
     fun description(project: Project, componentId: String): Pair<String?, String?>? {
@@ -133,13 +144,27 @@ object BitrixComponentMeta {
             val value = element.value as? com.jetbrains.php.lang.psi.elements.ArrayCreationExpression ?: return@forEach
             var name: String? = null
             var description: String? = null
+            var type: String? = null
+            var defaultValue: String? = null
+            var parent: String? = null
             value.hashElements.forEach { field ->
                 when ((field.key as? StringLiteralExpression)?.contents) {
                     "NAME" -> name = resolveElement(project, field)
                     "DESCRIPTION" -> description = resolveElement(project, field)
+                    "TYPE" -> type = resolveElement(project, field)
+                    "DEFAULT" -> defaultValue = resolveElement(project, field)
+                    "PARENT" -> parent = resolveElement(project, field)
                 }
             }
-            result[key] = BitrixComponentParameter(key, name, description, keyElement)
+            result[key] = BitrixComponentParameter(
+                key = key,
+                name = name,
+                description = description,
+                target = keyElement,
+                type = type,
+                defaultValue = defaultValue,
+                parent = parent,
+            )
         }
         return result
     }

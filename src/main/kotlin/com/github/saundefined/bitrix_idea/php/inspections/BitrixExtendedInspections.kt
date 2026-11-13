@@ -35,10 +35,49 @@ class UnknownTemplateParameterInspection : LocalInspectionTool() {
                 val known = BitrixComponentParameters.keys(element.project, componentId) ?: return
                 if (element.contents in known) return
 
+                val componentDirectory = BitrixComponentMeta.componentDirectoryFor(file)
                 holder.registerProblem(
                     element,
                     message("inspection.template.parameter.message", element.contents),
                     ProblemHighlightType.WEAK_WARNING,
+                    *listOfNotNull(
+                        componentDirectory?.takeIf { it.findChild(".parameters.php") != null }?.let {
+                            AddComponentParameterFix(it, element.contents, element.contents)
+                        },
+                    ).toTypedArray(),
+                )
+            }
+        }
+    }
+}
+
+/**
+ * В `IncludeComponent` указан шаблон, которого нет у компонента.
+ */
+class UnknownComponentTemplateInspection : LocalInspectionTool() {
+    override fun buildVisitor(holder: ProblemsHolder, isOnTheFly: Boolean): PsiElementVisitor {
+        return object : PhpElementVisitor() {
+            override fun visitPhpStringLiteralExpression(element: StringLiteralExpression) {
+                val call = com.github.saundefined.bitrix_idea.php.BitrixPhp.directCall(element) ?: return
+                val index = com.github.saundefined.bitrix_idea.php.BitrixPhp.argumentIndex(element) ?: return
+                if (!com.github.saundefined.bitrix_idea.php.BitrixPhp.isIncludeComponent(call) || index != 1) return
+
+                val componentLiteral = call.parameterList?.getParameter(0) as? StringLiteralExpression ?: return
+                val componentId = componentLiteral.contents
+                val template = element.contents.ifBlank { ".default" }
+                if (componentId.isBlank()) return
+                val component = com.github.saundefined.bitrix_idea.structure.BitrixProjectStructure
+                    .getModel(element.project)
+                    .findComponent(componentId) ?: return
+                val dirs = com.github.saundefined.bitrix_idea.structure.BitrixProjectStructure
+                    .findComponentTemplateDirs(element.project, componentId, template)
+                if (dirs.isNotEmpty()) return
+
+                holder.registerProblem(
+                    element,
+                    message("inspection.component.template.unknown.message", componentId, template),
+                    ProblemHighlightType.WEAK_WARNING,
+                    CreateComponentTemplateDirectoryFix(component.directory, template),
                 )
             }
         }

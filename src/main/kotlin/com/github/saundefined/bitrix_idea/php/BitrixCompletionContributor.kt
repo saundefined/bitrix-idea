@@ -46,6 +46,20 @@ private class BitrixCompletionProvider : CompletionProvider<CompletionParameters
             return
         }
 
+        BitrixComponentMeta.componentIdForArrayAccess(literal)?.let { ownerId ->
+            BitrixComponentMeta.parameters(project, ownerId).values
+                .sortedBy { it.key }
+                .forEach { parameter ->
+                    val tail = listOfNotNull(
+                        parameter.name,
+                        parameter.defaultValue?.takeIf { it.isNotBlank() }?.let { "по умолчанию: $it" },
+                    ).joinToString(" · ")
+                    add(result, parameter.key, parameter.type ?: "parameter", tail.ifBlank { null })
+                }
+            BitrixComponentParameters.standardKeys.sorted().forEach { add(result, it, "standard") }
+            return
+        }
+
         val call = BitrixPhp.directCall(literal) ?: return
         val index = BitrixPhp.argumentIndex(literal) ?: return
 

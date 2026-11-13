@@ -75,6 +75,14 @@
                 implementationClass="com.github.saundefined.bitrix_idea.php.inspections.MissingComponentTemplateInspection"/>
         <localInspection
                 language="PHP"
+                shortName="BitrixUnknownComponentTemplate"
+                displayName="Bitrix: unknown component template"
+                groupName="Bitrix"
+                enabledByDefault="true"
+                level="WEAK_WARNING"
+                implementationClass="com.github.saundefined.bitrix_idea.php.inspections.UnknownComponentTemplateInspection"/>
+        <localInspection
+                language="PHP"
                 shortName="BitrixMissingComponentLang"
                 displayName="Bitrix: missing component lang"
                 groupName="Bitrix"

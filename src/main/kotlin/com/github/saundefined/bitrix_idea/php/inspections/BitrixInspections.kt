@@ -198,6 +198,7 @@ class MissingComponentTemplateInspection : LocalInspectionTool() {
                             file,
                             message("inspection.component.template.missing.message", template.name),
                             ProblemHighlightType.WEAK_WARNING,
+                            CreateComponentTemplateFileFix(template),
                         )
                     }
                 }
