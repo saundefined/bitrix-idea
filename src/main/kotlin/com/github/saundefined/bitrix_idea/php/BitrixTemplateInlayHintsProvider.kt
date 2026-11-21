@@ -43,6 +43,7 @@ class BitrixTemplateInlayHintsProvider : InlayHintsProvider<NoSettings> {
                     literal.textRange.endOffset,
                     false,
                     factory.smallText("  $template: $relative"),
+                    false,
                 )
                 return true
             }

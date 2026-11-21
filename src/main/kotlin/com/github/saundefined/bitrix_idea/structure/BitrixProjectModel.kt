@@ -3,6 +3,7 @@ package com.github.saundefined.bitrix_idea.structure
 import com.github.saundefined.bitrix_idea.settings.BitrixProjectSettings
 import com.intellij.openapi.application.ReadAction
 import com.intellij.openapi.project.Project
+import com.intellij.openapi.project.guessProjectDir
 import com.intellij.openapi.util.Key
 import com.intellij.openapi.util.ModificationTracker
 import com.intellij.openapi.vfs.LocalFileSystem
@@ -127,9 +128,8 @@ object BitrixProjectStructure {
     /**
      * Каталог, содержащий `bitrix` и `local`. По умолчанию — корень проекта.
      */
-    @Suppress("DEPRECATION")
     fun bitrixRoot(project: Project): VirtualFile? {
-        val base = project.baseDir ?: return null
+        val base = project.guessProjectDir() ?: return null
         val configured = BitrixProjectSettings.getInstance(project).bitrixRootPath.trim()
         if (configured.isEmpty()) return base
         val file = if (File(configured).isAbsolute) {

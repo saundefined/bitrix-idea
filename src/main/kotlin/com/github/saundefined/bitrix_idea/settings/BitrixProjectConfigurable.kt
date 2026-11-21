@@ -15,6 +15,7 @@ import com.intellij.openapi.fileChooser.FileChooserDescriptorFactory
 import com.intellij.openapi.ide.CopyPasteManager
 import com.intellij.openapi.options.Configurable
 import com.intellij.openapi.project.Project
+import com.intellij.openapi.project.guessProjectDir
 import com.intellij.openapi.ui.DialogPanel
 import com.intellij.openapi.vfs.VfsUtilCore
 import com.intellij.psi.PsiManager
@@ -118,7 +119,7 @@ class BitrixProjectConfigurable(private val project: Project) : Configurable {
                         .withTitle(message("settings.bitrix.root.choose")),
                     project = project,
                     fileChosen = { file ->
-                        val base = project.baseDir
+                        val base = project.guessProjectDir()
                         if (base != null) {
                             VfsUtilCore.getRelativePath(file, base, '/') ?: file.path
                         } else {

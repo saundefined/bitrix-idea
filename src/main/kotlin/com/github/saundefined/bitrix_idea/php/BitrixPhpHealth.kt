@@ -43,7 +43,7 @@ object BitrixPhpHealth {
         files.forEach { virtualFile ->
             val file = PsiManager.getInstance(project).findFile(virtualFile) ?: return@forEach
             inspections.forEach { inspection ->
-                runCatching { manager.defaultProcessFile(inspection, file) }
+                runCatching { inspection.processFile(file, manager) }
                     .getOrDefault(emptyList())
                     .forEach { descriptor ->
                         result += BitrixHealthIssue(

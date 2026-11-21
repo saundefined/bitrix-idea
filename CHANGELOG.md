@@ -81,12 +81,15 @@
 - Vendor and localization settings are now edited in `PHP > Frameworks > Bitrix` instead of a separate Tools page
 - PHP insight is loaded through an optional PHP plugin dependency, so the plugin also installs in PhpStorm Lite
 - Refactored dialogs, actions, file-template handling, and settings code
+- Kotlin default methods are compiled without compatibility bridges (`jvm-default=no-compatibility`), so the plugin verifier no longer reports compiler-generated internal/deprecated API usages
 
 ### Fixed
 
 - Empty names and descriptions are rejected when creating modules, templates, and components
 - URL validation rejects addresses without a host
 - Localization changes in settings are applied only after confirmation
+- Bitrix tool window no longer risks `MissingResourceException` for the component templates node (`toolwindow.template.tree` key added)
+- Removed deprecated and internal platform API usages: `Project.getBaseDir()`, `InlayHintsSink.addInlineElement`, and `InspectionManager.defaultProcessFile`
 - CI refactoring
 
 ## [2026.1.0]

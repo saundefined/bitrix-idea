@@ -1,10 +1,20 @@
 import org.jetbrains.intellij.platform.gradle.IntelliJPlatformType
 import org.jetbrains.intellij.platform.gradle.TestFrameworkType
+import org.jetbrains.kotlin.gradle.dsl.JvmDefaultMode
 
 plugins {
     id("org.jetbrains.kotlin.jvm")
     id("org.jetbrains.intellij.platform")
     id("org.jetbrains.changelog")
+}
+
+kotlin {
+    compilerOptions {
+        // Без compatibility-мостов: плагин не публикует свои интерфейсы как библиотеку,
+        // а сгенерированные мосты к default-методам платформы попадают в отчёт
+        // plugin verifier как использования internal/deprecated API.
+        jvmDefault = JvmDefaultMode.NO_COMPATIBILITY
+    }
 }
 
 // PSI-тесты требуют загрузки tests-bootstrap. В офлайн-окружении их можно отключить:
