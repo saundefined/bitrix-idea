@@ -76,6 +76,8 @@
 
 ### Changed
 
+- Build infrastructure updated to IntelliJ Platform Plugin Template `2.7.0`: IntelliJ Platform Gradle Plugin `2.20.1`, Kotlin `2.4.21`, Gradle Wrapper `9.9.2`
+- CI workflows use current GitHub Actions releases (`checkout@v7`, `setup-java@v6`, `upload-artifact@v7`, `download-artifact@v8`, `free-disk-space@v2.0.0`); the plugin ZIP is uploaded without re-archiving
 - Vendor and localization settings are now edited in `PHP > Frameworks > Bitrix` instead of a separate Tools page
 - PHP insight is loaded through an optional PHP plugin dependency, so the plugin also installs in PhpStorm Lite
 - Refactored dialogs, actions, file-template handling, and settings code

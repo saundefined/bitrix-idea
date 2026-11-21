@@ -34,13 +34,13 @@ jobs:
 
     steps:
       - name: Maximize build space
-        uses: jlumbroso/free-disk-space@v1.3.1
+        uses: jlumbroso/free-disk-space@v2.0.0
         with:
-          tool-cache: false
+          preinstalled-runtimes: false
           large-packages: false
 
       - name: Checkout
-        uses: actions/checkout@v6
+        uses: actions/checkout@v7
         with:
           submodules: recursive
           token: ${{ secrets.FETCH_SUBMODULES_PAT || github.token }}
@@ -50,7 +50,7 @@ jobs:
         uses: gradle/actions/wrapper-validation@v6
 
       - name: Setup Java
-        uses: actions/setup-java@v5
+        uses: actions/setup-java@v6
         with:
           distribution: zulu
           java-version: 21
@@ -73,7 +73,7 @@ jobs:
 
       - name: Collect test results
         if: failure()
-        uses: actions/upload-artifact@v6
+        uses: actions/upload-artifact@v7
         with:
           name: tests-result
           path: build/reports/tests
@@ -89,17 +89,18 @@ jobs:
 
       - name: Collect plugin verifier result
         if: always()
-        uses: actions/upload-artifact@v6
+        uses: actions/upload-artifact@v7
         with:
           name: pluginVerifier-result
           path: build/reports/pluginVerifier
           retention-days: 7
           if-no-files-found: ignore
 
+      # ZIP загружается как есть (archive: false), чтобы не упаковывать артефакт повторно.
       - name: Upload plugin artifact
-        uses: actions/upload-artifact@v6
+        uses: actions/upload-artifact@v7
         with:
-          name: plugin
           path: build/distributions/*.zip
+          archive: false
           retention-days: 7
           if-no-files-found: error

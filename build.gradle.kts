@@ -11,7 +11,7 @@ plugins {
 // ./gradlew test -PpsiTests=true
 val psiTests = providers.gradleProperty("psiTests").isPresent
 val platformVersion = providers.gradleProperty("platformVersion").orNull
-    ?.takeIf { it.isNotBlank() } ?: "2025.2.6.2"
+    ?.takeIf { it.isNotBlank() } ?: "2026.2.5"
 val phpPluginVersion = providers.gradleProperty("phpPluginVersion").orNull
     ?.takeIf { it.isNotBlank() } ?: "252.28539.149"
 val verifyPlatformVersions = providers.gradleProperty("verifyPlatforms").orNull

@@ -9,7 +9,7 @@ It creates Bitrix CMS module/template/component file sets and exposes the bundle
 as a PHP library for navigation.
 
 - Target platform: IntelliJ IDEA `2025.2.6.2` (build 252), configured in `build.gradle.kts`.
-- Toolchain: JDK 21 (CI), Gradle wrapper 9.5, Kotlin 2.1.20, IntelliJ Platform Gradle Plugin 2.16.0.
+- Toolchain: JDK 21 (CI), Gradle wrapper 9.9.2, Kotlin 2.4.21, IntelliJ Platform Gradle Plugin 2.20.1.
 - Kotlin package is `com.github.saundefined.bitrix_idea` (underscore). Icons live in the
   top-level `icons` package.
 
